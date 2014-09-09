@@ -29,10 +29,15 @@ struct TestDataManager
 	using return_type = typename TestDataPermutation::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
-	// blocks we are supposed to call the constructor with the blockwise
+	// blocks we are supposed to call the constructor with the blocksize
 	// and the number of blocks to be fetched in current burst.
 	// to hide this detail from test data get_sample implementation
 	// this part is left to the caller method
+	// TODO
+	// in order to handle different blocksize for different distribution
+	// in case of different number of samples, it's wise to keep the
+	// total number of blocks from all the distributions and internally
+	// decide the blocksize for each distribution each time we fetch
 	template <bool IsPermutationTest>
 	return_type get_samples(Fetcher fetch)
 	{

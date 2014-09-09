@@ -1,4 +1,12 @@
-//
+template <class Kernel, class TestDataManager>
+struct TestKernelManager
+{
+	template <bool IsPermutationTest, bool Precompute>
+	Kernel* get_kernel()
+	{
+	}
+};
+
 template <class Features, class Fetcher>
 struct TwoSampleTestKernelManager
 {
