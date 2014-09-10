@@ -7,6 +7,25 @@
 
 using namespace shogun;
 
+// TODO solve memory leaks
+// TODO solve different block-size issue
+// TODO parserRAII does not work. (stopping and starting it again starts it from the beginning)
+
+// traits
+template <class Features>
+struct fetch_traits
+{
+	typedef Features feats_type;
+	typedef Features return_type;
+};
+
+template <> template <typename T>
+struct fetch_traits<CStreamingDenseFeatures<T> >
+{
+	typedef CStreamingDenseFeatures<T> feats_type;
+	typedef CDenseFeatures<T> return_type;
+};
+
 // somehow this module has to provide the computation module
 // the data - either blockwise streamed or as a whole fetched
 //			- either permuted or unpermuted (differentiate between independene test and two-sample test)
@@ -23,10 +42,11 @@ using namespace shogun;
 // info:
 // fetcher is dependent on features
 // test data permutation is independent of features
-template <class Features, class Fetcher, class TestDataPermutation>
+template <class Features, template <class> class Fetcher, template <class> class TestDataPermutation>
 struct TestDataManager
 {
-	using return_type = typename TestDataPermutation::return_type;
+	using fetch_type = typename fetch_traits<Features>::return_type;
+	using return_type = typename TestDataPermutation<fetch_type>::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
 	// blocks we are supposed to call the constructor with the blocksize
@@ -39,11 +59,11 @@ struct TestDataManager
 	// total number of blocks from all the distributions and internally
 	// decide the blocksize for each distribution each time we fetch
 	template <bool IsPermutationTest>
-	return_type get_samples(Fetcher fetch)
+	return_type get_samples(Fetcher<Features> fetch)
 	{
 		ASSERT(samples.size() > 1);
 
-		TestDataPermutation permutation;
+		TestDataPermutation<fetch_type> permutation;
 
 		for (auto sample : samples)
 			permutation.samples.push_back(fetch(sample));
@@ -74,12 +94,16 @@ struct FeatureVectorPermutation<CDenseFeatures<T> >
 };
 
 // specialization for sparse features
+// TODO
+
 
 // permutation policies
 template <class Features>
 struct TwoSampleTestPermutation
 {
+	typedef Features feats_type;
 	typedef Features* return_type;
+
 	template <bool IsPermutationTest> struct type {};
 
 	template <bool IsPermutationTest>
@@ -88,17 +112,17 @@ struct TwoSampleTestPermutation
 		return get(type<IsPermutationTest>());
 	}
 
-	std::vector<Features*> samples;
+	std::vector<feats_type*> samples;
 private:
 	return_type get(type<false>)
 	{
 		return_type p_and_q = return_type(samples[0]->create_merged_copy(samples[1]));
-		return return_type(p_and_q);
+		return p_and_q;
 	}
 
 	return_type get(type<true>)
 	{
-		FeatureVectorPermutation<Features> permute_feat_vectors;
+		FeatureVectorPermutation<feats_type> permute_feat_vectors;
 		return_type p_and_q = get<false>();
 		permute_feat_vectors(p_and_q);
 		return p_and_q;
@@ -108,7 +132,9 @@ private:
 template <class Features>
 struct IndependenceTestPermutation
 {
+	typedef Features feats_type;
 	typedef std::vector<Features*> return_type;
+
 	template <bool IsPermutationTest> struct type {};
 
 	template <bool IsPermutationTest>
@@ -117,7 +143,7 @@ struct IndependenceTestPermutation
 		return get(type<IsPermutationTest>());
 	}
 
-	std::vector<Features*> samples;
+	std::vector<feats_type*> samples;
 
 private:
 	return_type get(type<false>)
@@ -126,28 +152,12 @@ private:
 	}
 	return_type get(type<true>)
 	{
-		FeatureVectorPermutation<Features> permute_feat_vectors;
+		FeatureVectorPermutation<feats_type> permute_feat_vectors;
 		permute_feat_vectors(samples[0]);
 		return get<false>();
 	}
 };
 
-// traits
-template <class Features> struct fetch_traits;
-
-template <> template <typename T>
-struct fetch_traits<CStreamingDenseFeatures<T> >
-{
-	typedef CStreamingDenseFeatures<T> feats_type;
-	typedef CDenseFeatures<T> return_type;
-};
-
-template <> template <typename T>
-struct fetch_traits<CDenseFeatures<T> >
-{
-	typedef CDenseFeatures<T> feats_type;
-	typedef CDenseFeatures<T> return_type;
-};
 
 // fetching features policies
 template <class Features>
@@ -168,6 +178,20 @@ struct FetchBlocks
 	return_type* operator()(feats_type* samples);
 };
 
+template <class StreamingFeatures>
+struct ParserRAII
+{
+	ParserRAII(StreamingFeatures* samples) : samples(samples)
+	{
+		samples->start_parser();
+	}
+	~ParserRAII()
+	{
+		samples->end_parser();
+	}
+	StreamingFeatures* samples;
+};
+
 template <> template <typename T>
 struct FetchBlocks<CStreamingDenseFeatures<T> >
 {
@@ -175,8 +199,10 @@ struct FetchBlocks<CStreamingDenseFeatures<T> >
 		: blocksize(blocksize), num_blocks(num_blocks)
 	{
 	}
+	// TODO handle start_parser() and end_parser() in some smart way
 	CDenseFeatures<T>* operator()(CStreamingDenseFeatures<T>* samples)
 	{
+		ParserRAII<CStreamingDenseFeatures<T> > parser(samples);
 		return (CDenseFeatures<T>*)samples->get_streamed_features(blocksize*num_blocks);
 	}
 	int blocksize;
