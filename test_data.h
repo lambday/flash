@@ -1,3 +1,21 @@
+/*
+ * Restructuring Shogun's statistical hypothesis testing framework.
+ * Copyright (C) 2014  Soumyajit De
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <shogun/lib/config.h>
 #include <shogun/lib/List.h>
 #include <shogun/lib/SGVector.h>
@@ -7,9 +25,13 @@
 
 using namespace shogun;
 
-// TODO solve memory leaks
+// TODO solve memory leaks - DONE
 // TODO solve different block-size issue
-// TODO parserRAII does not work. (stopping and starting it again starts it from the beginning)
+// TODO parserRAII does not work. (stopping and starting it again starts it from the beginning) - DONE
+// TODO make TestDataManager un-copiable (since it has to perform RAII action) - DONE
+// TODO need to make sure that get_samples() always returns the features (or vector containing)
+// features with refcount 1 and all other internal storage is cleaned up so that no external
+// cleanup is required. - DONE, CHECKING NEEDED
 
 // traits
 template <class Features>
@@ -24,6 +46,49 @@ struct fetch_traits<CStreamingDenseFeatures<T> >
 {
 	typedef CStreamingDenseFeatures<T> feats_type;
 	typedef CDenseFeatures<T> return_type;
+};
+
+// RAII functors
+template <class Features>
+struct init_functor
+{
+	inline void operator()(Features* samples)
+	{
+		SG_REF(samples);
+	}
+};
+
+template <> template <typename T>
+struct init_functor<CStreamingDenseFeatures<T> >
+{
+	inline void operator()(CStreamingDenseFeatures<T>* samples)
+	{
+		SG_REF(samples);
+		samples->start_parser();
+	}
+};
+
+template <class Features>
+struct cleanup_functor
+{
+	inline void operator()(std::vector<Features*> samples)
+	{
+		for (auto sample : samples)
+			SG_UNREF(sample);
+	}
+};
+
+template <> template <typename T>
+struct cleanup_functor<CStreamingDenseFeatures<T> >
+{
+	inline void operator()(std::vector<CStreamingDenseFeatures<T>*> samples)
+	{
+		for (auto sample : samples)
+		{
+			sample->end_parser();
+			SG_UNREF(sample);
+		}
+	}
 };
 
 // somehow this module has to provide the computation module
@@ -45,8 +110,8 @@ struct fetch_traits<CStreamingDenseFeatures<T> >
 template <class Features, template <class> class Fetcher, template <class> class TestDataPermutation>
 struct TestDataManager
 {
-	using fetch_type = typename fetch_traits<Features>::return_type;
-	using return_type = typename TestDataPermutation<fetch_type>::return_type;
+//	using fetch_type = typename fetch_traits<Features>::return_type;
+	using return_type = typename TestDataPermutation<Features>::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
 	// blocks we are supposed to call the constructor with the blocksize
@@ -58,17 +123,43 @@ struct TestDataManager
 	// in case of different number of samples, it's wise to keep the
 	// total number of blocks from all the distributions and internally
 	// decide the blocksize for each distribution each time we fetch
+
+	TestDataManager() {}
+
+	// disable copy constructor and assignment operator
+	TestDataManager(const TestDataManager& other);
+	TestDataManager& operator=(const TestDataManager& other);
+
+	~TestDataManager()
+	{
+		cleanup(samples);
+	}
+
+	void push_back(Features* sample)
+	{
+		init(sample);
+		samples.push_back(sample);
+	}
 	template <bool IsPermutationTest>
 	return_type get_samples(Fetcher<Features> fetch)
 	{
 		ASSERT(samples.size() > 1);
 
-		TestDataPermutation<fetch_type> permutation;
+		TestDataPermutation<Features> permutation;
 
 		for (auto sample : samples)
-			permutation.samples.push_back(fetch(sample));
+			// passing original sample and fetcher as an arg because
+			// permutation needs to know the original feature type
+			// in order to free any intermediate allocated memory
+			// in case streaming features is used
+			permutation.push_back(fetch, sample);
 		return permutation.template get<IsPermutationTest>();
 	}
+
+	init_functor<Features> init;
+	cleanup_functor<Features> cleanup;
+
+private:
 	std::vector<Features*> samples;
 };
 
@@ -97,14 +188,52 @@ struct FeatureVectorPermutation<CDenseFeatures<T> >
 // TODO
 
 
+// these cleaners are needed since streaming from a features yields
+// another type of features which is stored internally. if we don't
+// keep track of these then we'll get memory leak
+// it is also important that we free the streamed features immediately
+// since we are already returning a merged feature object. no use of
+// keeping track of it. Note that this is taken care in the destructor
+// which gets called every time we call get_samples in the data manager
+// long live RAII
+template <class Features>
+struct TwoSampleTestCleaner
+{
+	using feats_type = typename fetch_traits<Features>::return_type;
+	TwoSampleTestCleaner(std::vector<feats_type*> samples) {}
+};
+
+template <> template <typename T>
+struct TwoSampleTestCleaner<CStreamingDenseFeatures<T> >
+{
+	using feats_type = typename fetch_traits<CStreamingDenseFeatures<T> >::return_type;
+	TwoSampleTestCleaner(std::vector<feats_type*> samples)
+	{
+		for (auto sample : samples)
+			SG_UNREF(sample);
+	}
+};
+
 // permutation policies
 template <class Features>
 struct TwoSampleTestPermutation
 {
 	typedef Features feats_type;
-	typedef Features* return_type;
+	using fetch_type = typename fetch_traits<Features>::return_type;
+	typedef fetch_type* return_type;
 
 	template <bool IsPermutationTest> struct type {};
+
+	~TwoSampleTestPermutation()
+	{
+		TwoSampleTestCleaner<feats_type> cleanup(samples);
+	}
+
+	template <template <class> class Fetcher>
+	void push_back(Fetcher<feats_type> fetch, feats_type* sample)
+	{
+		samples.push_back(fetch(sample));
+	}
 
 	template <bool IsPermutationTest>
 	return_type get()
@@ -112,7 +241,6 @@ struct TwoSampleTestPermutation
 		return get(type<IsPermutationTest>());
 	}
 
-	std::vector<feats_type*> samples;
 private:
 	return_type get(type<false>)
 	{
@@ -122,29 +250,35 @@ private:
 
 	return_type get(type<true>)
 	{
-		FeatureVectorPermutation<feats_type> permute_feat_vectors;
+		FeatureVectorPermutation<fetch_type> permute_feat_vectors;
 		return_type p_and_q = get<false>();
 		permute_feat_vectors(p_and_q);
 		return p_and_q;
 	}
+
+	std::vector<fetch_type*> samples;
 };
 
 template <class Features>
 struct IndependenceTestPermutation
 {
 	typedef Features feats_type;
-	typedef std::vector<Features*> return_type;
+	using fetch_type = typename fetch_traits<feats_type>::return_type;
+	typedef std::vector<fetch_type*> return_type;
 
 	template <bool IsPermutationTest> struct type {};
+
+	template <template <class> class Fetcher>
+	void push_back(Fetcher<feats_type> fetch, feats_type* sample)
+	{
+		samples.push_back(fetch(sample));
+	}
 
 	template <bool IsPermutationTest>
 	return_type get()
 	{
 		return get(type<IsPermutationTest>());
 	}
-
-	std::vector<feats_type*> samples;
-
 private:
 	return_type get(type<false>)
 	{
@@ -152,10 +286,11 @@ private:
 	}
 	return_type get(type<true>)
 	{
-		FeatureVectorPermutation<feats_type> permute_feat_vectors;
+		FeatureVectorPermutation<fetch_type> permute_feat_vectors;
 		permute_feat_vectors(samples[0]);
 		return get<false>();
 	}
+	std::vector<fetch_type*> samples;
 };
 
 
@@ -172,12 +307,13 @@ struct FetchAll
 template <class Features>
 struct FetchBlocks
 {
-	using return_type = typename fetch_traits<Features>::return_type;
-	using feats_type = typename fetch_traits<Features>::feats_type;
+	using return_type = typename fetch_traits<Features>::return_type*;
+	using feats_type = typename fetch_traits<Features>::feats_type*;
 
-	return_type* operator()(feats_type* samples);
+	return_type operator()(feats_type samples);
 };
 
+/*
 template <class StreamingFeatures>
 struct ParserRAII
 {
@@ -191,24 +327,27 @@ struct ParserRAII
 	}
 	StreamingFeatures* samples;
 };
+*/
 
 template <> template <typename T>
 struct FetchBlocks<CStreamingDenseFeatures<T> >
 {
-	FetchBlocks(int blocksize, int num_blocks)
-		: blocksize(blocksize), num_blocks(num_blocks)
+	using return_type = typename fetch_traits<CStreamingDenseFeatures<T> >::return_type*;
+	using feats_type = typename fetch_traits<CStreamingDenseFeatures<T> >::feats_type*;
+
+	FetchBlocks(int blocksize, int num_blocks) : blocksize(blocksize), num_blocks(num_blocks)
 	{
 	}
-	// TODO handle start_parser() and end_parser() in some smart way
-	CDenseFeatures<T>* operator()(CStreamingDenseFeatures<T>* samples)
+	return_type operator()(feats_type samples)
 	{
-		ParserRAII<CStreamingDenseFeatures<T> > parser(samples);
-		return (CDenseFeatures<T>*)samples->get_streamed_features(blocksize*num_blocks);
+		//ParserRAII<CStreamingDenseFeatures<T> > parser(samples);
+		return return_type(samples->get_streamed_features(blocksize * num_blocks));
 	}
 	int blocksize;
 	int num_blocks;
 };
 
+/*
 template <> template <typename T>
 struct FetchBlocks<CDenseFeatures<T> >
 {
@@ -224,5 +363,4 @@ struct FetchBlocks<CDenseFeatures<T> >
 	int blocksize;
 	int num_blocks;
 };
-
-
+*/
