@@ -16,15 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <test_data.h>
+#include <shogun/kernel/Kernel.h>
+
+using namespace shogun;
+
 template <class Kernel, class TestDataManager>
 struct TestKernelManager
 {
-	template <bool IsPermutationTest, bool Precompute>
-	Kernel* get_kernel()
+	using test_type = typename TestDataManager::test_type;
+
+	template <bool IsPermutationTest>
+	return_type get_kernel()
 	{
 	}
+	TestDataManager data_manager;
+	KernelStore<test_type> store;
 };
 
+template <class TestDataManager>
+struct kernel_traits
+{
+
+};
+
+/*
 template <class Features, class Fetcher>
 struct TwoSampleTestKernelManager
 {
@@ -63,4 +79,4 @@ template <class Kernel>
 struct IndependenceTestKernel
 {
 };
-
+*/
