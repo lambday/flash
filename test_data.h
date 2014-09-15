@@ -36,7 +36,7 @@ using namespace shogun;
 // storage is cleaned up so that no external cleanup is required. - DONE
 
 // DEPENDENCIES:
-// - It relies on the fact that CDenseFeatures->create_merged_copy() always
+// - It relies on the fact that CFeatures->create_merged_copy() always
 // returns a new object with refcount 1
 // - It relies on the fact that CStreamingDenseFeatures->get_streamed_features()
 // also returns a new object with refcount 1
@@ -113,6 +113,8 @@ struct cleanup_functor<CStreamingDenseFeatures<T> >
 	}
 };
 
+
+
 // somehow this module has to provide the computation module
 // the data - either blockwise streamed or as a whole fetched
 //          - either permuted or unpermuted (differentiate between independene
@@ -130,11 +132,12 @@ struct cleanup_functor<CStreamingDenseFeatures<T> >
 // info:
 // fetcher is dependent on features
 // test data permutation is independent of features
-template <class Features, template <class> class Fetcher, template <class> class TestDataPermutation>
+template <class Features, template <class> class Fetcher, template <class> class TestType>
 struct TestDataManager
 {
 //	using fetch_type = typename fetch_traits<Features>::return_type;
-	using return_type = typename TestDataPermutation<Features>::return_type;
+	using permutation_type = typename TestType<Features>::permutation_type;
+	using return_type = typename permutation_type::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
 	// blocks we are supposed to call the constructor with the blocksize
@@ -168,7 +171,7 @@ struct TestDataManager
 	{
 		ASSERT(samples.size() > 1);
 
-		TestDataPermutation<Features> permutation;
+		permutation_type permutation;
 
 		for (auto sample : samples)
 			// passing original sample and fetcher as an arg because
@@ -316,6 +319,21 @@ private:
 	std::vector<fetch_type*> samples;
 };
 
+// TestTypes
+
+template <class Features>
+struct TwoSampleTest
+{
+	typedef TwoSampleTestPermutation<Features> permutation_type;
+};
+
+template <class Features>
+struct IndependenceTest
+{
+	typedef IndependenceTestPermutation<Features> permutation_type;
+};
+
+//
 
 // fetching features policies
 template <class Features>

@@ -40,7 +40,7 @@ void independence_test_get_all()
 	feats_type* feats_p = new feats_type(data_p);
 	feats_type* feats_q = new feats_type(data_q);
 
-	TestDataManager<feats_type, FetchAll, IndependenceTestPermutation> data_manager;
+	TestDataManager<feats_type, FetchAll, IndependenceTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
 
@@ -63,7 +63,7 @@ void two_sample_test_get_all()
 	feats_type* feats_p = new feats_type(data_p);
 	feats_type* feats_q = new feats_type(data_q);
 
-	TestDataManager<feats_type, FetchAll, TwoSampleTestPermutation> data_manager;
+	TestDataManager<feats_type, FetchAll, TwoSampleTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
 
@@ -92,7 +92,7 @@ void independence_test_get_blocks()
 	feats_type* feats_p = new feats_type(data_p);
 	feats_type* feats_q = new feats_type(data_q);
 
-	TestDataManager<streaming_feats_type, FetchBlocks, IndependenceTestPermutation> data_manager;
+	TestDataManager<streaming_feats_type, FetchBlocks, IndependenceTest> data_manager;
 	data_manager.push_back(new streaming_feats_type(feats_p));
 	data_manager.push_back(new streaming_feats_type(feats_q));
 
@@ -130,7 +130,7 @@ void two_sample_test_get_blocks()
 	feats_type* feats_p = new feats_type(data_p);
 	feats_type* feats_q = new feats_type(data_q);
 
-	TestDataManager<streaming_feats_type, FetchBlocks, TwoSampleTestPermutation> data_manager;
+	TestDataManager<streaming_feats_type, FetchBlocks, TwoSampleTest> data_manager;
 	data_manager.push_back(new streaming_feats_type(feats_p));
 	data_manager.push_back(new streaming_feats_type(feats_q));
 
@@ -159,7 +159,7 @@ void independence_test_get_blocks_from_generator()
 	feats_type* feats_p = new CMeanShiftDataGenerator(0, num_feats);
 	feats_type* feats_q = new CMeanShiftDataGenerator(difference, num_feats);
 
-	TestDataManager<feats_type, FetchBlocks, IndependenceTestPermutation> data_manager;
+	TestDataManager<feats_type, FetchBlocks, IndependenceTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
 
@@ -191,7 +191,7 @@ void two_sample_test_get_blocks_from_generator()
 	feats_type* feats_p = new CMeanShiftDataGenerator(0, num_feats);
 	feats_type* feats_q = new CMeanShiftDataGenerator(difference, num_feats);
 
-	TestDataManager<feats_type, FetchBlocks, TwoSampleTestPermutation> data_manager;
+	TestDataManager<feats_type, FetchBlocks, TwoSampleTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
 
