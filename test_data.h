@@ -27,11 +27,24 @@ using namespace shogun;
 
 // TODO solve memory leaks - DONE
 // TODO solve different block-size issue
-// TODO parserRAII does not work. (stopping and starting it again starts it from the beginning) - DONE
-// TODO make TestDataManager un-copiable (since it has to perform RAII action) - DONE
-// TODO need to make sure that get_samples() always returns the features (or vector containing)
-// features with refcount 1 and all other internal storage is cleaned up so that no external
-// cleanup is required. - DONE, CHECKING NEEDED
+// TODO parserRAII does not work. (stopping and starting it again starts
+// it from the beginning) - DONE
+// TODO make TestDataManager un-copiable (since it has to perform RAII
+// action) - DONE
+// TODO need to make sure that get_samples() always returns the features
+// (or vector containing) features with refcount 1 and all other internal
+// storage is cleaned up so that no external cleanup is required. - DONE
+
+// DEPENDENCIES:
+// - It relies on the fact that CDenseFeatures->create_merged_copy() always
+// returns a new object with refcount 1
+// - It relies on the fact that CStreamingDenseFeatures->get_streamed_features()
+// also returns a new object with refcount 1
+// TODO think about ways if we can get rid of these dependencies as well.
+// Or possible drawbacks due to these dependencies
+// TODO think about ways to do things similarly for all streaming dot features
+// subclasses - at least dense, sparse and string so that we don't have to write
+// code for each of these explicitly.
 
 // traits
 template <class Features>
@@ -47,6 +60,15 @@ struct fetch_traits<CStreamingDenseFeatures<T> >
 	typedef CStreamingDenseFeatures<T> feats_type;
 	typedef CDenseFeatures<T> return_type;
 };
+
+/*
+template <> template <typename T>
+struct fetch_traits<CStreamingSparseFeatures<T> >
+{
+	typedef CStreamingSparseFeatures<T> feats_type;
+	typedef CSparseFeatures<T> return_type;
+};
+*/
 
 // RAII functors
 template <class Features>
@@ -93,7 +115,8 @@ struct cleanup_functor<CStreamingDenseFeatures<T> >
 
 // somehow this module has to provide the computation module
 // the data - either blockwise streamed or as a whole fetched
-//			- either permuted or unpermuted (differentiate between independene test and two-sample test)
+//          - either permuted or unpermuted (differentiate between independene
+//            test and two-sample test)
 // or
 // the kernel - doesn't bother about how the data was fetched
 // always return a precomputed kernel (dense or sparse doesn't matter)
