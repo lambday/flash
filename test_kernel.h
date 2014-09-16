@@ -21,23 +21,93 @@
 
 using namespace shogun;
 
+// DESIGN NOTES:
+// ingrinding feature type for tests may be wise since we know which feature
+// type is being used for a particular test (as in, for a particular CSGObject* wrapper)
+// but we shouldn't do the same for kernels sincekernels are in the application at the
+// runtime. so relying on kernel-type at the compilation phase is not something we should do.
+
+// or maybe we can, if we explicitly instantiate only a chosen few types of
+// kernels in the cpp.
+
+// for example, we can use concrete CDenseFeatures or CSparseFeatures in the
+// CHSIC, CQuadraticTimeMMD and concrete CStreamingDenseFeatures or
+// CStreamingSparseFeatures in the CStreamingMMD or CStreamingHSIC tests but
+// there is no way to know the kernel type in compile time (of the library).
+// It's better we work with a factory like component and rely on runtime polymorphism.
+
+// or one thing we can do, we can move the test data manager and test kernel manager
+// compilation part in the application program (these are small components so doesn't
+// take long since not all types of features will get instantiated during compilation
+// but only the ones that are actually used). But then the CSGObject* wrappers have to work
+// with a non-template base pointer of the data and kernel manager which is impossible.
+
+// if two-sample test, return one kernel
+// if independence test, return n kernels where n is the number of distributions
+// in case of multiple kernels, return one by one, precomputed
+// also note that we don't need data manager if custom kernel is provided
+
+// NOTE: cannot be templated on Kernel because it can be anything and it really
+// depends on runtime. We don't want to bloat up the binary size by making compiler
+// produce code for each of the kernel types. Here we should really work with base CKernel.
+
+// invariant :- get_kernel should always return CCustomKernels.
+// if CCombinedKernels are not used:
+// 		for two-sample test, it just returns one precomputed kernels
+//		for independence test, it just returns n precomputed kernels where n is the number of distributions
+// else
+//		for two-sample test, it returns N precomputed kernels one by one
+//		for independence test, it returns nxN precomputed kernels, n at a time
+// This simplifies our design: depending on the test_type, we return things.
+// in case CCombinedKernels are used, we return the same thing multiple times.
+
 template <class Kernel, class TestDataManager>
 struct TestKernelManager
 {
 	using test_type = typename TestDataManager::test_type;
 
+	/*
 	template <bool IsPermutationTest>
 	return_type get_kernel()
 	{
 	}
+	*/
 	TestDataManager data_manager;
-	KernelStore<test_type> store;
+
+	// having this functorized because we want to provide get_kernel() i.e. without param
+	// for single kernels and get_kernel(i) i.e. with kernel index for combined kernel
+	// without having to write two different methods here. Method overloading could have
+	// served the purpose but then we have to disable one or the other based on the
+	// kernel type in the template specialization of TestKernelManager which we don't want
+	GetKernelFunctor<Kernel> get_kernel;
+
+	//KernelStore<test_type> store;
 };
 
-template <class TestDataManager>
-struct kernel_traits
+template <Kernel>
+struct GetKernelFunctor
 {
+};
 
+template <>
+struct GetKernelFunctor<CCombinedKernel>
+{
+};
+
+template <class Kernel, class TestType> struct kernel_traits;
+
+template <class Kernel> template <class Features>
+struct kernel_traits <Kernel, TwoSampleTest<Features> >
+{
+	using return_type = Kernel*;
+	// gotta check with compatibility for CustomKernel
+};
+
+template <class Kernel> template <class Features>
+struct kernel_traits <Kernel, IndependenceTest<Features> >
+{
+	using return_type = std::vector<Kernel*>;
+	// gotta check with compatibility for CustomKernel
 };
 
 /*

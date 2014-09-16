@@ -136,7 +136,8 @@ template <class Features, template <class> class Fetcher, template <class> class
 struct TestDataManager
 {
 //	using fetch_type = typename fetch_traits<Features>::return_type;
-	using permutation_type = typename TestType<Features>::permutation_type;
+	using test_type = TestType<Features>;
+	using permutation_type = typename test_type::permutation_type;
 	using return_type = typename permutation_type::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
