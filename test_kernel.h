@@ -18,6 +18,8 @@
 
 #include <test_data.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 
 using namespace shogun;
 
@@ -60,30 +62,68 @@ using namespace shogun;
 //		for independence test, it returns nxN precomputed kernels, n at a time
 // This simplifies our design: depending on the test_type, we return things.
 // in case CCombinedKernels are used, we return the same thing multiple times.
+// ASSUMPTION: CustomKernel is the base for all precomputed kernels
 
-template <class Kernel, class TestDataManager>
+template <class TestType> struct kernel_traits;
+
+template <>
+struct kernel_traits <TwoSampleTest>
+{
+	using return_type = CCustomKernel*;
+};
+
+template <>
+struct kernel_traits <IndependenceTest>
+{
+	using return_type = std::vector<CCustomKernel*>;
+};
+
+template <template <class> class TestType>
 struct TestKernelManager
 {
-	using test_type = typename TestDataManager::test_type;
+//	using test_type = typename TestDataManager::test_type;
+	using test_type = TestType;
+	using data_type = typename test_type::return_type;
+	using return_type = typename kernel_traits<test_type>::return_type;
 
-	/*
-	template <bool IsPermutationTest>
+//	void push_back(
+
+	// this is the method through which kernel manager uses data manager
+	// use-case:- kernel_manager.register_samples(data_manager.get_samples());
+	// before we do any get_kernel operation on it.
+	void register_samples(data_type sample)
+	{
+		samples = sample;
+		//TODO ensure that the features are SG_REF'ed
+	}
+
+	// this method is for precomputed kernels
+	// use-case:- kernel_manager.get_kernel()
 	return_type get_kernel()
 	{
 	}
-	*/
-	TestDataManager data_manager;
 
+	// making this non-template because if permutated kernel is desired,
+	// then the permutation can be handled inside get_samples<bool>() call as well.
+	// in case sampling null is required, its better to handle it externally.
+	return_type get_kernel(data_type samples)
+	{
+	}
+
+	data_type samples;
+
+/*
 	// having this functorized because we want to provide get_kernel() i.e. without param
 	// for single kernels and get_kernel(i) i.e. with kernel index for combined kernel
 	// without having to write two different methods here. Method overloading could have
 	// served the purpose but then we have to disable one or the other based on the
 	// kernel type in the template specialization of TestKernelManager which we don't want
 	GetKernelFunctor<Kernel> get_kernel;
-
+*/
 	//KernelStore<test_type> store;
 };
 
+/*
 template <Kernel>
 struct GetKernelFunctor
 {
@@ -93,23 +133,7 @@ template <>
 struct GetKernelFunctor<CCombinedKernel>
 {
 };
-
-template <class Kernel, class TestType> struct kernel_traits;
-
-template <class Kernel> template <class Features>
-struct kernel_traits <Kernel, TwoSampleTest<Features> >
-{
-	using return_type = Kernel*;
-	// gotta check with compatibility for CustomKernel
-};
-
-template <class Kernel> template <class Features>
-struct kernel_traits <Kernel, IndependenceTest<Features> >
-{
-	using return_type = std::vector<Kernel*>;
-	// gotta check with compatibility for CustomKernel
-};
-
+*/
 /*
 template <class Features, class Fetcher>
 struct TwoSampleTestKernelManager

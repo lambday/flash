@@ -35,6 +35,9 @@ using namespace shogun;
 // (or vector containing) features with refcount 1 and all other internal
 // storage is cleaned up so that no external cleanup is required. - DONE
 
+// TODO VERY IMPORTANT: removal of permutation subset is not handled yet.
+// think about it.
+
 // DEPENDENCIES:
 // - It relies on the fact that CFeatures->create_merged_copy() always
 // returns a new object with refcount 1
@@ -138,7 +141,7 @@ struct TestDataManager
 //	using fetch_type = typename fetch_traits<Features>::return_type;
 	using test_type = TestType<Features>;
 	using permutation_type = typename test_type::permutation_type;
-	using return_type = typename permutation_type::return_type;
+	using return_type = typename test_type::return_type;
 
 	// passing fetch as an argument is necessary because in case of fetch
 	// blocks we are supposed to call the constructor with the blocksize
@@ -214,6 +217,13 @@ struct FeatureVectorPermutation<CDenseFeatures<T> >
 // specialization for sparse features
 // TODO
 
+// TestTypes
+
+// forward declarations
+template <class Features> struct TwoSampleTest;
+template <class Features> struct IndependenceTest;
+
+
 
 // these cleaners are needed since streaming from a features yields
 // another type of features which is stored internally. if we don't
@@ -247,7 +257,7 @@ struct TwoSampleTestPermutation
 {
 	typedef Features feats_type;
 	using fetch_type = typename fetch_traits<Features>::return_type;
-	typedef fetch_type* return_type;
+	using return_type = typename TwoSampleTest<fetch_type>::return_type;
 
 	template <bool IsPermutationTest> struct type {};
 
@@ -291,7 +301,8 @@ struct IndependenceTestPermutation
 {
 	typedef Features feats_type;
 	using fetch_type = typename fetch_traits<feats_type>::return_type;
-	typedef std::vector<fetch_type*> return_type;
+//	typedef std::vector<fetch_type*> return_type;
+	using return_type = typename IndependenceTest<fetch_type>::return_type;
 
 	template <bool IsPermutationTest> struct type {};
 
@@ -320,18 +331,22 @@ private:
 	std::vector<fetch_type*> samples;
 };
 
-// TestTypes
 
+// TestTypes
 template <class Features>
 struct TwoSampleTest
 {
 	typedef TwoSampleTestPermutation<Features> permutation_type;
+	typedef typename fetch_traits<Features>::return_type fetch_type;
+	typedef fetch_type* return_type;
 };
 
 template <class Features>
 struct IndependenceTest
 {
 	typedef IndependenceTestPermutation<Features> permutation_type;
+	typedef typename fetch_traits<Features>::return_type fetch_type;
+	typedef std::vector<fetch_type*> return_type;
 };
 
 //
