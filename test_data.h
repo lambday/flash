@@ -170,7 +170,14 @@ struct TestDataManager
 		init(sample);
 		samples.push_back(sample);
 	}
-	template <bool IsPermutationTest>
+
+	void set_permutation(bool sample_null)
+	{
+		IsPermutationTest = sample_null;
+	}
+
+	// TODO - we can't make this templated on IsPermutationTest
+	// since this is set inside the program - DONE
 	return_type get_samples(Fetcher<Features> fetch)
 	{
 		ASSERT(samples.size() > 1);
@@ -183,13 +190,14 @@ struct TestDataManager
 			// in order to free any intermediate allocated memory
 			// in case streaming features is used
 			permutation.push_back(fetch, sample);
-		return permutation.template get<IsPermutationTest>();
+		return permutation.get(IsPermutationTest);
 	}
 
 	init_functor<Features> init;
 	cleanup_functor<Features> cleanup;
 
 private:
+	bool IsPermutationTest;
 	std::vector<Features*> samples;
 };
 
@@ -259,7 +267,7 @@ struct TwoSampleTestPermutation
 	using fetch_type = typename fetch_traits<Features>::return_type;
 	using return_type = typename TwoSampleTest<fetch_type>::return_type;
 
-	template <bool IsPermutationTest> struct type {};
+	//template <bool IsPermutationTest> struct type {};
 
 	~TwoSampleTestPermutation()
 	{
@@ -272,23 +280,24 @@ struct TwoSampleTestPermutation
 		samples.push_back(fetch(sample));
 	}
 
-	template <bool IsPermutationTest>
-	return_type get()
+	return_type get(bool IsPermutationTest)
 	{
-		return get(type<IsPermutationTest>());
+		if (IsPermutationTest)
+			return get_shuffled();
+		return get();
 	}
 
 private:
-	return_type get(type<false>)
+	return_type get()
 	{
 		return_type p_and_q = return_type(samples[0]->create_merged_copy(samples[1]));
 		return p_and_q;
 	}
 
-	return_type get(type<true>)
+	return_type get_shuffled()
 	{
 		FeatureVectorPermutation<fetch_type> permute_feat_vectors;
-		return_type p_and_q = get<false>();
+		return_type p_and_q = get();
 		permute_feat_vectors(p_and_q);
 		return p_and_q;
 	}
@@ -304,7 +313,7 @@ struct IndependenceTestPermutation
 //	typedef std::vector<fetch_type*> return_type;
 	using return_type = typename IndependenceTest<fetch_type>::return_type;
 
-	template <bool IsPermutationTest> struct type {};
+	//template <bool IsPermutationTest> struct type {};
 
 	template <template <class> class Fetcher>
 	void push_back(Fetcher<feats_type> fetch, feats_type* sample)
@@ -312,21 +321,22 @@ struct IndependenceTestPermutation
 		samples.push_back(fetch(sample));
 	}
 
-	template <bool IsPermutationTest>
-	return_type get()
+	return_type get(bool IsPermutationTest)
 	{
-		return get(type<IsPermutationTest>());
+		if (IsPermutationTest)
+			return get_shuffled();
+		return get();
 	}
 private:
-	return_type get(type<false>)
+	return_type get()
 	{
 		return samples;
 	}
-	return_type get(type<true>)
+	return_type get_shuffled()
 	{
 		FeatureVectorPermutation<fetch_type> permute_feat_vectors;
 		permute_feat_vectors(samples[0]);
-		return get<false>();
+		return get();
 	}
 	std::vector<fetch_type*> samples;
 };

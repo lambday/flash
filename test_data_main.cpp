@@ -43,8 +43,9 @@ void independence_test_get_all()
 	TestDataManager<feats_type, FetchAll, IndependenceTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
+	data_manager.set_permutation(IsPermutationTest);
 
-	std::vector<feats_type*> samples = data_manager.get_samples<IsPermutationTest>(FetchAll<feats_type>());
+	std::vector<feats_type*> samples = data_manager.get_samples(FetchAll<feats_type>());
 	for (auto sample : samples)
 		sample->get_feature_matrix().display_matrix();
 }
@@ -66,8 +67,9 @@ void two_sample_test_get_all()
 	TestDataManager<feats_type, FetchAll, TwoSampleTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
+	data_manager.set_permutation(IsPermutationTest);
 
-	feats_type* samples = data_manager.get_samples<IsPermutationTest>(FetchAll<feats_type>());
+	feats_type* samples = data_manager.get_samples(FetchAll<feats_type>());
 	samples->get_feature_matrix().display_matrix();
 	SG_UNREF(samples);
 }
@@ -95,13 +97,14 @@ void independence_test_get_blocks()
 	TestDataManager<streaming_feats_type, FetchBlocks, IndependenceTest> data_manager;
 	data_manager.push_back(new streaming_feats_type(feats_p));
 	data_manager.push_back(new streaming_feats_type(feats_q));
+	data_manager.set_permutation(IsPermutationTest);
 
 	int num_burst = num_vec / blocksize / num_blocks_per_burst;
 	for (int burst = 0; burst < num_burst; ++burst)
 	{
 		std::cout << "burst : " << burst << std::endl;
 		FetchBlocks<streaming_feats_type> fetch_functor(blocksize, num_blocks_per_burst);
-		std::vector<return_type*> samples = data_manager.get_samples<IsPermutationTest>(fetch_functor);
+		std::vector<return_type*> samples = data_manager.get_samples(fetch_functor);
 		for (auto sample : samples)
 		{
 			sample->get_feature_matrix().display_matrix();
@@ -133,13 +136,14 @@ void two_sample_test_get_blocks()
 	TestDataManager<streaming_feats_type, FetchBlocks, TwoSampleTest> data_manager;
 	data_manager.push_back(new streaming_feats_type(feats_p));
 	data_manager.push_back(new streaming_feats_type(feats_q));
+	data_manager.set_permutation(IsPermutationTest);
 
 	int num_burst = num_vec / blocksize / num_blocks_per_burst;
 	for (int burst = 0; burst < num_burst; ++burst)
 	{
 		std::cout << "burst : " << burst << std::endl;
 		FetchBlocks<streaming_feats_type> fetch_functor(blocksize, num_blocks_per_burst);
-		return_type* samples = data_manager.get_samples<IsPermutationTest>(fetch_functor);
+		return_type* samples = data_manager.get_samples(fetch_functor);
 		samples->get_feature_matrix().display_matrix();
 		SG_UNREF(samples);
 	}
@@ -162,13 +166,14 @@ void independence_test_get_blocks_from_generator()
 	TestDataManager<feats_type, FetchBlocks, IndependenceTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
+	data_manager.set_permutation(IsPermutationTest);
 
 	int num_burst = num_vec / blocksize / num_blocks_per_burst;
 	for (int burst = 0; burst < num_burst; ++burst)
 	{
 		std::cout << "burst : " << burst << std::endl;
 		FetchBlocks<feats_type> fetch_functor(blocksize, num_blocks_per_burst);
-		std::vector<return_type*> samples = data_manager.get_samples<IsPermutationTest>(fetch_functor);
+		std::vector<return_type*> samples = data_manager.get_samples(fetch_functor);
 		for (auto sample : samples)
 		{
 			sample->get_feature_matrix().display_matrix();
@@ -194,13 +199,14 @@ void two_sample_test_get_blocks_from_generator()
 	TestDataManager<feats_type, FetchBlocks, TwoSampleTest> data_manager;
 	data_manager.push_back(feats_p);
 	data_manager.push_back(feats_q);
+	data_manager.set_permutation(IsPermutationTest);
 
 	int num_burst = num_vec / blocksize / num_blocks_per_burst;
 	for (int burst = 0; burst < num_burst; ++burst)
 	{
 		std::cout << "burst : " << burst << std::endl;
 		FetchBlocks<feats_type> fetch_functor(blocksize, num_blocks_per_burst);
-		return_type* samples = data_manager.get_samples<IsPermutationTest>(fetch_functor);
+		return_type* samples = data_manager.get_samples(fetch_functor);
 		samples->get_feature_matrix().display_matrix();
 		SG_UNREF(samples);
 	}

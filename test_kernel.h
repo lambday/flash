@@ -78,6 +78,7 @@ struct kernel_traits <IndependenceTest>
 	using return_type = std::vector<CCustomKernel*>;
 };
 
+// templating on test-type here - I think this is fine as per design constraints
 template <template <class> class TestType>
 struct TestKernelManager
 {
@@ -110,6 +111,31 @@ struct TestKernelManager
 	{
 	}
 
+	// gotta think about the consequences of storing the samples here.
+	// why we need to store?
+	// in case of single kernels, we don't need to store anything - we can just
+	// simply get the features (or not, if precomputed) and then just plain
+	// discard the features from the kernel manager
+	// but in case of multiple kernels, as in, CCombinedKernels, we need to compute
+	// multiple kernels on the same data - so in that case we have to store the data
+	// for a while. but there is no reason we should store it in the class level.
+	//
+	// another thing to keep in mind - we don't want reveal any difference in the API
+	// for multiple kernels and single kernel. so better we simply write an iterator
+	// for kernel manager and use it like
+	// for (auto kernel_it = kernel_manager.begin(), kernel_it != kernel_manager.end(); ++kernel_it)
+	// {
+	//		CKernel* kernel = *kernel_it; // for two-sample test
+	//		std::vector<CKernel*> kernels = *kernel_it; // for independence test
+	//		// do stuffs - call computation component passing this kernel
+	// }
+	// DRAG: for independence tests, if multiple kernels are used (say, in future we want
+	// to do kernel selection with HSIC) this idea breaks. So the best idea is to provide
+	// different interface for two-sample test and indepenence test - in the latter we'll
+	// specify an index for which kernel(s) will be provided. But the computation should
+	// be independent - as in, say, if two distributions are there in an independence test,
+	// then we gotta be able to run those inside nested loop - even for two-sample test,
+	// we need that when we want covariance matrix of statistics computed (see StreamingMMD)
 	data_type samples;
 
 /*
@@ -122,6 +148,13 @@ struct TestKernelManager
 */
 	//KernelStore<test_type> store;
 };
+
+/*
+   application
+
+   kernel_manager
+
+*/
 
 /*
 template <Kernel>
