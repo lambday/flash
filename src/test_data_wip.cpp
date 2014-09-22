@@ -98,11 +98,10 @@ struct feats_traits<C_STREAMING_DENSE, F_DREAL>
 };
 */
 
+// fetch policies
 struct FetchBase
 {
 	virtual CFeatures* fetch(CFeatures* feats) = 0;
-	int blocksize;
-	int num_blocks_per_burst;
 };
 
 template <class Features>
@@ -127,6 +126,8 @@ struct FetchBlocks : public FetchBase
 		std::cout << "streaming!" << std::endl;
 		return ptr->get_streamed_features(blocksize * num_blocks_per_burst);
 	}
+	int blocksize;
+	int num_blocks_per_burst;
 };
 
 struct TwoSampleTest
@@ -141,20 +142,15 @@ struct StreamingTwoSampleTest
 	using fetch_type = FetchBlocks<T>;
 };
 
-/*
-struct StreamingTwoSampleTest
-{
-	template <class T>
-	using fetch_type = FetchBlocks<T>;
-};
-*/
-
 template <class TestType>
 struct DataManager
 {
 	template <typename Features>
 	void push_back(Features* feats)
 	{
+		static_assert(std::is_base_of<CFeatures, Features>::value, "Unsupported feature type provided!\n");
+		static_assert(!std::is_same<CFeatures, Features>::value, "Please provide feature with actual type!\n");
+
 		samples.push_back(any(feats));
 		fetchers.push_back(new typename TestType::template fetch_type<Features>());
 	}
@@ -219,7 +215,7 @@ void test1()
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);
 }
-
+/*
 void test2()
 {
 	const index_t dim = 10;
@@ -255,7 +251,7 @@ void test2()
 	SG_UNREF(sfeats_p);
 	SG_UNREF(sfeats_q);
 }
-
+*/
 void test3()
 {
 	const index_t dim = 10;
@@ -296,7 +292,7 @@ int main(int argc, char **argv)
 	}
 */
 	test1();
-	test2();
+//	test2();
 
 	exit_shogun();
 	return 0;
