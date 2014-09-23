@@ -1,0 +1,5 @@
+1. run Make
+2. run 'python test.py <any number you like>
+   e.g. python test.py 10000000
+3. run Make test
+4. run ./test <any number you like>
