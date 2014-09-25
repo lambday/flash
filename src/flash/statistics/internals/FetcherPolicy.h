@@ -16,55 +16,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <type_traits>
+#include <memory>
 #include <shogun/lib/config.h>
-#include <shogun/features/Features.h>
-#include <shogun/features/DenseFeatures.h>
-#include <shogun/features/streaming/StreamingDenseFeatures.h>
 
-#ifndef FETCH_POLICY_H_
-#define FETCH_POLICY_H_
+#ifndef FETCHER_POLICY_H__
+#define FETCHER_POLICY_H__
 
-using namespace shogun;
+namespace shogun
+{
 
-struct FetchBase
+class CFeatures;
+class CStreamingFeatures;
+template <class T> class CDenseFeatures;
+template <class T> class CStreamingDenseFeatures;
+
+namespace internal
+{
+
+template <class Features>
+struct fetch_traits
+{
+	typedef Features feats_type;
+	typedef Features return_type;
+};
+
+template <> template <typename T>
+struct fetch_traits<CStreamingDenseFeatures<T> >
+{
+	typedef CStreamingDenseFeatures<T> feats_type;
+	typedef CDenseFeatures<T> return_type;
+};
+
+struct FetcherBase
 {
 	virtual CFeatures* fetch(CFeatures* feats) = 0;
 };
 
-// TODO - make these dense<T> and streamingdense<T>
-// should not compile if feat types provided other than these
 template <class Features>
-struct FetchAll : public FetchBase
+class AllFetcher : public FetcherBase
 {
 	static_assert(std::is_base_of<CFeatures, Features>::value,
 			"Unsupported feature type provided!\n");
-
+public:
 	using feat_type = Features;
-	virtual CFeatures* fetch(CFeatures* feats) override
-	{
-		feat_type* ptr = static_cast<feat_type*>(feats);
-		std::cout << "normal!" << std::endl;
-		return feats;
-	}
+	static std::shared_ptr<FetcherBase> get_instance();
+	virtual CFeatures* fetch(CFeatures* feats) override;
+private:
+	AllFetcher();
 };
 
 template <class Features>
-struct FetchBlocks : public FetchBase
+class BlockFetcher : public FetcherBase
 {
 	static_assert(std::is_base_of<CStreamingFeatures, Features>::value,
 			"Unsupported feature type provided!\n");
-
+public:
 	using feat_type = Features;
-	virtual CFeatures* fetch(CFeatures* feats) override
-	{
-		feat_type* ptr = static_cast<feat_type*>(feats);
-		std::cout << "streaming!" << std::endl;
-		return ptr->get_streamed_features(blocksize * num_blocks_per_burst);
-	}
+	static std::shared_ptr<FetcherBase> get_instance();
+	virtual CFeatures* fetch(CFeatures* feats) override;
 	int blocksize;
 	int num_blocks_per_burst;
+private:
+	BlockFetcher();
 };
 
-#endif // FETCH_POLICY_H_
+}
+
+}
+#endif // FETCHER_POLICY_H__

@@ -20,35 +20,27 @@
 #define __TWO_SAMPLE_TEST_H_
 
 #include <shogun/lib/config.h>
-#include <HypothesisTest.h>
+#include <flash/statistics/HypothesisTest.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
 
-// two-sample test base class
-class CTwoSampleTestBase : public CHypothesisTestBase<TwoSampleTest>
+namespace flash
+{
+
+class CTwoSampleTest : public CHypothesisTest<internal::TwoSampleTest>
 {
 public:
-	using test_type = CHypothesisTestBase<TwoSampleTest>::test_type;
+	using test_type = CHypothesisTest<internal::TwoSampleTest>::test_type;
 
-	CTwoSampleTestBase() : CHypothesisTestBase<TwoSampleTest>() {}
-	CTwoSampleTestBase(const CTwoSampleTestBase& other) : CHypothesisTestBase<TwoSampleTest>(other) {}
-	~CTwoSampleTestBase() {}
-
-	virtual const char* get_name() const
-	{
-		return "TwoSampleTestBase";
-	}
-};
-
-class CKernelTwoSampleTestBase : public CTwoSampleTestBase
-{
-public:
-	using test_type = CTwoSampleTestBase::test_type;
-protected:
-//	KernelManager<test_type> kernel_manager;
+	CTwoSampleTest();
+	CTwoSampleTest(const CTwoSampleTest& other);
+	~CTwoSampleTest();
+	virtual const char* get_name() const;
 };
 
 }
 
+}
 #endif // __TWO_SAMPLE_TEST_H_
