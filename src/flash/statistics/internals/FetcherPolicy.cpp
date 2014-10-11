@@ -65,5 +65,6 @@ CFeatures* BlockFetcher<T>::fetch(CFeatures* feats)
 	return ptr->get_streamed_features(blocksize * num_blocks_per_burst);
 }
 
-template struct AllFetcher<CDenseFeatures<float64_t> >;
-template struct BlockFetcher<CStreamingDenseFeatures<float64_t> >;
+template struct AllFetcher<CDenseFeatures<float64_t>>;
+template struct AllFetcher<CStreamingDenseFeatures<float64_t>>; // should not happen
+template struct BlockFetcher<CStreamingDenseFeatures<float64_t>>;

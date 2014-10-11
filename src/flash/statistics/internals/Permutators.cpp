@@ -17,6 +17,7 @@
  */
 
 #include <memory>
+#include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/Features.h>
@@ -26,6 +27,11 @@
 using namespace std;
 using namespace shogun;
 using namespace internal;
+
+template <> template <typename T>
+Permutator<CDenseFeatures<T>>::Permutator()
+{
+}
 
 template <> template <typename T>
 shared_ptr<PermutatorBase> Permutator<CDenseFeatures<T>>::get_instance()
@@ -38,6 +44,7 @@ shared_ptr<PermutatorBase> Permutator<CDenseFeatures<T>>::get_instance()
 template <> template <typename T>
 void Permutator<CDenseFeatures<T>>::permute(CFeatures* feats)
 {
+	std::cout << "permuting the feature vectors" << std::endl;
 	typedef CDenseFeatures<T> feat_type;
 	feat_type* casted_feats = static_cast<feat_type*>(feats);
 	casted_feats->remove_all_subsets();

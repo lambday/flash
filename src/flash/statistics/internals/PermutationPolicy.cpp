@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <shogun/features/Features.h>
 #include <flash/statistics/internals/Permutators.h>
@@ -31,10 +32,12 @@ using IndependenceTestReturnType = typename IndependenceTest::return_type;
 TwoSampleTestPermutation::TwoSampleTestPermutation(const vector<shared_ptr<PermutatorBase>>& _permutators)
 	: Permutation(_permutators)
 {
+	std::cout << "TwoSampleTestPermutation::constructor" << std::endl;
 }
 
 TwoSampleTestReturnType TwoSampleTestPermutation::get(bool simulate_h0)
 {
+	std::cout << "TwoSampleTestPermutation::get" << std::endl;
 	TwoSampleTestReturnType ret = get_unshuffled();
 	if (simulate_h0)
 	{
@@ -55,10 +58,12 @@ TwoSampleTestReturnType TwoSampleTestPermutation::get_unshuffled()
 IndependenceTestPermutation::IndependenceTestPermutation(const vector<shared_ptr<PermutatorBase>>& _permutators)
 	: Permutation(_permutators)
 {
+	std::cout << "IndependenceTestPermutation::constructor" << std::endl;
 }
 
 IndependenceTestReturnType IndependenceTestPermutation::get(bool simulate_h0)
 {
+	std::cout << "IndependenceTestPermutation::get" << std::endl;
 	IndependenceTestReturnType ret = get_unshuffled();
 	if (simulate_h0)
 	{

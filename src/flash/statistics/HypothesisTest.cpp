@@ -25,7 +25,7 @@
 
 using namespace shogun;
 using namespace internal;
-using namespace flash;
+using namespace statistics;
 
 template <class T>
 CHypothesisTest<T>::CHypothesisTest() : CSGObject()

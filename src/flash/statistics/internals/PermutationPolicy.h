@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <flash/statistics/internals/Permutators.h>
 #include <flash/statistics/internals/TestTypes.h>
@@ -44,9 +45,11 @@ struct Permutation
 	Permutation(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators)
 		: permutators(_permutators)
 	{
+		std::cout << "Permutation::constructor" << std::endl;
 	}
 	inline void push_back(CFeatures* feats)
 	{
+		std::cout << "Permutation::push_back" << std::endl;
 		samples.push_back(feats);
 	}
 	virtual return_type get(bool simulate_h0) = 0;

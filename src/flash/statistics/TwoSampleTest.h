@@ -26,7 +26,7 @@
 namespace shogun
 {
 
-namespace flash
+namespace statistics
 {
 
 class CTwoSampleTest : public CHypothesisTest<internal::TwoSampleTest>

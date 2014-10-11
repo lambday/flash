@@ -17,27 +17,27 @@
  */
 
 #include <shogun/lib/config.h>
-#include <flash/statistics/TwoSampleTest.h>
+#include <flash/statistics/StreamingTwoSampleTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CTwoSampleTest::CTwoSampleTest() : CHypothesisTest<TwoSampleTest>()
+CStreamingTwoSampleTest::CStreamingTwoSampleTest() : CHypothesisTest<StreamingTwoSampleTest>()
 {
 }
 
-CTwoSampleTest::CTwoSampleTest(const CTwoSampleTest& other)
-	: CHypothesisTest<TwoSampleTest>(other)
+CStreamingTwoSampleTest::CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other)
+	: CHypothesisTest<StreamingTwoSampleTest>(other)
 {
 }
 
-CTwoSampleTest::~CTwoSampleTest()
+CStreamingTwoSampleTest::~CStreamingTwoSampleTest()
 {
 }
 
-const char* CTwoSampleTest::get_name() const
+const char* CStreamingTwoSampleTest::get_name() const
 {
-	return "TwoSampleTest";
+	return "StreamingTwoSampleTest";
 }

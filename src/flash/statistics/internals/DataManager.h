@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <flash/statistics/internals/Permutators.h>
 #include <flash/statistics/internals/FetcherPolicy.h>
@@ -38,6 +39,12 @@ template <class TestType>
 class DataManager
 {
 public:
+	DataManager() : simulate_h0(false)
+	{
+		samples.reserve(2);
+		fetchers.reserve(2);
+		permutators.reserve(2);
+	}
 	void set_simulate_h0(bool is_simulate_h0)
 	{
 		simulate_h0 = is_simulate_h0;
@@ -50,6 +57,7 @@ public:
 	template <class F>
 	void push_back(F* feats)
 	{
+		std::cout << "DataManager::push_back" << std::endl;
 		static_assert(std::is_base_of<CFeatures, F>::value, "Unsupported feature type provided!\n");
 		static_assert(!std::is_same<CFeatures, F>::value, "Please provide feature with actual type!\n");
 
@@ -61,6 +69,7 @@ public:
 
 	typename TestType::return_type get_samples()
 	{
+		std::cout << "DataManager::get_samples" << std::endl;
 		std::shared_ptr<Permutation<TestType>> permutation(new typename TestType::permutation_type(permutators));
 		for (size_t i = 0; i < samples.size(); ++i)
 		{

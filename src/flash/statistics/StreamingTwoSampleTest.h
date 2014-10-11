@@ -16,49 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __HYPOTHESIS_TEST_H_
-#define __HYPOTHESIS_TEST_H_
+#ifndef __STREAMING_TWO_SAMPLE_TEST_H_
+#define __STREAMING_TWO_SAMPLE_TEST_H_
 
 #include <shogun/lib/config.h>
-#include <shogun/base/SGObject.h>
-#include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/HypothesisTest.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
 
-class CFeatures;
-
 namespace statistics
 {
 
-template <class TestType>
-class CHypothesisTest : public shogun::CSGObject
+class CStreamingTwoSampleTest : public CHypothesisTest<internal::StreamingTwoSampleTest>
 {
 public:
-	using test_type = TestType;
+	using test_type = CHypothesisTest<internal::StreamingTwoSampleTest>::test_type;
 
-	CHypothesisTest();
-	CHypothesisTest(const CHypothesisTest& other);
-	CHypothesisTest& operator=(const CHypothesisTest& other);
-	~CHypothesisTest();
-
-	void set_p(shogun::CFeatures* p);
-	void set_q(shogun::CFeatures* q);
-
-	void set_simulate_h0(bool simulate_h0);
-	bool get_simulate_h0();
-
-	typename test_type::return_type get_samples();
-
+	CStreamingTwoSampleTest();
+	CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other);
+	~CStreamingTwoSampleTest();
 	virtual const char* get_name() const;
-private:
-	void set_feats(shogun::CFeatures* feats);
-protected:
-	internal::DataManager<test_type> data_manager;
 };
 
 }
 
 }
-
-#endif // __HYPOTHESIS_TEST_H_
+#endif // __STREAMING_TWO_SAMPLE_TEST_H_
