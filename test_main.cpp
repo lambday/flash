@@ -24,6 +24,7 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <flash/statistics/TwoSampleTest.h>
+#include <flash/statistics/StreamingTwoSampleTest.h>
 #include <flash/statistics/IndependenceTest.h>
 
 using namespace shogun;
@@ -142,6 +143,35 @@ void test4()
 	}
 
 	SG_UNREF(test);
+}
+
+void test5()
+{
+	std::cout << "test2: streaming two-sample test (without permutation)" << std::endl;
+	const index_t dim = 2;
+	const index_t num_vec = 8;
+	SGMatrix<float64_t> data_p(dim, num_vec);
+	SGMatrix<float64_t> data_q(dim, num_vec);
+	std::iota(data_p.matrix, data_p.matrix + dim * num_vec, 0);
+	std::iota(data_q.matrix, data_q.matrix + dim * num_vec, dim * num_vec);
+
+	data_p.display_matrix();
+	data_q.display_matrix();
+
+	CDenseFeatures<float64_t> *feats_p = new CDenseFeatures<float64_t>(data_p);
+	CDenseFeatures<float64_t> *feats_q = new CDenseFeatures<float64_t>(data_q);
+
+	statistics::CStreamingTwoSampleTest* test = new statistics::CStreamingTwoSampleTest();
+	test->set_p(new CStreamingDenseFeatures<float64_t>(feats_p));
+	test->set_q(new CStreamingDenseFeatures<float64_t>(feats_q));
+	test->set_blocksize(4);
+	test->set_num_blocks_per_burst(1);
+
+	CFeatures* samples = test->get_samples();
+	((CDenseFeatures<float64_t>*)samples)->get_feature_matrix().display_matrix();
+
+	SG_UNREF(test);
+	SG_UNREF(samples);
 }
 
 int main(int argc, char **argv)

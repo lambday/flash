@@ -89,19 +89,9 @@ const char* CHypothesisTest<T>::get_name() const
 template <class T>
 void CHypothesisTest<T>::set_feats(CFeatures* feats)
 {
-	// TODO - think of better ways to do this, maybe demangling (cxxabi)
-	if (feats->get_feature_type() == F_DREAL)
-	{
-		if (feats->get_feature_class() == C_DENSE)
-			data_manager.push_back(static_cast<typename feats_traits<C_DENSE,F_DREAL>::type*>(feats));
-		else if (feats->get_feature_class() == C_STREAMING_DENSE)
-			data_manager.push_back(static_cast<typename feats_traits<C_STREAMING_DENSE,F_DREAL>::type*>(feats));
-		else
-			SG_SNOTIMPLEMENTED;
-	}
-	else
-		SG_SNOTIMPLEMENTED;
+	data_manager.push_back(feats);
 }
 
 template class CHypothesisTest<TwoSampleTest>;
+template class CHypothesisTest<StreamingTwoSampleTest>;
 template class CHypothesisTest<IndependenceTest>;

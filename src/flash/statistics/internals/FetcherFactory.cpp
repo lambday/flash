@@ -16,54 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
+#include <iostream> // TODO remove
+#include <shogun/lib/config.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
+#include <flash/statistics/internals/FetcherFactory.h>
 #include <flash/statistics/internals/FetcherPolicy.h>
 
-using namespace std;
 using namespace shogun;
 using namespace internal;
 
-template <class T>
-AllFetcher<T>::AllFetcher() : FetcherBase()
+const FetcherFactory::factory& FetcherFactory::initializers = FetcherFactory::initialize();
+
+FetcherFactory::factory FetcherFactory::initialize()
 {
+	FetcherFactory::factory initializers;
+
+	initializers.insert(std::make_pair(std::make_pair(C_DENSE, F_DREAL),
+			[](){ return AllFetcher<CDenseFeatures<float64_t>>::get_instance(); }));
+	initializers.insert(std::make_pair(std::make_pair(C_STREAMING_DENSE, F_DREAL),
+			[](){ return BlockFetcher<CStreamingDenseFeatures<float64_t>>::get_instance(); }));
+
+	return initializers;
 }
 
-template <class T>
-shared_ptr<FetcherBase> AllFetcher<T>::get_instance()
+FetcherFactory::return_type FetcherFactory::get_instance(CFeatures* feats)
 {
-	static shared_ptr<FetcherBase> instance(new AllFetcher<T>);
-	return instance;
+	EFeatureClass feature_class = feats->get_feature_class();
+	EFeatureType feature_type = feats->get_feature_type();
+
+	auto it = initializers.find(std::make_pair(feature_class, feature_type));
+	if (it != initializers.end())
+	{
+		return it->second();
+	}
+	return nullptr;
 }
 
-template <class T>
-CFeatures* AllFetcher<T>::fetch(CFeatures* feats)
-{
-	T* ptr = static_cast<T*>(feats);
-	SG_REF(ptr);
-	return ptr;
-}
-
-template <class T>
-BlockFetcher<T>::BlockFetcher() : FetcherBase()
-{
-}
-
-template <class T>
-shared_ptr<FetcherBase> BlockFetcher<T>::get_instance()
-{
-	shared_ptr<FetcherBase> instance(new BlockFetcher<T>);
-	return instance;
-}
-
-template <class T>
-CFeatures* BlockFetcher<T>::fetch(CFeatures* feats)
-{
-	T* ptr = static_cast<T*>(feats);
-	return ptr->get_streamed_features(blocksize * num_blocks_per_burst);
-}
-
-template struct AllFetcher<CDenseFeatures<float64_t>>;
-template struct BlockFetcher<CStreamingDenseFeatures<float64_t>>;

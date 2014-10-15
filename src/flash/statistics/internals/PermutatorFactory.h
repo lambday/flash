@@ -16,35 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __STREAMING_TWO_SAMPLE_TEST_H_
-#define __STREAMING_TWO_SAMPLE_TEST_H_
-
+#include <map>
+#include <memory>
+#include <functional>
 #include <shogun/lib/config.h>
-#include <flash/statistics/HypothesisTest.h>
-#include <flash/statistics/internals/TestTypes.h>
+#include <shogun/features/Features.h>
+
+#ifndef PERMUTATOR_FACTORY_H__
+#define PERMUTATOR_FACTORY_H__
 
 namespace shogun
 {
 
-namespace statistics
+namespace internal
 {
 
-class CStreamingTwoSampleTest : public CHypothesisTest<internal::StreamingTwoSampleTest>
+class PermutatorBase;
+
+struct PermutatorFactory
 {
-public:
-	using test_type = CHypothesisTest<internal::StreamingTwoSampleTest>::test_type;
+	using return_type = std::shared_ptr<PermutatorBase>;
+	using factory = std::map<std::pair<EFeatureClass, EFeatureType>, std::function<return_type()>>;
 
-	CStreamingTwoSampleTest();
-	CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other);
-	~CStreamingTwoSampleTest();
+	static return_type get_instance(CFeatures* feats);
 
-	void set_blocksize(index_t blocksize);
-	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
-
-	virtual const char* get_name() const;
+private:
+	static factory initialize();
+	static const factory& initializers;
 };
 
 }
 
 }
-#endif // __STREAMING_TWO_SAMPLE_TEST_H_
+#endif // PERMUTATOR_FACTORY_H__

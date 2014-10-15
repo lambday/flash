@@ -57,8 +57,8 @@ class AllFetcher : public FetcherBase
 {
 	static_assert(std::is_base_of<CFeatures, Features>::value,
 			"Unsupported feature type provided!\n");
-//	static_assert(!std::is_base_of<CStreamingFeatures, Features>::value,
-//			"Not supported for streaming features!\n");
+	static_assert(!std::is_base_of<CStreamingFeatures, Features>::value,
+			"Not supported for streaming features!\n");
 public:
 	using feat_type = Features;
 	static std::shared_ptr<FetcherBase> get_instance();

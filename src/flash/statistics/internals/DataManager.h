@@ -21,11 +21,15 @@
 
 #include <vector>
 #include <memory>
+#include <numeric>
 #include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <flash/statistics/internals/Permutators.h>
 #include <flash/statistics/internals/FetcherPolicy.h>
 #include <flash/statistics/internals/PermutationPolicy.h>
+#include <flash/statistics/internals/FetcherFactory.h>
+#include <flash/statistics/internals/PermutatorFactory.h>
+#include <shogun/features/Features.h> // TODO remove - move the implementation to cpp
 
 namespace shogun
 {
@@ -45,32 +49,48 @@ public:
 		fetchers.reserve(2);
 		permutators.reserve(2);
 	}
+
 	void set_simulate_h0(bool is_simulate_h0)
 	{
 		simulate_h0 = is_simulate_h0;
 	}
+
 	bool get_simulate_h0()
 	{
 		return simulate_h0;
 	}
 
-	template <class F>
-	void push_back(F* feats)
+	index_t get_num_samples()
+	{
+		index_t num_samples = 0;
+		for (auto sample : samples)
+			num_samples += sample->get_num_vectors();
+		return num_samples;
+	}
+
+	void set_blocksize(index_t blocksize)
+	{
+		std::cout << get_num_samples() << std::endl;
+	}
+
+	void set_num_blocks_per_burst(index_t num_blocks_per_burst)
+	{
+	}
+
+	void push_back(CFeatures* feats)
 	{
 		std::cout << "DataManager::push_back" << std::endl;
-		static_assert(std::is_base_of<CFeatures, F>::value, "Unsupported feature type provided!\n");
-		static_assert(!std::is_same<CFeatures, F>::value, "Please provide feature with actual type!\n");
 
 		samples.push_back(feats);
-
-		fetchers.push_back(TestType::template fetch_type<F>::get_instance());
-		permutators.push_back(Permutator<typename fetch_traits<F>::return_type>::get_instance());
+		fetchers.push_back(FetcherFactory::get_instance(feats));
+		permutators.push_back(PermutatorFactory::get_instance(feats));
 	}
 
 	typename TestType::return_type get_samples()
 	{
 		std::cout << "DataManager::get_samples" << std::endl;
-		std::shared_ptr<Permutation<TestType>> permutation(new typename TestType::permutation_type(permutators));
+		std::shared_ptr<typename TestType::permutation_type> permutation(new
+				typename TestType::permutation_type(permutators));
 		for (size_t i = 0; i < samples.size(); ++i)
 		{
 			permutation->push_back(fetchers[i]->fetch(samples[i]));

@@ -37,6 +37,16 @@ CStreamingTwoSampleTest::~CStreamingTwoSampleTest()
 {
 }
 
+void CStreamingTwoSampleTest::set_blocksize(index_t blocksize)
+{
+	data_manager.set_blocksize(blocksize);
+}
+
+void CStreamingTwoSampleTest::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+{
+	data_manager.set_num_blocks_per_burst(num_blocks_per_burst);
+}
+
 const char* CStreamingTwoSampleTest::get_name() const
 {
 	return "StreamingTwoSampleTest";
