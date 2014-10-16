@@ -50,6 +50,8 @@ struct fetch_traits<CStreamingDenseFeatures<T> >
 struct FetcherBase
 {
 	virtual CFeatures* fetch(CFeatures* feats) = 0;
+	virtual void set_blocksize(index_t blocksize);
+	virtual void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 };
 
 template <class Features>
@@ -76,9 +78,11 @@ public:
 	using feat_type = Features;
 	static std::shared_ptr<FetcherBase> get_instance();
 	virtual CFeatures* fetch(CFeatures* feats) override;
+	virtual void set_blocksize(index_t blocksize);
+	virtual void set_num_blocks_per_burst(index_t num_blocks_per_burst);
+private:
 	int blocksize;
 	int num_blocks_per_burst;
-private:
 	BlockFetcher();
 };
 

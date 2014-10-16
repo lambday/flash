@@ -51,8 +51,6 @@ public:
 	typename test_type::return_type get_samples();
 
 	virtual const char* get_name() const;
-private:
-	void set_feats(shogun::CFeatures* feats);
 protected:
 	internal::DataManager<test_type> data_manager;
 };

@@ -38,6 +38,9 @@ public:
 	CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other);
 	~CStreamingTwoSampleTest();
 
+	void set_num_samples_p(index_t num_samples_p);
+	void set_num_samples_q(index_t num_samples_q);
+
 	void set_blocksize(index_t blocksize);
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 

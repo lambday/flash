@@ -43,8 +43,9 @@ template <class TestType>
 class DataManager
 {
 public:
-	DataManager() : simulate_h0(false)
+	DataManager() : simulate_h0(false), _blocksize(0)
 	{
+		samples.reserve(2);
 		samples.reserve(2);
 		fetchers.reserve(2);
 		permutators.reserve(2);
@@ -60,21 +61,53 @@ public:
 		return simulate_h0;
 	}
 
+	void set_num_samples(index_t n)
+	{
+		num_samples.push_back(n);
+	}
+
 	index_t get_num_samples()
 	{
-		index_t num_samples = 0;
-		for (auto sample : samples)
-			num_samples += sample->get_num_vectors();
-		return num_samples;
+		if (num_samples.size() == 0)
+		{
+			for (auto feats : samples)
+				num_samples.push_back(feats->get_num_vectors());
+		}
+
+		return std::accumulate(num_samples.begin(), num_samples.end(), 0);
 	}
 
 	void set_blocksize(index_t blocksize)
 	{
-		std::cout << get_num_samples() << std::endl;
+		index_t n = get_num_samples();
+
+		ASSERT(n > 0);
+		ASSERT(blocksize > 0 && blocksize <= n);
+		ASSERT(n % blocksize == 0);
+		ASSERT(num_samples.size() == fetchers.size());
+
+		for (index_t i = 0; i < num_samples.size(); ++i)
+		{
+			index_t m = num_samples[i];
+			ASSERT((blocksize * m) % n == 0);
+			fetchers[i]->set_blocksize(blocksize * m / n);
+			std::cout << "block[" << i << "].size = " << blocksize * m / n << std::endl;
+		}
+		_blocksize = blocksize;
 	}
 
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst)
 	{
+		ASSERT(_blocksize > 0);
+		ASSERT(num_blocks_per_burst > 0);
+
+		index_t max_num_blocks_per_burst = get_num_samples()/_blocksize;
+		ASSERT(num_blocks_per_burst <= max_num_blocks_per_burst);
+
+		for (auto fetcher : fetchers)
+		{
+			fetcher->set_num_blocks_per_burst(num_blocks_per_burst);
+		}
 	}
 
 	void push_back(CFeatures* feats)
@@ -99,7 +132,9 @@ public:
 	}
 private:
 	bool simulate_h0;
+	index_t _blocksize;
 	std::vector<shogun::CFeatures*> samples;
+	std::vector<index_t> num_samples;
 	std::vector<std::shared_ptr<FetcherBase>> fetchers;
 	std::vector<std::shared_ptr<PermutatorBase>> permutators;
 };

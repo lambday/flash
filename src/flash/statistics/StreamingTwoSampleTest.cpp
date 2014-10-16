@@ -37,6 +37,16 @@ CStreamingTwoSampleTest::~CStreamingTwoSampleTest()
 {
 }
 
+void CStreamingTwoSampleTest::set_num_samples_p(index_t num_samples_p)
+{
+	data_manager.set_num_samples(num_samples_p);
+}
+
+void CStreamingTwoSampleTest::set_num_samples_q(index_t num_samples_q)
+{
+	data_manager.set_num_samples(num_samples_q);
+}
+
 void CStreamingTwoSampleTest::set_blocksize(index_t blocksize)
 {
 	data_manager.set_blocksize(blocksize);

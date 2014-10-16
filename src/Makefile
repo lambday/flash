@@ -5,7 +5,8 @@ STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoSampleTest.o $(STATISTICS)/IndependenceTest.o \
 			  $(INTERNALS)/FetcherPolicy.o $(INTERNALS)/Permutators.o $(INTERNALS)/PermutationPolicy.o \
-			  $(STATISTICS)/StreamingTwoSampleTest.o $(INTERNALS)/FetcherFactory.o $(INTERNALS)/PermutatorFactory.o
+			  $(STATISTICS)/StreamingTwoSampleTest.o $(INTERNALS)/FetcherFactory.o $(INTERNALS)/PermutatorFactory.o \
+			  $(STATISTICS)/StreamingIndependenceTest.o
 INTERNAL	= $(INTERNALS)/Features.h $(INTERNALS)/DataManager.h $(INTERNALS)/FetcherPolicy.h \
 			  $(INTERNALS)/PermutationPolicy.h $(INTERNALS)/TestTypes.h $(INTERNALS)/Permutators.h
 
@@ -22,6 +23,9 @@ $(STATISTICS)/StreamingTwoSampleTest.o: $(STATISTICS)/StreamingTwoSampleTest.h $
 $(STATISTICS)/IndependenceTest.o: $(STATISTICS)/IndependenceTest.h $(STATISTICS)/IndependenceTest.cpp \
 		$(STATISTICS)/HypothesisTest.h $(INTERNALS)/TestTypes.h
 	g++ $(OPTS) -c $(STATISTICS)/IndependenceTest.cpp $(INCLUDES) -o $(STATISTICS)/IndependenceTest.o
+$(STATISTICS)/StreamingIndependenceTest.o: $(STATISTICS)/StreamingIndependenceTest.h $(STATISTICS)/StreamingIndependenceTest.cpp \
+		$(STATISTICS)/HypothesisTest.h $(INTERNALS)/TestTypes.h
+	g++ $(OPTS) -c $(STATISTICS)/StreamingIndependenceTest.cpp $(INCLUDES) -o $(STATISTICS)/StreamingIndependenceTest.o
 $(INTERNALS)/FetcherPolicy.o: $(INTERNALS)/FetcherPolicy.h $(INTERNALS)/FetcherPolicy.cpp
 	g++ $(OPTS) -c $(INTERNALS)/FetcherPolicy.cpp $(INCLUDES) -o $(INTERNALS)/FetcherPolicy.o
 $(INTERNALS)/FetcherFactory.o: $(INTERNALS)/FetcherFactory.h $(INTERNALS)/FetcherFactory.cpp

@@ -53,13 +53,13 @@ CHypothesisTest<T>::~CHypothesisTest()
 template <class T>
 void CHypothesisTest<T>::set_p(CFeatures* p)
 {
-	set_feats(p);
+	data_manager.push_back(p);
 }
 
 template <class T>
 void CHypothesisTest<T>::set_q(CFeatures* q)
 {
-	set_feats(q);
+	data_manager.push_back(q);
 }
 
 template <class T>
@@ -86,12 +86,7 @@ const char* CHypothesisTest<T>::get_name() const
 	return "HypothesisTest";
 }
 
-template <class T>
-void CHypothesisTest<T>::set_feats(CFeatures* feats)
-{
-	data_manager.push_back(feats);
-}
-
 template class CHypothesisTest<TwoSampleTest>;
 template class CHypothesisTest<StreamingTwoSampleTest>;
 template class CHypothesisTest<IndependenceTest>;
+template class CHypothesisTest<StreamingIndependenceTest>;

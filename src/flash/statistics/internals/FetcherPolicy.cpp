@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream> // TODO remove
 #include <memory>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
@@ -25,6 +26,14 @@
 using namespace std;
 using namespace shogun;
 using namespace internal;
+
+void FetcherBase::set_blocksize(index_t blocksize)
+{
+}
+
+void FetcherBase::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+{
+}
 
 template <class T>
 AllFetcher<T>::AllFetcher() : FetcherBase()
@@ -47,7 +56,7 @@ CFeatures* AllFetcher<T>::fetch(CFeatures* feats)
 }
 
 template <class T>
-BlockFetcher<T>::BlockFetcher() : FetcherBase()
+BlockFetcher<T>::BlockFetcher() : FetcherBase(), blocksize(0), num_blocks_per_burst(0)
 {
 }
 
@@ -62,7 +71,20 @@ template <class T>
 CFeatures* BlockFetcher<T>::fetch(CFeatures* feats)
 {
 	T* ptr = static_cast<T*>(feats);
+	std::cout << "streaming " << blocksize * num_blocks_per_burst << " samples" << std::endl;
 	return ptr->get_streamed_features(blocksize * num_blocks_per_burst);
+}
+
+template <class T>
+void BlockFetcher<T>::set_blocksize(index_t _blocksize)
+{
+	blocksize = _blocksize;
+}
+
+template <class T>
+void BlockFetcher<T>::set_num_blocks_per_burst(index_t _num_blocks_per_burst)
+{
+	num_blocks_per_burst = _num_blocks_per_burst;
 }
 
 template struct AllFetcher<CDenseFeatures<float64_t>>;
