@@ -114,7 +114,7 @@ public:
 	{
 		std::cout << "DataManager::push_back" << std::endl;
 
-		samples.push_back(feats);
+		samples.push_back(std::shared_ptr<shogun::CFeatures>(feats));
 		fetchers.push_back(FetcherFactory::get_instance(feats));
 		permutators.push_back(PermutatorFactory::get_instance(feats));
 	}
@@ -126,14 +126,14 @@ public:
 				typename TestType::permutation_type(permutators));
 		for (size_t i = 0; i < samples.size(); ++i)
 		{
-			permutation->push_back(fetchers[i]->fetch(samples[i]));
+			permutation->push_back(fetchers[i]->fetch(samples[i].get()));
 		}
 		return permutation->get(simulate_h0);
 	}
 private:
 	bool simulate_h0;
 	index_t _blocksize;
-	std::vector<shogun::CFeatures*> samples;
+	std::vector<std::shared_ptr<shogun::CFeatures>> samples;
 	std::vector<index_t> num_samples;
 	std::vector<std::shared_ptr<FetcherBase>> fetchers;
 	std::vector<std::shared_ptr<PermutatorBase>> permutators;
