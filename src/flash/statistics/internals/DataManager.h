@@ -50,6 +50,13 @@ public:
 		fetchers.reserve(2);
 		permutators.reserve(2);
 	}
+	~DataManager()
+	{
+		for (auto it = samples.begin(); it != samples.end(); ++it)
+		{
+			SG_UNREF(*it);
+		}
+	}
 
 	void set_simulate_h0(bool is_simulate_h0)
 	{
@@ -114,7 +121,8 @@ public:
 	{
 		std::cout << "DataManager::push_back" << std::endl;
 
-		samples.push_back(std::shared_ptr<shogun::CFeatures>(feats));
+		samples.push_back(feats);
+		SG_REF(feats);
 		fetchers.push_back(FetcherFactory::get_instance(feats));
 		permutators.push_back(PermutatorFactory::get_instance(feats));
 	}
@@ -126,14 +134,14 @@ public:
 				typename TestType::permutation_type(permutators));
 		for (size_t i = 0; i < samples.size(); ++i)
 		{
-			permutation->push_back(fetchers[i]->fetch(samples[i].get()));
+			permutation->push_back(fetchers[i]->fetch(samples[i]));
 		}
 		return permutation->get(simulate_h0);
 	}
 private:
 	bool simulate_h0;
 	index_t _blocksize;
-	std::vector<std::shared_ptr<shogun::CFeatures>> samples;
+	std::vector<shogun::CFeatures*> samples;
 	std::vector<index_t> num_samples;
 	std::vector<std::shared_ptr<FetcherBase>> fetchers;
 	std::vector<std::shared_ptr<PermutatorBase>> permutators;
