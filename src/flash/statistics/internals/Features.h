@@ -24,23 +24,33 @@
 #include <shogun/features/DenseFeatures.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 
+namespace shogun
+{
+
+namespace internal
+{
+
 // feat traits - required for proper typecasting
-template <shogun::EFeatureClass C, shogun::EFeatureType T>
+template <EFeatureClass C, EFeatureType T>
 struct feats_traits
 {
-	using type = shogun::CFeatures;
+	using type = CFeatures;
 };
 
 template <>
-struct feats_traits<shogun::EFeatureClass::C_DENSE, shogun::EFeatureType::F_DREAL>
+struct feats_traits<EFeatureClass::C_DENSE, EFeatureType::F_DREAL>
 {
-	using type = shogun::CDenseFeatures<float64_t>;
+	using type = CDenseFeatures<float64_t>;
 };
 
 template <>
-struct feats_traits<shogun::EFeatureClass::C_STREAMING_DENSE, shogun::EFeatureType::F_DREAL>
+struct feats_traits<EFeatureClass::C_STREAMING_DENSE, EFeatureType::F_DREAL>
 {
-	using type = shogun::CStreamingDenseFeatures<float64_t>;
+	using type = CStreamingDenseFeatures<float64_t>;
 };
+
+}
+
+}
 
 #endif // __FEATURES_H_

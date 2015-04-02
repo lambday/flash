@@ -32,7 +32,7 @@ namespace statistics
 {
 
 template <class TestType>
-class CHypothesisTest : public shogun::CSGObject
+class CHypothesisTest : public CSGObject
 {
 public:
 	using test_type = TestType;
@@ -42,8 +42,8 @@ public:
 	CHypothesisTest& operator=(const CHypothesisTest& other);
 	~CHypothesisTest();
 
-	void set_p(shogun::CFeatures* p);
-	void set_q(shogun::CFeatures* q);
+	void set_p(CFeatures* p);
+	void set_q(CFeatures* q);
 
 	void set_simulate_h0(bool simulate_h0);
 	bool get_simulate_h0();

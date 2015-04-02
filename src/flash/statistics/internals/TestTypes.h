@@ -35,28 +35,33 @@ template <class T> struct BlockFetcher;
 struct TwoSampleTestPermutation;
 struct IndependenceTestPermutation;
 
-struct TwoSampleTest
+struct BaseTestType
+{
+	enum { num_feats = 2 };
+};
+
+struct TwoSampleTest : public BaseTestType
 {
 	template <class T> using fetch_type = AllFetcher<T>;
 	using permutation_type = TwoSampleTestPermutation;
 	using return_type = shogun::CFeatures*;
 };
 
-struct IndependenceTest
+struct IndependenceTest : public BaseTestType
 {
 	template <class T> using fetch_type = AllFetcher<T>;
 	using permutation_type = IndependenceTestPermutation;
 	using return_type = std::vector<shogun::CFeatures*>;
 };
 
-struct StreamingTwoSampleTest
+struct StreamingTwoSampleTest : public BaseTestType
 {
 	template <class T> using fetch_type = BlockFetcher<T>;
 	using permutation_type = TwoSampleTestPermutation;
 	using return_type = shogun::CFeatures*;
 };
 
-struct StreamingIndependenceTest
+struct StreamingIndependenceTest : public BaseTestType
 {
 	template <class T> using fetch_type = BlockFetcher<T>;
 	using permutation_type = IndependenceTestPermutation;

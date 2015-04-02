@@ -39,12 +39,12 @@ CStreamingIndependenceTest::~CStreamingIndependenceTest()
 
 void CStreamingIndependenceTest::set_num_samples_p(index_t num_samples_p)
 {
-	data_manager.set_num_samples(num_samples_p);
+	data_manager.set_num_samples(num_samples_p, 0);
 }
 
 void CStreamingIndependenceTest::set_num_samples_q(index_t num_samples_q)
 {
-	data_manager.set_num_samples(num_samples_q);
+	data_manager.set_num_samples(num_samples_q, 1);
 }
 
 void CStreamingIndependenceTest::set_blocksize(index_t blocksize)

@@ -20,6 +20,7 @@
 #include <iostream> // TODO remove
 #include <shogun/lib/config.h>
 #include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
 #include <flash/statistics/internals/Permutators.h>
@@ -48,7 +49,9 @@ void Permutator<CDenseFeatures<T>>::permute(CFeatures* feats)
 	typedef CDenseFeatures<T> feat_type;
 	feat_type* casted_feats = static_cast<feat_type*>(feats);
 	casted_feats->remove_all_subsets();
-	SGVector<index_t> inds = SGVector<index_t>::randperm_vec(feats->get_num_vectors());
+	SGVector<index_t> inds = SGVector<index_t>(feats->get_num_vectors());
+	inds.range_fill();
+	CMath::permute(inds);
 	casted_feats->add_subset(inds);
 }
 

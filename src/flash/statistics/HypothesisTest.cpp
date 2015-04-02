@@ -53,13 +53,13 @@ CHypothesisTest<T>::~CHypothesisTest()
 template <class T>
 void CHypothesisTest<T>::set_p(CFeatures* p)
 {
-	data_manager.push_back(p);
+	data_manager.put(p, 0);
 }
 
 template <class T>
 void CHypothesisTest<T>::set_q(CFeatures* q)
 {
-	data_manager.push_back(q);
+	data_manager.put(q, 1);
 }
 
 template <class T>
