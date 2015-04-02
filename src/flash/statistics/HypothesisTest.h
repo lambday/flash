@@ -22,6 +22,7 @@
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <memory>
 
 namespace shogun
 {
@@ -51,8 +52,11 @@ public:
 	typename test_type::return_type get_samples();
 
 	virtual const char* get_name() const;
+private:
+	struct Self;
+	std::unique_ptr<Self> impl;
 protected:
-	internal::DataManager<test_type> data_manager;
+	internal::DataManager<test_type>& get_data_manager();
 };
 
 }

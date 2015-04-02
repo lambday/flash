@@ -39,22 +39,22 @@ CStreamingIndependenceTest::~CStreamingIndependenceTest()
 
 void CStreamingIndependenceTest::set_num_samples_p(index_t num_samples_p)
 {
-	data_manager.set_num_samples(num_samples_p, 0);
+	get_data_manager().set_num_samples(num_samples_p, 0);
 }
 
 void CStreamingIndependenceTest::set_num_samples_q(index_t num_samples_q)
 {
-	data_manager.set_num_samples(num_samples_q, 1);
+	get_data_manager().set_num_samples(num_samples_q, 1);
 }
 
 void CStreamingIndependenceTest::set_blocksize(index_t blocksize)
 {
-	data_manager.set_blocksize(blocksize);
+	get_data_manager().set_blocksize(blocksize);
 }
 
 void CStreamingIndependenceTest::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	data_manager.set_num_blocks_per_burst(num_blocks_per_burst);
+	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
 const char* CStreamingIndependenceTest::get_name() const

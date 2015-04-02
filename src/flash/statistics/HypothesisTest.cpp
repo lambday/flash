@@ -22,27 +22,44 @@
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 #include <flash/statistics/internals/Features.h>
+#include <memory>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
 template <class T>
+struct CHypothesisTest<T>::Self
+{
+	Self() {}
+	Self(DataManager<T> data_mgr) : data_manager(data_mgr) {}
+	DataManager<T> data_manager;
+};
+
+template <class T>
 CHypothesisTest<T>::CHypothesisTest() : CSGObject()
 {
+	impl = std::unique_ptr<Self>(new Self);
 }
 
 template <class T>
 CHypothesisTest<T>::CHypothesisTest(const CHypothesisTest<T>& other)
-	: CSGObject(), data_manager(other.data_manager)
+	: CSGObject()
 {
+	impl = std::unique_ptr<Self>(new Self(other.impl->data_manager));
 }
 
 template <class T>
 CHypothesisTest<T>& CHypothesisTest<T>::operator=(const CHypothesisTest<T>& other)
 {
-	data_manager = other.data_manager;
+	impl = std::unique_ptr<Self>(new Self(other.impl->data_manager));
 	return *this;
+}
+
+template <class T>
+DataManager<T>& CHypothesisTest<T>::get_data_manager()
+{
+	return impl->data_manager;
 }
 
 template <class T>
@@ -53,31 +70,31 @@ CHypothesisTest<T>::~CHypothesisTest()
 template <class T>
 void CHypothesisTest<T>::set_p(CFeatures* p)
 {
-	data_manager.put(p, 0);
+	impl->data_manager.put(p, 0);
 }
 
 template <class T>
 void CHypothesisTest<T>::set_q(CFeatures* q)
 {
-	data_manager.put(q, 1);
+	impl->data_manager.put(q, 1);
 }
 
 template <class T>
 void CHypothesisTest<T>::set_simulate_h0(bool simulate_h0)
 {
-	data_manager.set_simulate_h0(simulate_h0);
+	impl->data_manager.set_simulate_h0(simulate_h0);
 }
 
 template <class T>
 bool CHypothesisTest<T>::get_simulate_h0()
 {
-	return data_manager.get_simulate_h0();
+	return impl->data_manager.get_simulate_h0();
 }
 
 template <class T>
 typename T::return_type CHypothesisTest<T>::get_samples()
 {
-	return data_manager.get_samples();
+	return impl->data_manager.get_samples();
 }
 
 template <class T>
