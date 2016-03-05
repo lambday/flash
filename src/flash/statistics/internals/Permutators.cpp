@@ -48,7 +48,6 @@ void Permutator<CDenseFeatures<T>>::permute(CFeatures* feats)
 	std::cout << "permuting the feature vectors" << std::endl;
 	typedef CDenseFeatures<T> feat_type;
 	feat_type* casted_feats = static_cast<feat_type*>(feats);
-	casted_feats->remove_all_subsets();
 	SGVector<index_t> inds = SGVector<index_t>(feats->get_num_vectors());
 	inds.range_fill();
 	CMath::permute(inds);

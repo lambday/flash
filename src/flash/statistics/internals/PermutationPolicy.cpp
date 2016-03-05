@@ -38,7 +38,11 @@ TwoSampleTestPermutation::TwoSampleTestPermutation(const vector<shared_ptr<Permu
 TwoSampleTestReturnType TwoSampleTestPermutation::get(bool simulate_h0)
 {
 	std::cout << "TwoSampleTestPermutation::get" << std::endl;
-	TwoSampleTestReturnType ret = get_unshuffled();
+	for (auto features = samples.begin(); features != samples.end(); features++)
+	{
+		(*features)->remove_all_subsets();
+	}
+	auto ret = get_unshuffled();
 	if (simulate_h0)
 	{
 		permutators[0]->permute(ret);
@@ -49,7 +53,7 @@ TwoSampleTestReturnType TwoSampleTestPermutation::get(bool simulate_h0)
 TwoSampleTestReturnType TwoSampleTestPermutation::get_unshuffled()
 {
 	ASSERT(samples.size() == 2);
-	TwoSampleTestReturnType ret = samples[0]->create_merged_copy(samples[1]);
+	auto ret = samples[0]->create_merged_copy(samples[1]);
 	SG_UNREF(samples[0]);
 	SG_UNREF(samples[1]);
 	return ret;
@@ -64,7 +68,11 @@ IndependenceTestPermutation::IndependenceTestPermutation(const vector<shared_ptr
 IndependenceTestReturnType IndependenceTestPermutation::get(bool simulate_h0)
 {
 	std::cout << "IndependenceTestPermutation::get" << std::endl;
-	IndependenceTestReturnType ret = get_unshuffled();
+	for (auto features = samples.begin(); features != samples.end(); features++)
+	{
+		(*features)->remove_all_subsets();
+	}
+	auto ret = get_unshuffled();
 	if (simulate_h0)
 	{
 		permutators[0]->permute(ret[0]);

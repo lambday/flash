@@ -1,6 +1,6 @@
 SRC			= flash
 INCLUDES	= -I. -I/usr/include/eigen3
-OPTS		= -O3 -std=c++11 -fPIC
+OPTS		= -O3 -std=c++14 -fPIC
 STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoSampleTest.o $(STATISTICS)/IndependenceTest.o \
