@@ -46,9 +46,8 @@ public:
 	void set_simulate_h0(bool is_simulate_h0);
 	bool get_simulate_h0();
 
-	// @param n number of samples
 	// @param i the index for which the number of samples is n
-	void set_num_samples(index_t n, index_t i);
+	index_t& num_samples_at(index_t i);
 	index_t get_num_samples();
 
 	// blocksize is the total number of samples (num_vec_p + num_vec_q)

@@ -23,7 +23,7 @@
 #include <flash/statistics/internals/PermutationPolicy.h>
 #include <flash/statistics/internals/FetcherFactory.h>
 #include <flash/statistics/internals/PermutatorFactory.h>
-#include <shogun/features/Features.h> // TODO remove - move the implementation to cpp
+#include <shogun/features/Features.h>
 
 using namespace shogun;
 using namespace internal;
@@ -63,14 +63,12 @@ bool DataManager<TestType>::get_simulate_h0()
 	return simulate_h0;
 }
 
-// make it index specific so that the order of the call doesn't matter
-// @param n number of samples
 // @param i the index for which the number of samples is n
 template <class TestType>
-void DataManager<TestType>::set_num_samples(index_t n, index_t i)
+index_t& DataManager<TestType>::num_samples_at(index_t i)
 {
 	ASSERT(i < num_samples.size());
-	num_samples[i] = n;
+	return num_samples[i];
 }
 
 template <class TestType>
