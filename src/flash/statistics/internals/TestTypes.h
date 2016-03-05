@@ -32,8 +32,8 @@ namespace internal
 
 template <class T> struct AllFetcher;
 template <class T> struct BlockFetcher;
-struct TwoSampleTestPermutation;
-struct IndependenceTestPermutation;
+struct TwoSampleTestPermutationPolicy;
+struct IndependenceTestPermutationPolicy;
 
 struct BaseTestType
 {
@@ -43,28 +43,28 @@ struct BaseTestType
 struct TwoSampleTest : public BaseTestType
 {
 	template <class T> using fetch_type = AllFetcher<T>;
-	using permutation_type = TwoSampleTestPermutation;
+	using permutation_policy = TwoSampleTestPermutationPolicy;
 	using return_type = shogun::CFeatures*;
 };
 
 struct IndependenceTest : public BaseTestType
 {
 	template <class T> using fetch_type = AllFetcher<T>;
-	using permutation_type = IndependenceTestPermutation;
+	using permutation_policy = IndependenceTestPermutationPolicy;
 	using return_type = std::vector<shogun::CFeatures*>;
 };
 
 struct StreamingTwoSampleTest : public BaseTestType
 {
 	template <class T> using fetch_type = BlockFetcher<T>;
-	using permutation_type = TwoSampleTestPermutation;
+	using permutation_policy = TwoSampleTestPermutationPolicy;
 	using return_type = shogun::CFeatures*;
 };
 
 struct StreamingIndependenceTest : public BaseTestType
 {
 	template <class T> using fetch_type = BlockFetcher<T>;
-	using permutation_type = IndependenceTestPermutation;
+	using permutation_policy = IndependenceTestPermutationPolicy;
 	using return_type = std::vector<shogun::CFeatures*>;
 };
 

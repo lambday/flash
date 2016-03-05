@@ -63,7 +63,7 @@ public:
 private:
 	bool simulate_h0;
 	index_t _blocksize;
-	std::vector<shogun::CFeatures*> samples;
+	std::vector<std::shared_ptr<CFeatures>> samples;
 	std::vector<index_t> num_samples;
 	// multiple fetchers option is there for the same reason as permutators
 	std::vector<std::shared_ptr<FetcherBase>> fetchers;

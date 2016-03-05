@@ -47,7 +47,7 @@ InitPerSamples<TestType>& InitPerSamples<TestType>::operator=(CFeatures* feats)
 {
 	std::cout << "InitPerSamples::Assignment() : setting the samples, fetchers and permutators" << std::endl;
 	SG_REF(feats);
-	data_manager.samples[index] = feats;
+	data_manager.samples[index] = std::shared_ptr<CFeatures>(feats, [](CFeatures* f) { SG_UNREF(f); });
 	data_manager.fetchers[index] = FetcherFactory::get_instance(feats);
 	data_manager.permutators[index] = PermutatorFactory::get_instance(feats);
 	return *this;

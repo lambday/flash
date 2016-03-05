@@ -29,15 +29,15 @@ using namespace internal;
 using TwoSampleTestReturnType = typename TwoSampleTest::return_type;
 using IndependenceTestReturnType = typename IndependenceTest::return_type;
 
-TwoSampleTestPermutation::TwoSampleTestPermutation(const vector<shared_ptr<PermutatorBase>>& _permutators)
-	: Permutation(_permutators)
+TwoSampleTestPermutationPolicy::TwoSampleTestPermutationPolicy(const vector<shared_ptr<PermutatorBase>>& _permutators)
+	: PermutationPolicy(_permutators)
 {
-	std::cout << "TwoSampleTestPermutation::constructor" << std::endl;
+	std::cout << "TwoSampleTestPermutationPolicy::constructor" << std::endl;
 }
 
-TwoSampleTestReturnType TwoSampleTestPermutation::get(bool simulate_h0)
+TwoSampleTestReturnType TwoSampleTestPermutationPolicy::get(bool simulate_h0)
 {
-	std::cout << "TwoSampleTestPermutation::get" << std::endl;
+	std::cout << "TwoSampleTestPermutationPolicy::get" << std::endl;
 	for (auto features = samples.begin(); features != samples.end(); features++)
 	{
 		(*features)->remove_all_subsets();
@@ -50,7 +50,7 @@ TwoSampleTestReturnType TwoSampleTestPermutation::get(bool simulate_h0)
 	return ret;
 }
 
-TwoSampleTestReturnType TwoSampleTestPermutation::get_unshuffled()
+TwoSampleTestReturnType TwoSampleTestPermutationPolicy::get_unshuffled()
 {
 	ASSERT(samples.size() == 2);
 	auto ret = samples[0]->create_merged_copy(samples[1]);
@@ -59,15 +59,15 @@ TwoSampleTestReturnType TwoSampleTestPermutation::get_unshuffled()
 	return ret;
 }
 
-IndependenceTestPermutation::IndependenceTestPermutation(const vector<shared_ptr<PermutatorBase>>& _permutators)
-	: Permutation(_permutators)
+IndependenceTestPermutationPolicy::IndependenceTestPermutationPolicy(const vector<shared_ptr<PermutatorBase>>& _permutators)
+	: PermutationPolicy(_permutators)
 {
-	std::cout << "IndependenceTestPermutation::constructor" << std::endl;
+	std::cout << "IndependenceTestPermutationPolicy::constructor" << std::endl;
 }
 
-IndependenceTestReturnType IndependenceTestPermutation::get(bool simulate_h0)
+IndependenceTestReturnType IndependenceTestPermutationPolicy::get(bool simulate_h0)
 {
-	std::cout << "IndependenceTestPermutation::get" << std::endl;
+	std::cout << "IndependenceTestPermutationPolicy::get" << std::endl;
 	for (auto features = samples.begin(); features != samples.end(); features++)
 	{
 		(*features)->remove_all_subsets();
@@ -80,7 +80,7 @@ IndependenceTestReturnType IndependenceTestPermutation::get(bool simulate_h0)
 	return ret;
 }
 
-IndependenceTestReturnType IndependenceTestPermutation::get_unshuffled()
+IndependenceTestReturnType IndependenceTestPermutationPolicy::get_unshuffled()
 {
 	return samples;
 }

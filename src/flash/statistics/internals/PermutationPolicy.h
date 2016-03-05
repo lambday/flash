@@ -38,11 +38,11 @@ namespace internal
 template <class T> struct Permutators;
 
 template <class TestType>
-struct Permutation
+struct PermutationPolicy
 {
 	using return_type = typename TestType::return_type;
 
-	Permutation(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators)
+	PermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators)
 		: permutators(_permutators)
 	{
 		std::cout << "Permutation::constructor" << std::endl;
@@ -57,21 +57,21 @@ struct Permutation
 	const std::vector<std::shared_ptr<PermutatorBase>>& permutators;
 };
 
-class TwoSampleTestPermutation : public Permutation<TwoSampleTest>
+class TwoSampleTestPermutationPolicy : public PermutationPolicy<TwoSampleTest>
 {
 public:
 	using return_type = typename TwoSampleTest::return_type;
-	TwoSampleTestPermutation(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
+	TwoSampleTestPermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
 	virtual return_type get(bool simulate_h0) override;
 private:
 	return_type get_unshuffled();
 };
 
-class IndependenceTestPermutation : public Permutation<IndependenceTest>
+class IndependenceTestPermutationPolicy : public PermutationPolicy<IndependenceTest>
 {
 public:
 	using return_type = typename IndependenceTest::return_type;
-	IndependenceTestPermutation(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
+	IndependenceTestPermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
 	virtual return_type get(bool simulate_h0) override;
 private:
 	return_type get_unshuffled();

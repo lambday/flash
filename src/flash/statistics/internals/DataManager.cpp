@@ -45,10 +45,6 @@ DataManager<TestType>::DataManager() : simulate_h0(false), _blocksize(0)
 template <class TestType>
 DataManager<TestType>::~DataManager()
 {
-	for (auto it = samples.begin(); it != samples.end(); ++it)
-	{
-		SG_UNREF(*it);
-	}
 }
 
 template <class TestType>
@@ -149,11 +145,11 @@ typename TestType::return_type DataManager<TestType>::get_samples()
 	// to perform the permutation. but whether to merge samples or not
 	// whether to permute samples from one distribution or both, that
 	// logic does inside this permutation. Just one instance per get_sample
-	std::shared_ptr<typename TestType::permutation_type> permutation(new
-			typename TestType::permutation_type(permutators));
+	using permutation_policy = typename TestType::permutation_policy;
+	std::shared_ptr<permutation_policy> permutation(new permutation_policy(permutators));
 	for (size_t i = 0; i < samples.size(); ++i)
 	{
-		permutation->push_back(fetchers[i]->fetch(samples[i]));
+		permutation->push_back(fetchers[i]->fetch(samples[i].get()));
 	}
 	return permutation->get(simulate_h0);
 }
