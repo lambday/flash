@@ -17,7 +17,7 @@
  */
 
 #include <memory>
-#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 
 #ifndef FETCHER_POLICY_H__
 #define FETCHER_POLICY_H__
