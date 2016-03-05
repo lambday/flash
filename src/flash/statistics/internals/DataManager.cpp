@@ -40,6 +40,8 @@ DataManager<TestType>::DataManager() : simulate_h0(false), _blocksize(0)
 	std::fill(num_samples.begin(), num_samples.end(), 0);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
 	std::fill(permutators.begin(), permutators.end(), nullptr);
+
+	permutation_policy = std::make_unique<typename TestType::permutation_policy>(permutators);
 }
 
 template <class TestType>
@@ -145,8 +147,8 @@ typename TestType::return_type DataManager<TestType>::get_samples()
 	// to perform the permutation. but whether to merge samples or not
 	// whether to permute samples from one distribution or both, that
 	// logic does inside this permutation. Just one instance per get_sample
-	using permutation_policy = typename TestType::permutation_policy;
-	std::shared_ptr<permutation_policy> permutation(new permutation_policy(permutators));
+	using policy = typename TestType::permutation_policy;
+	std::shared_ptr<policy> permutation(new policy(permutators));
 	for (size_t i = 0; i < samples.size(); ++i)
 	{
 		permutation->push_back(fetchers[i]->fetch(samples[i].get()));

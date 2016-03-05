@@ -35,7 +35,6 @@ public:
 	using test_type = CHypothesisTest<internal::TwoSampleTest>::test_type;
 
 	CTwoSampleTest();
-	CTwoSampleTest(const CTwoSampleTest& other);
 	~CTwoSampleTest();
 	virtual const char* get_name() const;
 };

@@ -28,11 +28,6 @@ CIndependenceTest::CIndependenceTest() : CHypothesisTest<IndependenceTest>()
 {
 }
 
-CIndependenceTest::CIndependenceTest(const CIndependenceTest& other)
-	: CHypothesisTest<IndependenceTest>(other)
-{
-}
-
 CIndependenceTest::~CIndependenceTest()
 {
 }

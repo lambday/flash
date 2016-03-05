@@ -28,11 +28,6 @@ CTwoSampleTest::CTwoSampleTest() : CHypothesisTest<TwoSampleTest>()
 {
 }
 
-CTwoSampleTest::CTwoSampleTest(const CTwoSampleTest& other)
-	: CHypothesisTest<TwoSampleTest>(other)
-{
-}
-
 CTwoSampleTest::~CTwoSampleTest()
 {
 }

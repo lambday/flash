@@ -28,11 +28,6 @@ CStreamingTwoSampleTest::CStreamingTwoSampleTest() : CHypothesisTest<StreamingTw
 {
 }
 
-CStreamingTwoSampleTest::CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other)
-	: CHypothesisTest<StreamingTwoSampleTest>(other)
-{
-}
-
 CStreamingTwoSampleTest::~CStreamingTwoSampleTest()
 {
 }

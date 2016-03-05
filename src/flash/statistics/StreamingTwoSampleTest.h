@@ -35,7 +35,6 @@ public:
 	using test_type = CHypothesisTest<internal::StreamingTwoSampleTest>::test_type;
 
 	CStreamingTwoSampleTest();
-	CStreamingTwoSampleTest(const CStreamingTwoSampleTest& other);
 	~CStreamingTwoSampleTest();
 
 	void set_num_samples_p(index_t num_samples_p);

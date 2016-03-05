@@ -35,7 +35,6 @@ public:
 	using test_type = CHypothesisTest<internal::IndependenceTest>::test_type;
 
 	CIndependenceTest();
-	CIndependenceTest(const CIndependenceTest& other);
 	~CIndependenceTest();
 	virtual const char* get_name() const;
 };

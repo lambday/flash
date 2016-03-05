@@ -28,11 +28,6 @@ CStreamingIndependenceTest::CStreamingIndependenceTest() : CHypothesisTest<Strea
 {
 }
 
-CStreamingIndependenceTest::CStreamingIndependenceTest(const CStreamingIndependenceTest& other)
-	: CHypothesisTest<StreamingIndependenceTest>(other)
-{
-}
-
 CStreamingIndependenceTest::~CStreamingIndependenceTest()
 {
 }

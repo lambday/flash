@@ -32,28 +32,13 @@ template <class T>
 struct CHypothesisTest<T>::Self
 {
 	Self() {}
-	Self(DataManager<T> data_mgr) : data_manager(data_mgr) {}
 	DataManager<T> data_manager;
 };
 
 template <class T>
 CHypothesisTest<T>::CHypothesisTest() : CSGObject()
 {
-	impl = std::unique_ptr<Self>(new Self);
-}
-
-template <class T>
-CHypothesisTest<T>::CHypothesisTest(const CHypothesisTest<T>& other)
-	: CSGObject()
-{
-	impl = std::unique_ptr<Self>(new Self(other.impl->data_manager));
-}
-
-template <class T>
-CHypothesisTest<T>& CHypothesisTest<T>::operator=(const CHypothesisTest<T>& other)
-{
-	impl = std::unique_ptr<Self>(new Self(other.impl->data_manager));
-	return *this;
+	impl = std::make_unique<Self>();
 }
 
 template <class T>

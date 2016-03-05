@@ -35,7 +35,6 @@ public:
 	using test_type = CHypothesisTest<internal::StreamingIndependenceTest>::test_type;
 
 	CStreamingIndependenceTest();
-	CStreamingIndependenceTest(const CStreamingIndependenceTest& other);
 	~CStreamingIndependenceTest();
 
 	void set_num_samples_p(index_t num_samples_p);

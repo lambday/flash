@@ -39,8 +39,6 @@ public:
 	using test_type = TestType;
 
 	CHypothesisTest();
-	CHypothesisTest(const CHypothesisTest& other);
-	CHypothesisTest& operator=(const CHypothesisTest& other);
 	~CHypothesisTest();
 
 	void set_p(CFeatures* p);
