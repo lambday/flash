@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <memory>
+#include <flash/statistics/internals/InitPerSamples.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -37,6 +38,7 @@ class PermutatorBase;
 template <class TestType>
 class DataManager
 {
+	template <class T> friend class InitPerSamples;
 public:
 	// preallocate memory for the samples, num_samples fetchers and permutators.
     // This is never goind to change for a test type
@@ -55,7 +57,7 @@ public:
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 
 	// put feats in index i
-	void put(CFeatures* feats, index_t i);
+	InitPerSamples<TestType> samples_at(index_t i);
 	typename TestType::return_type get_samples();
 
 private:

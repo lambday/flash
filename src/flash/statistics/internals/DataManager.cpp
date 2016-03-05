@@ -133,15 +133,11 @@ void DataManager<TestType>::set_num_blocks_per_burst(index_t num_blocks_per_burs
 
 // put feats in index i
 template <class TestType>
-void DataManager<TestType>::put(CFeatures* feats, index_t i)
+InitPerSamples<TestType> DataManager<TestType>::samples_at(index_t i)
 {
-	std::cout << "DataManager<TestType>::put" << std::endl;
-
-	ASSERT(i < samples.size());
-	samples[i] = feats;
-	SG_REF(feats);
-	fetchers[i] = FetcherFactory::get_instance(feats);
-	permutators[i] = PermutatorFactory::get_instance(feats);
+	std::cout << "DataManager<TestType>::samples_at" << std::endl;
+	InitPerSamples<TestType> init(*this, i);
+	return init;
 }
 
 template <class TestType>

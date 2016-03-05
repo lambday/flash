@@ -70,13 +70,13 @@ CHypothesisTest<T>::~CHypothesisTest()
 template <class T>
 void CHypothesisTest<T>::set_p(CFeatures* p)
 {
-	impl->data_manager.put(p, 0);
+	impl->data_manager.samples_at(0) = p;
 }
 
 template <class T>
 void CHypothesisTest<T>::set_q(CFeatures* q)
 {
-	impl->data_manager.put(q, 1);
+	impl->data_manager.samples_at(1) = q;
 }
 
 template <class T>
