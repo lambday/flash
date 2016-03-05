@@ -29,8 +29,7 @@ using namespace internal;
 using TwoSampleTestReturnType = typename TwoSampleTest::return_type;
 using IndependenceTestReturnType = typename IndependenceTest::return_type;
 
-TwoSampleTestPermutationPolicy::TwoSampleTestPermutationPolicy(const vector<shared_ptr<PermutatorBase>>& _permutators)
-	: PermutationPolicy(_permutators)
+TwoSampleTestPermutationPolicy::TwoSampleTestPermutationPolicy() : PermutationPolicy()
 {
 	std::cout << "TwoSampleTestPermutationPolicy::constructor" << std::endl;
 }
@@ -59,8 +58,7 @@ TwoSampleTestReturnType TwoSampleTestPermutationPolicy::get_unshuffled()
 	return ret;
 }
 
-IndependenceTestPermutationPolicy::IndependenceTestPermutationPolicy(const vector<shared_ptr<PermutatorBase>>& _permutators)
-	: PermutationPolicy(_permutators)
+IndependenceTestPermutationPolicy::IndependenceTestPermutationPolicy() : PermutationPolicy()
 {
 	std::cout << "IndependenceTestPermutationPolicy::constructor" << std::endl;
 }

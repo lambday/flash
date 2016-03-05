@@ -67,9 +67,6 @@ private:
 	std::vector<index_t> num_samples;
 	// multiple fetchers option is there for the same reason as permutators
 	std::vector<std::shared_ptr<FetcherBase>> fetchers;
-	// multiple permutators are useful when we want to pass two
-	// different features types as p and q
-	std::vector<std::shared_ptr<PermutatorBase>> permutators;
 	std::unique_ptr<typename TestType::permutation_policy> permutation_policy;
 };
 

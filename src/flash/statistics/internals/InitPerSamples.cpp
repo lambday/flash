@@ -22,6 +22,7 @@
 #include <flash/statistics/internals/FetcherPolicy.h>
 #include <flash/statistics/internals/FetcherFactory.h>
 #include <flash/statistics/internals/PermutatorFactory.h>
+#include <flash/statistics/internals/PermutationPolicy.h>
 #include <flash/statistics/internals/TestTypes.h>
 #include <shogun/features/Features.h>
 
@@ -49,7 +50,7 @@ InitPerSamples<TestType>& InitPerSamples<TestType>::operator=(CFeatures* feats)
 	SG_REF(feats);
 	data_manager.samples[index] = std::shared_ptr<CFeatures>(feats, [](CFeatures* f) { SG_UNREF(f); });
 	data_manager.fetchers[index] = FetcherFactory::get_instance(feats);
-	data_manager.permutators[index] = PermutatorFactory::get_instance(feats);
+	data_manager.permutation_policy->permutators[index] = PermutatorFactory::get_instance(feats);
 	return *this;
 }
 

@@ -40,28 +40,28 @@ template <class T> struct Permutators;
 template <class TestType>
 struct PermutationPolicy
 {
+	template <class T> friend class InitPerSamples;
 	using return_type = typename TestType::return_type;
-
-	PermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators)
-		: permutators(_permutators)
+	PermutationPolicy()
 	{
-		std::cout << "Permutation::constructor" << std::endl;
+		permutators.resize(TestType::num_feats);
+		samples.resize(TestType::num_feats);
 	}
-	inline void push_back(CFeatures* feats)
+	CFeatures*& put_at(index_t i)
 	{
-		std::cout << "Permutation::push_back" << std::endl;
-		samples.push_back(feats);
+		std::cout << "PermutationPolicy::put_at " << i << std::endl;
+		return samples[i];
 	}
 	virtual return_type get(bool simulate_h0) = 0;
 	std::vector<CFeatures*> samples;
-	const std::vector<std::shared_ptr<PermutatorBase>>& permutators;
+	std::vector<std::shared_ptr<PermutatorBase>> permutators;
 };
 
 class TwoSampleTestPermutationPolicy : public PermutationPolicy<TwoSampleTest>
 {
 public:
 	using return_type = typename TwoSampleTest::return_type;
-	TwoSampleTestPermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
+	TwoSampleTestPermutationPolicy();
 	virtual return_type get(bool simulate_h0) override;
 private:
 	return_type get_unshuffled();
@@ -71,7 +71,7 @@ class IndependenceTestPermutationPolicy : public PermutationPolicy<IndependenceT
 {
 public:
 	using return_type = typename IndependenceTest::return_type;
-	IndependenceTestPermutationPolicy(const std::vector<std::shared_ptr<PermutatorBase>>& _permutators);
+	IndependenceTestPermutationPolicy();
 	virtual return_type get(bool simulate_h0) override;
 private:
 	return_type get_unshuffled();
