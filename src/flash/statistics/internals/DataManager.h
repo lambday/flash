@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <memory>
-#include <flash/statistics/internals/InitPerSamples.h>
+#include <flash/statistics/internals/InitTaskPerFeature.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -32,42 +32,29 @@ class CFeatures;
 namespace internal
 {
 
-class FetcherBase;
-class PermutatorBase;
+class DataFetcher;
+class NextSamples;
 
-template <class TestType>
 class DataManager
 {
-	template <class T> friend class InitPerSamples;
+	friend class InitTaskPerFeature;
 public:
-	// preallocate memory for the samples, num_samples fetchers and permutators.
-    // This is never goind to change for a test type
-	DataManager();
+	DataManager(index_t num_distributions);
+	DataManager(const DataManager& other) = delete;
+	DataManager& operator=(const DataManager& other) = delete;
 	~DataManager();
-
-	void set_simulate_h0(bool is_simulate_h0);
-	bool get_simulate_h0();
-
-	// @param i the index for which the number of samples is n
+	// make it only available for streaming
+	// something like data_manager.streaming().num_samples_at(0) = 10
 	index_t& num_samples_at(index_t i);
 	index_t get_num_samples();
-
-	// blocksize is the total number of samples (num_vec_p + num_vec_q)
-	void set_blocksize(index_t blocksize);
-	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
-
-	// put feats in index i
-	InitPerSamples<TestType> samples_at(index_t i);
-	typename TestType::return_type get_samples();
-
+	// if we provide an opeartor= in init task per feature that
+	// accepts a file, the samples_at(i) = someFileObject will also work!
+	InitTaskPerFeature samples_at(index_t i);
+	NextSamples next();
 private:
-	bool simulate_h0;
-	index_t _blocksize;
-	std::vector<std::shared_ptr<CFeatures>> samples;
-	std::vector<index_t> num_samples;
-	// multiple fetchers option is there for the same reason as permutators
-	std::vector<std::shared_ptr<FetcherBase>> fetchers;
-	std::unique_ptr<typename TestType::permutation_policy> permutation_policy;
+	const index_t m_num_distributions;
+	// multiple fetchers option is there for heterogenous features
+	std::vector<std::unique_ptr<DataFetcher>> fetchers;
 };
 
 }
