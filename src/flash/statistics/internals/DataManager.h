@@ -37,7 +37,7 @@ class NextSamples;
 
 class DataManager
 {
-	friend class InitTaskPerFeature;
+	friend class InitPerFeature;
 public:
 	DataManager(index_t num_distributions);
 	DataManager(const DataManager& other) = delete;
@@ -49,7 +49,7 @@ public:
 	index_t get_num_samples();
 	// if we provide an opeartor= in init task per feature that
 	// accepts a file, the samples_at(i) = someFileObject will also work!
-	InitTaskPerFeature samples_at(index_t i);
+	InitPerFeature samples_at(index_t i);
 	NextSamples next();
 private:
 	const index_t m_num_distributions;

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INIT_PER_SAMPLES_H__
-#define INIT_PER_SAMPLES_H__
+#ifndef INIT_PER_FEATURE_H__
+#define INIT_PER_FEATURE_H__
 
 #include <shogun/lib/common.h>
 
@@ -29,20 +29,19 @@ class CFeatures;
 namespace internal
 {
 
-template <class T> class DataManager;
+class DataManager;
 
-template <typename TestType>
-struct InitPerSamples
+struct InitPerFeature
 {
-	explicit InitPerSamples(DataManager<TestType>& dm, index_t );
-	InitPerSamples& operator=(CFeatures* feats);
-	~InitPerSamples();
-	index_t index;
-	DataManager<TestType>& data_manager;
+	explicit InitPerFeature(const DataManager& dm, index_t i);
+	InitPerFeature& operator=(CFeatures* feats);
+	~InitPerFeature();
+	const index_t index;
+	const DataManager& data_manager;
 };
 }
 
 }
 
-#endif // INIT_PER_SAMPLES_H__
+#endif // INIT_PER_FEATURE_H__
 

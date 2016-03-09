@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,36 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
 #include <memory>
-#include <functional>
 #include <shogun/lib/config.h>
-#include <shogun/features/Features.h>
 
-#ifndef FETCHER_FACTORY_H__
-#define FETCHER_FACTORY_H__
+#ifndef DATA_FETCHER_FACTORY_H__
+#define DATA_FETCHER_FACTORY_H__
 
 namespace shogun
 {
 
+class CFeatures;
+
 namespace internal
 {
 
-class FetcherBase;
+class DataFetcher;
 
-struct FetcherFactory
+struct DataFetcherFactory
 {
-	using return_type = std::shared_ptr<FetcherBase>;
-	using factory = std::map<std::pair<EFeatureClass, EFeatureType>, std::function<return_type()>>;
+	DataFetcherFactory() = delete;
+	DataFetcherFactory(const DataFetcherFactory& other) = delete;
+	DataFetcherFactory& operator=(const DataFetcherFactory& other) = delete;
+	~DataFetcherFactory() = delete;
 
-	static return_type get_instance(CFeatures* feats);
-
-private:
-	static factory initialize();
-	static const factory& initializers;
+	static DataFetcher* get_instance(CFeatures* feats);
 };
 
 }
 
 }
-#endif // FETCHER_FACTORY_H__
+#endif // DATA_FETCHER_FACTORY_H__

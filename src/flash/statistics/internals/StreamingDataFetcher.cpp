@@ -25,7 +25,7 @@
 using namespace shogun;
 using namespace internal;
 
-StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples) : DataFetcher()
+StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples) : DataFetcher(), parser_running(false)
 {
 	SG_REF(samples);
 	m_samples = std::shared_ptr<CStreamingFeatures>(samples, [](auto& ptr) { SG_UNREF(ptr); });
@@ -34,6 +34,11 @@ StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples) : DataFe
 StreamingDataFetcher::~StreamingDataFetcher()
 {
 	end();
+}
+
+const char* StreamingDataFetcher::get_name() const
+{
+	return "StreamingDataFetcher";
 }
 
 void StreamingDataFetcher::set_num_samples(index_t num_samples)
@@ -51,6 +56,7 @@ void StreamingDataFetcher::start()
 	m_block_details.m_total_num_blocks = m_num_samples / m_block_details.m_blocksize;
 	m_block_details.m_next_block_index = 0;
 	m_samples->start_parser();
+	parser_running = true;
 }
 
 std::shared_ptr<CFeatures> StreamingDataFetcher::next()
@@ -79,5 +85,9 @@ void StreamingDataFetcher::reset()
 
 void StreamingDataFetcher::end()
 {
-	m_samples->end_parser();
+	if (parser_running)
+	{
+		m_samples->end_parser();
+	}
+	parser_running = false;
 }

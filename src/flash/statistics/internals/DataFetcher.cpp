@@ -39,6 +39,11 @@ DataFetcher::~DataFetcher()
 {
 }
 
+const char* DataFetcher::get_name() const
+{
+	return "DataFetcher";
+}
+
 void DataFetcher::start()
 {
 	if (m_block_details.m_blocksize == 0)

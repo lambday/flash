@@ -16,42 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-#include <shogun/lib/common.h>
-#include <flash/statistics/internals/BlockwiseDetails.h>
+#include <shogun/features/Features.h>
+#include <shogun/features/streaming/StreamingFeatures.h>
+#include <flash/statistics/internals/DataFetcher.h>
+#include <flash/statistics/internals/StreamingDataFetcher.h>
+#include <flash/statistics/internals/DataFetcherFactory.h>
 
-#ifndef DATA_FETCHER_H__
-#define DATA_FETCHER_H__
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+DataFetcher* DataFetcherFactory::get_instance(CFeatures* feats)
 {
-
-class CFeatures;
-
-namespace internal
-{
-
-class DataFetcher
-{
-public:
-	DataFetcher(CFeatures* samples);
-	virtual ~DataFetcher();
-	virtual void start();
-	virtual std::shared_ptr<CFeatures> next();
-	virtual void reset();
-	virtual void end();
-	const index_t get_num_samples() const;
-	BlockwiseDetails& fetch_blockwise();
-	virtual const char* get_name() const;
-protected:
-	DataFetcher();
-	BlockwiseDetails m_block_details;
-	index_t m_num_samples;
-private:
-	std::shared_ptr<CFeatures> m_samples;
-};
-
+	EFeatureClass fclass = feats->get_feature_class();
+	if (fclass == C_STREAMING_DENSE || fclass == C_STREAMING_SPARSE || fclass == C_STREAMING_STRING)
+	{
+		return new StreamingDataFetcher(static_cast<CStreamingFeatures*>(feats));
+	}
+	return new DataFetcher(feats);
 }
 
-}
-#endif // DATA_FETCHER_H__

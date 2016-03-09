@@ -42,8 +42,10 @@ public:
 	virtual void reset() override;
 	virtual void end() override;
 	void set_num_samples(index_t num_samples);
+	virtual const char* get_name() const override;
 private:
 	std::shared_ptr<CStreamingFeatures> m_samples;
+	bool parser_running;
 };
 
 }

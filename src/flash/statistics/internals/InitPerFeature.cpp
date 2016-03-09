@@ -29,32 +29,20 @@
 using namespace shogun;
 using namespace internal;
 
-template <class TestType>
-InitPerSamples<TestType>::InitPerSamples(DataManager<TestType>& dm, index_t i) : data_manager(dm)
+InitPerFeature::InitPerFeature(const DataManager& dm, index_t i) : data_manager(dm), index(i)
 {
-	std::cout << "InitPerSamples::Constructor() with i = " << i << std::endl;
+	std::cout << "InitPerFeature::Constructor() with i = " << i << std::endl;
 	ASSERT(i < data_manager.samples.size());
-	index = i;
 }
 
-template <class TestType>
-InitPerSamples<TestType>::~InitPerSamples()
+InitPerFeature::~InitPerFeature()
 {
-	std::cout << "InitPerSamples::Destructor()" << std::endl;
+	std::cout << "InitPerFeature::Destructor()" << std::endl;
 }
 
-template <class TestType>
-InitPerSamples<TestType>& InitPerSamples<TestType>::operator=(CFeatures* feats)
+InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 {
-	std::cout << "InitPerSamples::Assignment() : setting the samples, fetchers and permutators" << std::endl;
-	SG_REF(feats);
-	data_manager.samples[index] = std::shared_ptr<CFeatures>(feats, [](CFeatures* f) { SG_UNREF(f); });
+	std::cout << "InitPerFeature::Assignment() : setting the fetcher" << std::endl;
 	data_manager.fetchers[index] = FetcherFactory::get_instance(feats);
-	data_manager.permutation_policy->permutators[index] = PermutatorFactory::get_instance(feats);
 	return *this;
 }
-
-template class InitPerSamples<TwoSampleTest>;
-template class InitPerSamples<StreamingTwoSampleTest>;
-template class InitPerSamples<IndependenceTest>;
-template class InitPerSamples<StreamingIndependenceTest>;
