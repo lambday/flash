@@ -29,6 +29,7 @@ StreamingDataFetcher::StreamingDataFetcher(CStreamingFeatures* samples) : DataFe
 {
 	SG_REF(samples);
 	m_samples = std::shared_ptr<CStreamingFeatures>(samples, [](auto& ptr) { SG_UNREF(ptr); });
+	m_num_samples = 0;
 }
 
 StreamingDataFetcher::~StreamingDataFetcher()
@@ -55,8 +56,11 @@ void StreamingDataFetcher::start()
 	}
 	m_block_details.m_total_num_blocks = m_num_samples / m_block_details.m_blocksize;
 	m_block_details.m_next_block_index = 0;
-	m_samples->start_parser();
-	parser_running = true;
+	if (!parser_running)
+	{
+		m_samples->start_parser();
+		parser_running = true;
+	}
 }
 
 std::shared_ptr<CFeatures> StreamingDataFetcher::next()
@@ -88,6 +92,6 @@ void StreamingDataFetcher::end()
 	if (parser_running)
 	{
 		m_samples->end_parser();
+		parser_running = false;
 	}
-	parser_running = false;
 }

@@ -31,8 +31,11 @@ class CFeatures;
 namespace internal
 {
 
+class DataManager;
+
 class DataFetcher
 {
+	friend class DataManager;
 public:
 	DataFetcher(CFeatures* samples);
 	virtual ~DataFetcher();

@@ -18,21 +18,17 @@
 
 #include <iostream> // TODO remove
 #include <flash/statistics/internals/DataManager.h>
-#include <flash/statistics/internals/Permutators.h>
-#include <flash/statistics/internals/FetcherPolicy.h>
-#include <flash/statistics/internals/FetcherFactory.h>
-#include <flash/statistics/internals/PermutatorFactory.h>
-#include <flash/statistics/internals/PermutationPolicy.h>
-#include <flash/statistics/internals/TestTypes.h>
+#include <flash/statistics/internals/DataFetcher.h>
+#include <flash/statistics/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 using namespace internal;
 
-InitPerFeature::InitPerFeature(const DataManager& dm, index_t i) : data_manager(dm), index(i)
+InitPerFeature::InitPerFeature(DataManager& dm, index_t i) : data_manager(dm), index(i)
 {
 	std::cout << "InitPerFeature::Constructor() with i = " << i << std::endl;
-	ASSERT(i < data_manager.samples.size());
+	ASSERT(i < data_manager.fetchers.size());
 }
 
 InitPerFeature::~InitPerFeature()
@@ -43,6 +39,7 @@ InitPerFeature::~InitPerFeature()
 InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 {
 	std::cout << "InitPerFeature::Assignment() : setting the fetcher" << std::endl;
-	data_manager.fetchers[index] = FetcherFactory::get_instance(feats);
+	std::unique_ptr<DataFetcher> fetcher(DataFetcherFactory::get_instance(feats));
+	data_manager.fetchers[index] = std::move(fetcher);
 	return *this;
 }

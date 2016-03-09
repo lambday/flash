@@ -31,6 +31,7 @@ class BlockwiseDetails
 {
 	friend class DataFetcher;
 	friend class StreamingDataFetcher;
+	friend class DataManager;
 public:
 	BlockwiseDetails();
 	BlockwiseDetails& with_blocksize(index_t blocksize);

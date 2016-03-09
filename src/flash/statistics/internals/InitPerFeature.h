@@ -33,11 +33,11 @@ class DataManager;
 
 struct InitPerFeature
 {
-	explicit InitPerFeature(const DataManager& dm, index_t i);
+	explicit InitPerFeature(DataManager& dm, index_t i);
 	InitPerFeature& operator=(CFeatures* feats);
 	~InitPerFeature();
 	const index_t index;
-	const DataManager& data_manager;
+	DataManager& data_manager;
 };
 }
 

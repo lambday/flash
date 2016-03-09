@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,136 +18,106 @@
 
 #include <iostream> // TODO remove
 #include <flash/statistics/internals/DataManager.h>
-#include <flash/statistics/internals/Permutators.h>
-#include <flash/statistics/internals/FetcherPolicy.h>
-#include <flash/statistics/internals/PermutationPolicy.h>
-#include <flash/statistics/internals/FetcherFactory.h>
-#include <flash/statistics/internals/PermutatorFactory.h>
+#include <flash/statistics/internals/NextSamples.h>
+#include <flash/statistics/internals/DataFetcher.h>
+#include <flash/statistics/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 using namespace internal;
 
-template <class TestType>
-DataManager<TestType>::DataManager() : simulate_h0(false), _blocksize(0)
+DataManager::DataManager(index_t num_distributions) : m_num_distributions(num_distributions)
 {
-	samples.resize(TestType::num_feats);
-	num_samples.resize(TestType::num_feats);
-	fetchers.resize(TestType::num_feats);
-
-	std::fill(samples.begin(), samples.end(), nullptr);
-	std::fill(num_samples.begin(), num_samples.end(), 0);
+	fetchers.resize(m_num_distributions);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
-
-	permutation_policy = std::make_unique<typename TestType::permutation_policy>();
 }
 
-template <class TestType>
-DataManager<TestType>::~DataManager()
+DataManager::~DataManager()
 {
 }
 
-template <class TestType>
-void DataManager<TestType>::set_simulate_h0(bool is_simulate_h0)
+index_t& DataManager::num_samples_at(index_t i)
 {
-	simulate_h0 = is_simulate_h0;
+	ASSERT(i < fetchers.size());
+	return fetchers[i]->m_num_samples;
 }
 
-template <class TestType>
-bool DataManager<TestType>::get_simulate_h0()
+index_t DataManager::get_num_samples()
 {
-	return simulate_h0;
-}
-
-// @param i the index for which the number of samples is n
-template <class TestType>
-index_t& DataManager<TestType>::num_samples_at(index_t i)
-{
-	ASSERT(i < num_samples.size());
-	return num_samples[i];
-}
-
-template <class TestType>
-index_t DataManager<TestType>::get_num_samples()
-{
-	// TODO null check for empty samples
-
-	// if samples are set, then we don't need to do anything.
-	if (std::any_of(num_samples.begin(), num_samples.end(), [](index_t val) { return val == 0; }))
+	int n = 0;
+	if (std::any_of(fetchers.begin(), fetchers.end(), [](auto& f) { return f->m_num_samples == 0; }))
 	{
-		for (index_t i = 0; i < samples.size(); ++i)
-		{
-			// this is useful when a streaming feature is used in accordance with
-			// a dense feature. we can just set num_samples for the streaming
-			// features and keep the other one as zero. then this method will
-			// lazily assign number of samples for the dense feature.
-			if (num_samples[i] == 0)
-				num_samples[i] = samples[i]->get_num_vectors();
-		}
+		std::cout << "number of samples from all the distributions are not set" << std::endl;
 	}
-
-	return std::accumulate(num_samples.begin(), num_samples.end(), 0);
+	else
+	{
+		std::for_each(fetchers.begin(), fetchers.end(), [&n](auto &f) { n+= f->m_num_samples; });
+	}
+	return n;
 }
 
-// blocksize is the total number of samples (num_vec_p + num_vec_q)
-template <class TestType>
-void DataManager<TestType>::set_blocksize(index_t blocksize)
+void DataManager::set_blocksize(index_t blocksize)
 {
-	index_t n = get_num_samples();
+	auto n = get_num_samples();
 
-	// TODO replace with REQUIRE
 	ASSERT(n > 0);
 	ASSERT(blocksize > 0 && blocksize <= n);
 	ASSERT(n % blocksize == 0);
-	// ASSERT(num_samples.size() == fetchers.size()); // not required anymore
 
-	for (index_t i = 0; i < num_samples.size(); ++i)
+	for (auto i = 0; i < fetchers.size(); ++i)
 	{
-		index_t m = num_samples[i];
+		index_t m = fetchers[i]->m_num_samples;
 		ASSERT((blocksize * m) % n == 0);
-		fetchers[i]->set_blocksize(blocksize * m / n);
-		// TODO set logger for the logs
+		fetchers[i]->fetch_blockwise().with_blocksize(blocksize * m / n);
 		std::cout << "block[" << i << "].size = " << blocksize * m / n << std::endl;
 	}
-	_blocksize = blocksize;
 }
 
-template <class TestType>
-void DataManager<TestType>::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
-	ASSERT(_blocksize > 0);
 	ASSERT(num_blocks_per_burst > 0);
 
-	index_t max_num_blocks_per_burst = get_num_samples()/_blocksize;
+	index_t blocksize = 0;
+	std::for_each(fetchers.begin(), fetchers.end(), [&blocksize](auto& f) { blocksize += f->m_block_details.m_blocksize; });
+	ASSERT(blocksize > 0);
+
+	index_t max_num_blocks_per_burst = get_num_samples() / blocksize;
 	ASSERT(num_blocks_per_burst <= max_num_blocks_per_burst);
 
-	for (auto fetcher : fetchers)
+	for (auto i = 0; i < fetchers.size(); ++i)
 	{
-		fetcher->set_num_blocks_per_burst(num_blocks_per_burst);
+		fetchers[i]->fetch_blockwise().with_num_blocks_per_burst(num_blocks_per_burst);
 	}
 }
 
-// put feats in index i
-template <class TestType>
-InitPerSamples<TestType> DataManager<TestType>::samples_at(index_t i)
+InitPerFeature DataManager::samples_at(index_t i)
 {
-	std::cout << "DataManager<TestType>::samples_at" << std::endl;
-	InitPerSamples<TestType> init(*this, i);
-	return init;
+	std::cout << "DataManager::samples_at()" << std::endl;
+	return InitPerFeature(*this, i);
 }
 
-template <class TestType>
-typename TestType::return_type DataManager<TestType>::get_samples()
+void DataManager::start()
 {
-	std::cout << "DataManager<TestType>::get_samples" << std::endl;
-	for (size_t i = 0; i < samples.size(); ++i)
+	std::for_each(fetchers.begin(), fetchers.end(), [](auto& f) { f->start(); });
+}
+
+std::shared_ptr<NextSamples> DataManager::next()
+{
+	std::cout << "DataManager::next()" << std::endl;
+	auto next_samples = std::make_shared<NextSamples>(m_num_distributions);
+	for (auto i = 0; i < fetchers.size(); ++i)
 	{
-		permutation_policy->put_at(i) = fetchers[i]->fetch(samples[i].get());
+		next_samples->at(i) = fetchers[i]->next();
 	}
-	return permutation_policy->get(simulate_h0);
+	return next_samples;
 }
 
-template class DataManager<TwoSampleTest>;
-template class DataManager<StreamingTwoSampleTest>;
-template class DataManager<IndependenceTest>;
-template class DataManager<StreamingIndependenceTest>;
+void DataManager::end()
+{
+	std::for_each(fetchers.begin(), fetchers.end(), [](auto& f) { f->end(); });
+}
+
+void DataManager::reset()
+{
+	std::for_each(fetchers.begin(), fetchers.end(), [](auto& f) { f->reset(); });
+}

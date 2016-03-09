@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <memory>
-#include <flash/statistics/internals/InitTaskPerFeature.h>
+#include <flash/statistics/internals/InitPerFeature.h>
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -43,6 +43,8 @@ public:
 	DataManager(const DataManager& other) = delete;
 	DataManager& operator=(const DataManager& other) = delete;
 	~DataManager();
+	void set_blocksize(index_t blocksize);
+	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 	// make it only available for streaming
 	// something like data_manager.streaming().num_samples_at(0) = 10
 	index_t& num_samples_at(index_t i);
@@ -50,7 +52,10 @@ public:
 	// if we provide an opeartor= in init task per feature that
 	// accepts a file, the samples_at(i) = someFileObject will also work!
 	InitPerFeature samples_at(index_t i);
-	NextSamples next();
+	void start();
+	std::shared_ptr<NextSamples> next();
+	void end();
+	void reset();
 private:
 	const index_t m_num_distributions;
 	// multiple fetchers option is there for heterogenous features

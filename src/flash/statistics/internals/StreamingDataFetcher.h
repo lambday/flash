@@ -32,8 +32,11 @@ class CStreamingFeatures;
 namespace internal
 {
 
+class DataManager;
+
 class StreamingDataFetcher : public DataFetcher
 {
+	friend class DataManager;
 public:
 	StreamingDataFetcher(CStreamingFeatures* samples);
 	virtual ~StreamingDataFetcher() override;
