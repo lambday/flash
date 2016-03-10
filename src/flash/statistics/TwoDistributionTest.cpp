@@ -17,6 +17,7 @@
  */
 
 #include <flash/statistics/TwoDistributionTest.h>
+#include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;

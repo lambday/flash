@@ -16,18 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __HYPOTHESIS_TEST_H_
-#define __HYPOTHESIS_TEST_H_
+#ifndef HYPOTHESIS_TEST_H_
+#define HYPOTHESIS_TEST_H_
 
+#include <memory>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <flash/statistics/internals/DataManager.h>
-#include <memory>
 
 namespace shogun
 {
 
 class CFeatures;
+
+namespace internal
+{
+
+class DataManager;
+
+}
 
 namespace statistics
 {
@@ -54,4 +60,4 @@ protected:
 
 }
 
-#endif // __HYPOTHESIS_TEST_H_
+#endif // HYPOTHESIS_TEST_H_

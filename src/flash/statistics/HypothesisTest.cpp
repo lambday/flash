@@ -16,13 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/Features.h>
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
-#include <flash/statistics/internals/Features.h>
-#include <memory>
+#include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;

@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,15 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <shogun/lib/config.h>
 #include <flash/statistics/IndependenceTest.h>
-#include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CIndependenceTest::CIndependenceTest() : CHypothesisTest<IndependenceTest>()
+CIndependenceTest::CIndependenceTest() : CTwoDistributionTest()
 {
 }
 

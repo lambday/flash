@@ -26,6 +26,13 @@
 namespace shogun
 {
 
+namespace internal
+{
+
+struct TwoDistributionTest;
+
+}
+
 namespace statistics
 {
 
