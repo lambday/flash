@@ -44,7 +44,7 @@ InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 	return *this;
 }
 
-InitPerFeature::operator CFeatures*() const
+InitPerFeature::operator const CFeatures*() const
 {
 	return data_manager.fetchers[index]->m_samples.get();
 }

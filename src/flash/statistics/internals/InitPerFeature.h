@@ -36,7 +36,7 @@ class InitPerFeature
 public:
 	explicit InitPerFeature(DataManager& dm, index_t i);
 	InitPerFeature& operator=(CFeatures* feats);
-	operator CFeatures*() const;
+	operator const CFeatures*() const;
 	~InitPerFeature();
 private:
 	const index_t index;
