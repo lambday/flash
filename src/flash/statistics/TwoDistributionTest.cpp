@@ -23,35 +23,45 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CTwoDistributionTest::CTwoDistributionTest() : CHypothesisTest<TwoDistributionTest>()
+template <typename T>
+CTwoDistributionTest<T>::CTwoDistributionTest() : CHypothesisTest<T>()
 {
 }
 
-CTwoDistributionTest::~CTwoDistributionTest()
+template <typename T>
+CTwoDistributionTest<T>::~CTwoDistributionTest()
 {
 }
 
-void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
+template <typename T>
+void CTwoDistributionTest<T>::set_p(CFeatures* samples_from_p)
 {
-	get_data_manager().samples_at(0) = samples_from_p;
+	CHypothesisTest<T>::get_data_manager().samples_at(0) = samples_from_p;
 }
 
-void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
+template <typename T>
+void CTwoDistributionTest<T>::set_q(CFeatures* samples_from_q)
 {
-	get_data_manager().samples_at(1) = samples_from_q;
+	CHypothesisTest<T>::get_data_manager().samples_at(1) = samples_from_q;
 }
 
-void CTwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
+template <typename T>
+void CTwoDistributionTest<T>::set_num_samples_p(index_t num_samples_from_p)
 {
-	get_data_manager().num_samples_at(0) = num_samples_from_p;
+	CHypothesisTest<T>::get_data_manager().num_samples_at(0) = num_samples_from_p;
 }
 
-void CTwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
+template <typename T>
+void CTwoDistributionTest<T>::set_num_samples_q(index_t num_samples_from_q)
 {
-	get_data_manager().num_samples_at(1) = num_samples_from_q;
+	CHypothesisTest<T>::get_data_manager().num_samples_at(1) = num_samples_from_q;
 }
 
-const char* CTwoDistributionTest::get_name() const
+template <typename T>
+const char* CTwoDistributionTest<T>::get_name() const
 {
 	return "TwoDistributionTest";
 }
+
+template class CTwoDistributionTest<TwoSampleTest>;
+template class CTwoDistributionTest<IndependenceTest>;

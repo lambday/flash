@@ -36,7 +36,8 @@ struct TwoDistributionTest;
 namespace statistics
 {
 
-class CTwoDistributionTest : public CHypothesisTest<internal::TwoDistributionTest>
+template <typename TestType>
+class CTwoDistributionTest : public CHypothesisTest<TestType>
 {
 public:
 	CTwoDistributionTest();

@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <flash/statistics/internals/NextSamples.h>
+#include <vector>
+#include <memory>
+#include <algorithm>
 #include <shogun/base/init.h>
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/features/Features.h>
 #include <shogun/features/DenseFeatures.h>
-#include <vector>
-#include <memory>
-#include <algorithm>
+#include <flash/statistics/internals/NextSamples.h>
 
 using namespace shogun;
 using namespace internal;

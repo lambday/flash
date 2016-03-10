@@ -20,6 +20,7 @@
 #define TWO_SAMPLE_TEST_H_
 
 #include <flash/statistics/TwoDistributionTest.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
@@ -27,7 +28,7 @@ namespace shogun
 namespace statistics
 {
 
-class CTwoSampleTest : public CTwoDistributionTest
+class CTwoSampleTest : public CTwoDistributionTest<internal::TwoSampleTest>
 {
 public:
 	CTwoSampleTest();
