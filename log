@@ -1,98 +1,181 @@
-test1: two-sample test (without permutation)
+rm flash/statistics/*.o flash/statistics/internals/*.o libflash.so
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/HypothesisTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/HypothesisTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoDistributionTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/TwoDistributionTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoSampleTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/TwoSampleTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/IndependenceTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/IndependenceTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcherFactory.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataFetcherFactory.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcher.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataFetcher.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/StreamingDataFetcher.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/StreamingDataFetcher.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/NextSamples.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/NextSamples.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/InitPerFeature.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/InitPerFeature.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/BlockwiseDetails.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/BlockwiseDetails.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataManager.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataManager.o
+g++ -O3 -std=c++14 -fPIC -shared flash/statistics/HypothesisTest.o flash/statistics/TwoDistributionTest.o flash/statistics/TwoSampleTest.o flash/statistics/IndependenceTest.o flash/statistics/internals/DataFetcherFactory.o flash/statistics/internals/DataFetcher.o flash/statistics/internals/StreamingDataFetcher.o flash/statistics/internals/NextSamples.o flash/statistics/internals/InitPerFeature.o flash/statistics/internals/BlockwiseDetails.o flash/statistics/internals/DataManager.o -I. -I/usr/include/eigen3 -o libflash.so -lshogun
+g++ tests/NextSamplesTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/NextSamplesTest
+g++ tests/DataFetcherTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataFetcherTest
+g++ tests/StreamingDataFetcherTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/StreamingDataFetcherTest
+g++ tests/DataFetcherFactoryTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataFetcherFactoryTest
+g++ tests/DataManagerTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataManagerTest
+==29637== Memcheck, a memory error detector
+==29637== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==29637== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==29637== Command: tests/NextSamplesTest --leak-check=full --track-origins=yes
+==29637== 
+==29637== 
+==29637== HEAP SUMMARY:
+==29637==     in use at exit: 72,712 bytes in 2 blocks
+==29637==   total heap usage: 496 allocs, 494 frees, 167,079 bytes allocated
+==29637== 
+==29637== LEAK SUMMARY:
+==29637==    definitely lost: 0 bytes in 0 blocks
+==29637==    indirectly lost: 0 bytes in 0 blocks
+==29637==      possibly lost: 0 bytes in 0 blocks
+==29637==    still reachable: 72,712 bytes in 2 blocks
+==29637==         suppressed: 0 bytes in 0 blocks
+==29637== Rerun with --leak-check=full to see details of leaked memory
+==29637== 
+==29637== For counts of detected and suppressed errors, rerun with: -v
+==29637== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==29640== Memcheck, a memory error detector
+==29640== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==29640== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==29640== Command: tests/DataFetcherTest --leak-check=full --track-origins=yes
+==29640== 
 matrix=[
-[	0,	2,	4,	6],
-[	1,	3,	5,	7]
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
-]
-DataManager::put
-DataManager::put
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-Permutation::push_back
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	0,	2,	4,	6,	8,	10,	12,	14],
-[	1,	3,	5,	7,	9,	11,	13,	15]
-]
-test2: two-sample test (with permutation)
-matrix=[
-[	0,	2,	4,	6],
-[	1,	3,	5,	7]
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
-]
-DataManager::put
-DataManager::put
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-Permutation::push_back
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	12,	6,	14,	2,	10,	4,	0,	8],
-[	13,	7,	15,	3,	11,	5,	1,	9]
-]
-test3: independence test (without permutation)
-matrix=[
-[	0,	2,	4,	6],
-[	1,	3,	5,	7]
+[	0,	3,	6,	9],
+[	1,	4,	7,	10],
+[	2,	5,	8,	11]
 ]
 matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
+[	12,	15,	18,	21],
+[	13,	16,	19,	22],
+[	14,	17,	20,	23]
 ]
-DataManager::put
-DataManager::put
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-Permutation::push_back
-Permutation::push_back
-IndependenceTestPermutation::get
+==29640== 
+==29640== HEAP SUMMARY:
+==29640==     in use at exit: 72,712 bytes in 2 blocks
+==29640==   total heap usage: 378 allocs, 376 frees, 160,864 bytes allocated
+==29640== 
+==29640== LEAK SUMMARY:
+==29640==    definitely lost: 0 bytes in 0 blocks
+==29640==    indirectly lost: 0 bytes in 0 blocks
+==29640==      possibly lost: 0 bytes in 0 blocks
+==29640==    still reachable: 72,712 bytes in 2 blocks
+==29640==         suppressed: 0 bytes in 0 blocks
+==29640== Rerun with --leak-check=full to see details of leaked memory
+==29640== 
+==29640== For counts of detected and suppressed errors, rerun with: -v
+==29640== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==29641== Memcheck, a memory error detector
+==29641== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==29641== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==29641== Command: tests/StreamingDataFetcherTest --leak-check=full --track-origins=yes
+==29641== 
 matrix=[
-[	0,	2,	4,	6],
-[	1,	3,	5,	7]
-]
-matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
-]
-test4: independence test (with permutation)
-matrix=[
-[	0,	2,	4,	6],
-[	1,	3,	5,	7]
-]
-matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
-]
-DataManager::put
-DataManager::put
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-Permutation::push_back
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	4,	0,	6,	2],
-[	5,	1,	7,	3]
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 matrix=[
-[	8,	10,	12,	14],
-[	9,	11,	13,	15]
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
 ]
-test5: streaming two-sample test (without permutation)
+matrix=[
+[	0,	3,	6,	9],
+[	1,	4,	7,	10],
+[	2,	5,	8,	11]
+]
+matrix=[
+[	12,	15,	18,	21],
+[	13,	16,	19,	22],
+[	14,	17,	20,	23]
+]
+==29641== 
+==29641== HEAP SUMMARY:
+==29641==     in use at exit: 206,246 bytes in 278 blocks
+==29641==   total heap usage: 960 allocs, 682 frees, 308,984 bytes allocated
+==29641== 
+==29641== LEAK SUMMARY:
+==29641==    definitely lost: 152 bytes in 1 blocks
+==29641==    indirectly lost: 119,036 bytes in 13 blocks
+==29641==      possibly lost: 14,230 bytes in 256 blocks
+==29641==    still reachable: 72,828 bytes in 8 blocks
+==29641==         suppressed: 0 bytes in 0 blocks
+==29641== Rerun with --leak-check=full to see details of leaked memory
+==29641== 
+==29641== For counts of detected and suppressed errors, rerun with: -v
+==29641== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==29644== Memcheck, a memory error detector
+==29644== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==29644== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==29644== Command: tests/DataFetcherFactoryTest --leak-check=full --track-origins=yes
+==29644== 
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+==29644== 
+==29644== HEAP SUMMARY:
+==29644==     in use at exit: 205,102 bytes in 263 blocks
+==29644==   total heap usage: 497 allocs, 234 frees, 286,015 bytes allocated
+==29644== 
+==29644== LEAK SUMMARY:
+==29644==    definitely lost: 392 bytes in 1 blocks
+==29644==    indirectly lost: 131,882 bytes in 254 blocks
+==29644==      possibly lost: 0 bytes in 0 blocks
+==29644==    still reachable: 72,828 bytes in 8 blocks
+==29644==         suppressed: 0 bytes in 0 blocks
+==29644== Rerun with --leak-check=full to see details of leaked memory
+==29644== 
+==29644== For counts of detected and suppressed errors, rerun with: -v
+==29644== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==29645== Memcheck, a memory error detector
+==29645== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==29645== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==29645== Command: tests/DataManagerTest --leak-check=full --track-origins=yes
+==29645== 
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::next()
+block[0].size = 2
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9],
+[	1,	4,	7,	10],
+[	2,	5,	8,	11]
+]
+DataManager::next()
+matrix=[
+[	12,	15,	18,	21],
+[	13,	16,	19,	22],
+[	14,	17,	20,	23]
+]
+DataManager::next()
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -103,63 +186,15 @@ matrix=[
 [	25,	28,	31,	34,	37,	40,	43,	46],
 [	26,	29,	32,	35,	38,	41,	44,	47]
 ]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 2
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	0,	3,	24,	27],
-[	1,	4,	25,	28],
-[	2,	5,	26,	29]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	6,	9,	30,	33],
-[	7,	10,	31,	34],
-[	8,	11,	32,	35]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	12,	15,	36,	39],
-[	13,	16,	37,	40],
-[	14,	17,	38,	41]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	18,	21,	42,	45],
-[	19,	22,	43,	46],
-[	20,	23,	44,	47]
-]
-test6: streaming two-sample test (with permutation)
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 1
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -170,227 +205,10 @@ matrix=[
 [	25,	28,	31,	34,	37,	40,	43,	46],
 [	26,	29,	32,	35,	38,	41,	44,	47]
 ]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 2
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	3,	0,	24,	27],
-[	4,	1,	25,	28],
-[	5,	2,	26,	29]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	30,	9,	6,	33],
-[	31,	10,	7,	34],
-[	32,	11,	8,	35]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	15,	36,	12,	39],
-[	16,	37,	13,	40],
-[	17,	38,	14,	41]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	45,	21,	42,	18],
-[	46,	22,	43,	19],
-[	47,	23,	44,	20]
-]
-test7: streaming two-sample test (without permutation, different num_samples)
-matrix=[
-[	0,	3,	6,	9,	12,	15,	18,	21],
-[	1,	4,	7,	10,	13,	16,	19,	22],
-[	2,	5,	8,	11,	14,	17,	20,	23]
-]
-matrix=[
-[	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
-[	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
-[	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
-]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 3
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	0,	3,	24,	27,	30],
-[	1,	4,	25,	28,	31],
-[	2,	5,	26,	29,	32]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	6,	9,	33,	36,	39],
-[	7,	10,	34,	37,	40],
-[	8,	11,	35,	38,	41]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	12,	15,	42,	45,	48],
-[	13,	16,	43,	46,	49],
-[	14,	17,	44,	47,	50]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-matrix=[
-[	18,	21,	51,	54,	57],
-[	19,	22,	52,	55,	58],
-[	20,	23,	53,	56,	59]
-]
-test7: streaming two-sample test (with permutation, different num_samples)
-matrix=[
-[	0,	3,	6,	9,	12,	15,	18,	21],
-[	1,	4,	7,	10,	13,	16,	19,	22],
-[	2,	5,	8,	11,	14,	17,	20,	23]
-]
-matrix=[
-[	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
-[	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
-[	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
-]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 3
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	0,	3,	30,	27,	24],
-[	1,	4,	31,	28,	25],
-[	2,	5,	32,	29,	26]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	6,	9,	36,	33,	39],
-[	7,	10,	37,	34,	40],
-[	8,	11,	38,	35,	41]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	15,	12,	42,	45,	48],
-[	16,	13,	43,	46,	49],
-[	17,	14,	44,	47,	50]
-]
-DataManager::get_samples
-Permutation::constructor
-TwoSampleTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-TwoSampleTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	18,	21,	57,	51,	54],
-[	19,	22,	58,	52,	55],
-[	20,	23,	59,	53,	56]
-]
-test9: streaming independence test (without permutation)
-matrix=[
-[	0,	3,	6,	9,	12,	15,	18,	21],
-[	1,	4,	7,	10,	13,	16,	19,	22],
-[	2,	5,	8,	11,	14,	17,	20,	23]
-]
-matrix=[
-[	24,	27,	30,	33,	36,	39,	42,	45],
-[	25,	28,	31,	34,	37,	40,	43,	46],
-[	26,	29,	32,	35,	38,	41,	44,	47]
-]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 2
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
+block[0].size = 1
+block[1].size = 1
+DataManager::next()
 matrix=[
 [	0,	3],
 [	1,	4],
@@ -401,14 +219,7 @@ matrix=[
 [	25,	28],
 [	26,	29]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	6,	9],
 [	7,	10],
@@ -419,14 +230,7 @@ matrix=[
 [	31,	34],
 [	32,	35]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	12,	15],
 [	13,	16],
@@ -437,14 +241,7 @@ matrix=[
 [	37,	40],
 [	38,	41]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	18,	21],
 [	19,	22],
@@ -455,98 +252,7 @@ matrix=[
 [	43,	46],
 [	44,	47]
 ]
-test10: streaming independence test (with permutation)
-matrix=[
-[	0,	3,	6,	9,	12,	15,	18,	21],
-[	1,	4,	7,	10,	13,	16,	19,	22],
-[	2,	5,	8,	11,	14,	17,	20,	23]
-]
-matrix=[
-[	24,	27,	30,	33,	36,	39,	42,	45],
-[	25,	28,	31,	34,	37,	40,	43,	46],
-[	26,	29,	32,	35,	38,	41,	44,	47]
-]
-DataManager::put
-DataManager::put
-block[0].size = 2
-block[1].size = 2
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	3,	0],
-[	4,	1],
-[	5,	2]
-]
-matrix=[
-[	24,	27],
-[	25,	28],
-[	26,	29]
-]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	9,	6],
-[	10,	7],
-[	11,	8]
-]
-matrix=[
-[	30,	33],
-[	31,	34],
-[	32,	35]
-]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	15,	12],
-[	16,	13],
-[	17,	14]
-]
-matrix=[
-[	36,	39],
-[	37,	40],
-[	38,	41]
-]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 2 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
-matrix=[
-[	18,	21],
-[	19,	22],
-[	20,	23]
-]
-matrix=[
-[	42,	45],
-[	43,	46],
-[	44,	47]
-]
-test11: streaming independence test (without permutation, different num_samples)
+DataManager::next()
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -557,18 +263,29 @@ matrix=[
 [	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
-DataManager::put
-DataManager::put
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 1
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+matrix=[
+[	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
+[	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
+[	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
+]
+DataManager::next()
 block[0].size = 2
 block[1].size = 3
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	0,	3],
 [	1,	4],
@@ -579,14 +296,7 @@ matrix=[
 [	25,	28,	31],
 [	26,	29,	32]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	6,	9],
 [	7,	10],
@@ -597,14 +307,7 @@ matrix=[
 [	34,	37,	40],
 [	35,	38,	41]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	12,	15],
 [	13,	16],
@@ -615,14 +318,7 @@ matrix=[
 [	43,	46,	49],
 [	44,	47,	50]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
+DataManager::next()
 matrix=[
 [	18,	21],
 [	19,	22],
@@ -633,7 +329,67 @@ matrix=[
 [	52,	55,	58],
 [	53,	56,	59]
 ]
-test12: streaming independence test (with permutation, different num_samples)
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::next()
+block[0].size = 2
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9],
+[	1,	4,	7,	10],
+[	2,	5,	8,	11]
+]
+DataManager::next()
+matrix=[
+[	12,	15,	18,	21],
+[	13,	16,	19,	22],
+[	14,	17,	20,	23]
+]
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::next()
+block[0].size = 2
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9],
+[	1,	4,	7,	10],
+[	2,	5,	8,	11]
+]
+DataManager::next()
+matrix=[
+[	12,	15,	18,	21],
+[	13,	16,	19,	22],
+[	14,	17,	20,	23]
+]
+DataManager::next()
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -644,38 +400,40 @@ matrix=[
 [	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
-DataManager::put
-DataManager::put
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 0
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::samples_at()
+InitPerFeature::Constructor() with i = 1
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::next()
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+matrix=[
+[	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
+[	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
+[	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
+]
+DataManager::next()
 block[0].size = 2
 block[1].size = 3
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
+DataManager::next()
 matrix=[
-[	3,	0],
-[	4,	1],
-[	5,	2]
+[	0,	3],
+[	1,	4],
+[	2,	5]
 ]
 matrix=[
 [	24,	27,	30],
 [	25,	28,	31],
 [	26,	29,	32]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
+DataManager::next()
 matrix=[
 [	6,	9],
 [	7,	10],
@@ -686,41 +444,41 @@ matrix=[
 [	34,	37,	40],
 [	35,	38,	41]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
+DataManager::next()
 matrix=[
-[	15,	12],
-[	16,	13],
-[	17,	14]
+[	12,	15],
+[	13,	16],
+[	14,	17]
 ]
 matrix=[
 [	42,	45,	48],
 [	43,	46,	49],
 [	44,	47,	50]
 ]
-DataManager::get_samples
-Permutation::constructor
-IndependenceTestPermutation::constructor
-streaming 2 samples
-Permutation::push_back
-streaming 3 samples
-Permutation::push_back
-IndependenceTestPermutation::get
-permuting the feature vectors
+DataManager::next()
 matrix=[
-[	21,	18],
-[	22,	19],
-[	23,	20]
+[	18,	21],
+[	19,	22],
+[	20,	23]
 ]
 matrix=[
 [	51,	54,	57],
 [	52,	55,	58],
 [	53,	56,	59]
 ]
+DataManager::next()
+==29645== 
+==29645== HEAP SUMMARY:
+==29645==     in use at exit: 606,596 bytes in 1,088 blocks
+==29645==   total heap usage: 4,967 allocs, 3,879 frees, 852,188 bytes allocated
+==29645== 
+==29645== LEAK SUMMARY:
+==29645==    definitely lost: 608 bytes in 4 blocks
+==29645==    indirectly lost: 476,144 bytes in 52 blocks
+==29645==      possibly lost: 57,016 bytes in 1,024 blocks
+==29645==    still reachable: 72,828 bytes in 8 blocks
+==29645==         suppressed: 0 bytes in 0 blocks
+==29645== Rerun with --leak-check=full to see details of leaked memory
+==29645== 
+==29645== For counts of detected and suppressed errors, rerun with: -v
+==29645== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

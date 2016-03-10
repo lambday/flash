@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,37 +16,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __STREAMING_INDEPENDENCE_TEST_H_
-#define __STREAMING_INDEPENDENCE_TEST_H_
+#include <memory>
+#include <shogun/lib/common.h>
+#include <flash/statistics/internals/BlockwiseDetails.h>
 
-#include <shogun/lib/config.h>
-#include <flash/statistics/HypothesisTest.h>
-#include <flash/statistics/internals/TestTypes.h>
+#ifndef DATA_FETCHER_H__
+#define DATA_FETCHER_H__
 
 namespace shogun
 {
 
-namespace statistics
+class CFeatures;
+
+namespace internal
 {
 
-class CStreamingIndependenceTest : public CHypothesisTest<internal::StreamingIndependenceTest>
+class DataManager;
+
+class DataFetcher
 {
+	friend class DataManager;
 public:
-	using test_type = CHypothesisTest<internal::StreamingIndependenceTest>::test_type;
-
-	CStreamingIndependenceTest();
-	~CStreamingIndependenceTest();
-
-	void set_num_samples_p(index_t num_samples_p);
-	void set_num_samples_q(index_t num_samples_q);
-
-	void set_blocksize(index_t blocksize);
-	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
-
+	DataFetcher(CFeatures* samples);
+	virtual ~DataFetcher();
+	virtual void start();
+	virtual std::shared_ptr<CFeatures> next();
+	virtual void reset();
+	virtual void end();
+	const index_t get_num_samples() const;
+	BlockwiseDetails& fetch_blockwise();
 	virtual const char* get_name() const;
+protected:
+	DataFetcher();
+	BlockwiseDetails m_block_details;
+	index_t m_num_samples;
+private:
+	std::shared_ptr<CFeatures> m_samples;
 };
 
 }
 
 }
-#endif // __STREAMING_INDEPENDENCE_TEST_H_
+#endif // DATA_FETCHER_H__

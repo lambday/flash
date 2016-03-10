@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,44 +16,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PERMUTATORS_H__
-#define PERMUTATORS_H__
+#include <shogun/lib/common.h>
 
-#include <memory>
-#include <shogun/lib/config.h>
+#ifndef BLOCK_WISE_DETAILS_H__
+#define BLOCK_WISE_DETAILS_H__
 
 namespace shogun
 {
 
-class CFeatures;
-template <class T> class CDenseFeatures;
-
 namespace internal
 {
 
-struct PermutatorBase
+class BlockwiseDetails
 {
-	virtual void permute(shogun::CFeatures* feats) = 0;
-};
-
-template <class Features>
-class Permutator : public PermutatorBase
-{
-};
-
-template <> template <typename T>
-class Permutator<shogun::CDenseFeatures<T> > : public PermutatorBase
-{
+	friend class DataFetcher;
+	friend class StreamingDataFetcher;
+	friend class DataManager;
 public:
-	using feat_type = shogun::CDenseFeatures<T>;
-	static std::shared_ptr<PermutatorBase> get_instance();
-	virtual void permute(CFeatures* feats) override;
+	BlockwiseDetails();
+	BlockwiseDetails& with_blocksize(index_t blocksize);
+	BlockwiseDetails& with_num_blocks_per_burst(index_t num_blocks_per_burst);
 private:
-	Permutator();
+	index_t m_blocksize;
+	index_t m_num_blocks_per_burst;
+	index_t m_max_num_samples_per_burst;
+	// the following will be set by data fetchers
+	index_t m_next_block_index;
+	index_t m_total_num_blocks;
 };
 
 }
 
 }
-
-#endif // PERMUTATORS_H__
+#endif // BLOCK_WISE_DETAILS_H__

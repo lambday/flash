@@ -16,52 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_TYPES_H__
-#define TEST_TYPES_H__
+#include <memory>
+#include <shogun/lib/common.h>
+#include <flash/statistics/internals/DataFetcher.h>
+#include <flash/statistics/internals/BlockwiseDetails.h>
 
-#include <vector>
-#include <shogun/lib/config.h>
+#ifndef STREMING_DATA_FETCHER_H__
+#define STREMING_DATA_FETCHER_H__
 
 namespace shogun
 {
 
-class CFeatures;
+class CStreamingFeatures;
 
 namespace internal
 {
 
-struct TwoSampleTestPermutationPolicy;
-struct IndependenceTestPermutationPolicy;
+class DataManager;
 
-struct OneDistributionTest
+class StreamingDataFetcher : public DataFetcher
 {
-	enum { num_feats = 1 };
-};
-
-struct TwoDistributionTest
-{
-	enum { num_feats = 2 };
-};
-
-struct ThreeDistributionTest
-{
-	enum { num_feats = 3 };
-};
-
-struct TwoSampleTest : TwoDistributionTest
-{
-	using permutation_policy = TwoSampleTestPermutationPolicy;
-	using return_type = std::shared_ptr<CFeatures>;
-};
-
-struct IndependenceTest : TwoDistributionTest
-{
-	using permutation_policy = IndependenceTestPermutationPolicy;
-	using return_type = std::vector<std::shared_ptr<CFeatures>>;
+	friend class DataManager;
+public:
+	StreamingDataFetcher(CStreamingFeatures* samples);
+	virtual ~StreamingDataFetcher() override;
+	virtual void start() override;
+	virtual std::shared_ptr<CFeatures> next() override;
+	virtual void reset() override;
+	virtual void end() override;
+	void set_num_samples(index_t num_samples);
+	virtual const char* get_name() const override;
+private:
+	std::shared_ptr<CStreamingFeatures> m_samples;
+	bool parser_running;
 };
 
 }
 
 }
-
-#endif // TEST_TYPES_H__
+#endif // STREMING_DATA_FETCHER_H__

@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,36 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
-#include <memory>
-#include <functional>
-#include <shogun/lib/config.h>
-#include <shogun/features/Features.h>
+#ifndef INIT_PER_FEATURE_H__
+#define INIT_PER_FEATURE_H__
 
-#ifndef PERMUTATOR_FACTORY_H__
-#define PERMUTATOR_FACTORY_H__
+#include <shogun/lib/common.h>
 
 namespace shogun
 {
 
+class CFeatures;
+
 namespace internal
 {
 
-class PermutatorBase;
+class DataManager;
 
-struct PermutatorFactory
+struct InitPerFeature
 {
-	using return_type = std::shared_ptr<PermutatorBase>;
-	using factory = std::map<std::pair<EFeatureClass, EFeatureType>, std::function<return_type()>>;
-
-	static return_type get_instance(CFeatures* feats);
-
-private:
-	static factory initialize();
-	static const factory& initializers;
+	explicit InitPerFeature(DataManager& dm, index_t i);
+	InitPerFeature& operator=(CFeatures* feats);
+	~InitPerFeature();
+	const index_t index;
+	DataManager& data_manager;
 };
-
 }
 
 }
-#endif // PERMUTATOR_FACTORY_H__
+
+#endif // INIT_PER_FEATURE_H__
+

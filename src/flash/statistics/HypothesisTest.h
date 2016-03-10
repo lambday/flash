@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __HYPOTHESIS_TEST_H_
-#define __HYPOTHESIS_TEST_H_
+#ifndef HYPOTHESIS_TEST_H_
+#define HYPOTHESIS_TEST_H_
 
+#include <memory>
 #include <shogun/lib/config.h>
 #include <shogun/base/SGObject.h>
-#include <flash/statistics/internals/DataManager.h>
-#include <memory>
 
 namespace shogun
 {
 
 class CFeatures;
+
+namespace internal
+{
+
+class DataManager;
+
+}
 
 namespace statistics
 {
@@ -37,28 +43,21 @@ class CHypothesisTest : public CSGObject
 {
 public:
 	using test_type = TestType;
+	enum { num_distributions = test_type::num_feats };
 
 	CHypothesisTest();
-	~CHypothesisTest();
-
-	void set_p(CFeatures* p);
-	void set_q(CFeatures* q);
-
-	void set_simulate_h0(bool simulate_h0);
-	bool get_simulate_h0();
-
-	typename test_type::return_type get_samples();
+	virtual ~CHypothesisTest();
 
 	virtual const char* get_name() const;
 private:
 	struct Self;
 	std::unique_ptr<Self> impl;
 protected:
-	internal::DataManager<test_type>& get_data_manager();
+	internal::DataManager& get_data_manager();
 };
 
 }
 
 }
 
-#endif // __HYPOTHESIS_TEST_H_
+#endif // HYPOTHESIS_TEST_H_

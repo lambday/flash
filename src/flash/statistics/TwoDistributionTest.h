@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,37 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __STREAMING_TWO_SAMPLE_TEST_H_
-#define __STREAMING_TWO_SAMPLE_TEST_H_
+#ifndef TWO_DISTRIBUTION_TEST_H_
+#define TWO_DISTRIBUTION_TEST_H_
 
-#include <shogun/lib/config.h>
+#include <shogun/lib/common.h>
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
 
+namespace internal
+{
+
+struct TwoDistributionTest;
+
+}
+
 namespace statistics
 {
 
-class CStreamingTwoSampleTest : public CHypothesisTest<internal::StreamingTwoSampleTest>
+template <typename TestType>
+class CTwoDistributionTest : public CHypothesisTest<TestType>
 {
 public:
-	using test_type = CHypothesisTest<internal::StreamingTwoSampleTest>::test_type;
-
-	CStreamingTwoSampleTest();
-	~CStreamingTwoSampleTest();
-
-	void set_num_samples_p(index_t num_samples_p);
-	void set_num_samples_q(index_t num_samples_q);
-
-	void set_blocksize(index_t blocksize);
-	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
-
+	CTwoDistributionTest();
+	virtual ~CTwoDistributionTest();
+	void set_p(CFeatures* samples_from_p);
+	void set_q(CFeatures* samples_from_q);
+	void set_num_samples_p(index_t num_samples_from_p);
+	void set_num_samples_q(index_t num_samples_from_q);
 	virtual const char* get_name() const;
 };
 
 }
 
 }
-#endif // __STREAMING_TWO_SAMPLE_TEST_H_
+#endif // TWO_DISTRIBUTION_TEST_H_

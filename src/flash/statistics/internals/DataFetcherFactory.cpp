@@ -16,33 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INIT_PER_SAMPLES_H__
-#define INIT_PER_SAMPLES_H__
+#include <shogun/features/Features.h>
+#include <shogun/features/streaming/StreamingFeatures.h>
+#include <flash/statistics/internals/DataFetcher.h>
+#include <flash/statistics/internals/StreamingDataFetcher.h>
+#include <flash/statistics/internals/DataFetcherFactory.h>
 
-#include <shogun/lib/common.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+DataFetcher* DataFetcherFactory::get_instance(CFeatures* feats)
 {
-
-class CFeatures;
-
-namespace internal
-{
-
-template <class T> class DataManager;
-
-template <typename TestType>
-struct InitPerSamples
-{
-	explicit InitPerSamples(DataManager<TestType>& dm, index_t );
-	InitPerSamples& operator=(CFeatures* feats);
-	~InitPerSamples();
-	index_t index;
-	DataManager<TestType>& data_manager;
-};
+	EFeatureClass fclass = feats->get_feature_class();
+	if (fclass == C_STREAMING_DENSE || fclass == C_STREAMING_SPARSE || fclass == C_STREAMING_STRING)
+	{
+		return new StreamingDataFetcher(static_cast<CStreamingFeatures*>(feats));
+	}
+	return new DataFetcher(feats);
 }
-
-}
-
-#endif // INIT_PER_SAMPLES_H__
 

@@ -16,52 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_TYPES_H__
-#define TEST_TYPES_H__
+#include <flash/statistics/internals/BlockwiseDetails.h>
 
-#include <vector>
-#include <shogun/lib/config.h>
+using namespace shogun;
+using namespace internal;
 
-namespace shogun
+BlockwiseDetails::BlockwiseDetails()
+: m_blocksize(0), m_num_blocks_per_burst(1), m_max_num_samples_per_burst(0),
+  m_next_block_index(0), m_total_num_blocks(0)
 {
-
-class CFeatures;
-
-namespace internal
-{
-
-struct TwoSampleTestPermutationPolicy;
-struct IndependenceTestPermutationPolicy;
-
-struct OneDistributionTest
-{
-	enum { num_feats = 1 };
-};
-
-struct TwoDistributionTest
-{
-	enum { num_feats = 2 };
-};
-
-struct ThreeDistributionTest
-{
-	enum { num_feats = 3 };
-};
-
-struct TwoSampleTest : TwoDistributionTest
-{
-	using permutation_policy = TwoSampleTestPermutationPolicy;
-	using return_type = std::shared_ptr<CFeatures>;
-};
-
-struct IndependenceTest : TwoDistributionTest
-{
-	using permutation_policy = IndependenceTestPermutationPolicy;
-	using return_type = std::vector<std::shared_ptr<CFeatures>>;
-};
-
 }
 
+BlockwiseDetails& BlockwiseDetails::with_blocksize(index_t blocksize)
+{
+	m_blocksize = blocksize;
+	m_max_num_samples_per_burst = m_blocksize * m_num_blocks_per_burst;
+	return *this;
 }
 
-#endif // TEST_TYPES_H__
+BlockwiseDetails& BlockwiseDetails::with_num_blocks_per_burst(index_t num_blocks_per_burst)
+{
+	m_num_blocks_per_burst = num_blocks_per_burst;
+	m_max_num_samples_per_burst = m_blocksize * m_num_blocks_per_burst;
+	return *this;
+}

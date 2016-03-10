@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TWO_SAMPLE_TEST_H_
-#define __TWO_SAMPLE_TEST_H_
+#ifndef TWO_SAMPLE_TEST_H_
+#define TWO_SAMPLE_TEST_H_
 
-#include <shogun/lib/config.h>
-#include <flash/statistics/HypothesisTest.h>
+#include <flash/statistics/TwoDistributionTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
@@ -29,17 +28,15 @@ namespace shogun
 namespace statistics
 {
 
-class CTwoSampleTest : public CHypothesisTest<internal::TwoSampleTest>
+class CTwoSampleTest : public CTwoDistributionTest<internal::TwoSampleTest>
 {
 public:
-	using test_type = CHypothesisTest<internal::TwoSampleTest>::test_type;
-
 	CTwoSampleTest();
-	~CTwoSampleTest();
+	virtual ~CTwoSampleTest();
 	virtual const char* get_name() const;
 };
 
 }
 
 }
-#endif // __TWO_SAMPLE_TEST_H_
+#endif // TWO_SAMPLE_TEST_H_

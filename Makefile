@@ -1,7 +1,19 @@
 OPTS	 = -O3 -std=c++14
 INCLUDES = -Isrc -I/usr/include/eigen3
 LIBS	 = -Lsrc -lflash -lshogun
-a.out: test_main.cpp src/libflash.so
-	g++ test_main.cpp $(OPTS) $(INCLUDES) $(LIBS)
+TESTS    = tests
+all: $(TESTS)/NextSamplesTest $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
+		$(TESTS)/DataFetcherFactoryTest $(TESTS)/DataManagerTest
+$(TESTS)/NextSamplesTest: $(TESTS)/NextSamplesTest.cpp src/libflash.so
+	g++ $(TESTS)/NextSamplesTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/NextSamplesTest
+$(TESTS)/DataFetcherTest: $(TESTS)/DataFetcherTest.cpp src/libflash.so
+	g++ $(TESTS)/DataFetcherTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/DataFetcherTest
+$(TESTS)/StreamingDataFetcherTest: $(TESTS)/StreamingDataFetcherTest.cpp src/libflash.so
+	g++ $(TESTS)/StreamingDataFetcherTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/StreamingDataFetcherTest
+$(TESTS)/DataFetcherFactoryTest: $(TESTS)/DataFetcherFactoryTest.cpp src/libflash.so
+	g++ $(TESTS)/DataFetcherFactoryTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/DataFetcherFactoryTest
+$(TESTS)/DataManagerTest: $(TESTS)/DataManagerTest.cpp src/libflash.so
+	g++ $(TESTS)/DataManagerTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/DataManagerTest
 clean:
-	rm a.out
+	rm $(TESTS)/NextSamplesTest $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
+	   $(TESTS)/DataFetcherFactoryTest $(TESTS)/DataManagerTest
