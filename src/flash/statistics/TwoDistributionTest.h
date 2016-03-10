@@ -16,49 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/Features.h>
+#ifndef TWO_DISTRIBUTION_TEST_H_
+#define TWO_DISTRIBUTION_TEST_H_
+
+#include <shogun/lib/common.h>
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
-#include <flash/statistics/internals/Features.h>
-#include <memory>
 
-using namespace shogun;
-using namespace internal;
-using namespace statistics;
-
-template <class T>
-struct CHypothesisTest<T>::Self
+namespace shogun
 {
-	Self() : data_manager(num_distributions)
-	{
-	}
-	DataManager data_manager;
+
+namespace statistics
+{
+
+class CTwoDistributionTest : public CHypothesisTest<internal::TwoDistributionTest>
+{
+public:
+	CTwoDistributionTest();
+	virtual ~CTwoDistributionTest();
+	void set_p(CFeatures* samples_from_p);
+	void set_q(CFeatures* samples_from_q);
+	void set_num_samples_p(index_t num_samples_from_p);
+	void set_num_samples_q(index_t num_samples_from_q);
+	virtual const char* get_name() const;
 };
 
-template <class T>
-CHypothesisTest<T>::CHypothesisTest() : CSGObject()
-{
-	impl = std::make_unique<Self>();
 }
 
-template <class T>
-DataManager& CHypothesisTest<T>::get_data_manager()
-{
-	return impl->data_manager;
 }
-
-template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
-{
-}
-
-template <class T>
-const char* CHypothesisTest<T>::get_name() const
-{
-	return "HypothesisTest";
-}
-
-template class CHypothesisTest<TwoSampleTest>;
-template class CHypothesisTest<IndependenceTest>;
+#endif // TWO_DISTRIBUTION_TEST_H_

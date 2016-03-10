@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,24 +37,17 @@ class CHypothesisTest : public CSGObject
 {
 public:
 	using test_type = TestType;
+	enum { num_distributions = test_type::num_feats };
 
 	CHypothesisTest();
-	~CHypothesisTest();
-
-	void set_p(CFeatures* p);
-	void set_q(CFeatures* q);
-
-	void set_simulate_h0(bool simulate_h0);
-	bool get_simulate_h0();
-
-	typename test_type::return_type get_samples();
+	virtual ~CHypothesisTest();
 
 	virtual const char* get_name() const;
 private:
 	struct Self;
 	std::unique_ptr<Self> impl;
 protected:
-	internal::DataManager<test_type>& get_data_manager();
+	internal::DataManager& get_data_manager();
 };
 
 }

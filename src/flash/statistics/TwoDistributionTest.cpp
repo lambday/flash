@@ -16,49 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <shogun/lib/config.h>
-#include <shogun/io/SGIO.h>
-#include <shogun/features/Features.h>
-#include <flash/statistics/HypothesisTest.h>
-#include <flash/statistics/internals/TestTypes.h>
-#include <flash/statistics/internals/Features.h>
-#include <memory>
+#include <flash/statistics/TwoDistributionTest.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-template <class T>
-struct CHypothesisTest<T>::Self
-{
-	Self() : data_manager(num_distributions)
-	{
-	}
-	DataManager data_manager;
-};
-
-template <class T>
-CHypothesisTest<T>::CHypothesisTest() : CSGObject()
-{
-	impl = std::make_unique<Self>();
-}
-
-template <class T>
-DataManager& CHypothesisTest<T>::get_data_manager()
-{
-	return impl->data_manager;
-}
-
-template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
+CTwoDistributionTest::CTwoDistributionTest() : CHypothesisTest<TwoDistributionTest>()
 {
 }
 
-template <class T>
-const char* CHypothesisTest<T>::get_name() const
+CTwoDistributionTest::~CTwoDistributionTest()
 {
-	return "HypothesisTest";
 }
 
-template class CHypothesisTest<TwoSampleTest>;
-template class CHypothesisTest<IndependenceTest>;
+void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
+{
+	get_data_manager().samples_at(0) = samples_from_p;
+}
+
+void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
+{
+	get_data_manager().samples_at(1) = samples_from_q;
+}
+
+void CTwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
+{
+	get_data_manager().num_samples_at(0) = num_samples_from_p;
+}
+
+void CTwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
+{
+	get_data_manager().num_samples_at(1) = num_samples_from_q;
+}
+
+const char* CTwoDistributionTest::get_name() const
+{
+	return "TwoDistributionTest";
+}

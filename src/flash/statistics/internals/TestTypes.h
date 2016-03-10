@@ -1,6 +1,6 @@
 /*
  * Restructuring Shogun's statistical hypothesis testing framework.
- * Copyright (C) 2014  Soumyajit De
+ * Copyright (C) 2016  Soumyajit De
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,42 +30,34 @@ class CFeatures;
 namespace internal
 {
 
-template <class T> struct AllFetcher;
-template <class T> struct BlockFetcher;
 struct TwoSampleTestPermutationPolicy;
 struct IndependenceTestPermutationPolicy;
 
-struct BaseTestType
+struct OneDistributionTest
+{
+	enum { num_feats = 1 };
+};
+
+struct TwoDistributionTest
 {
 	enum { num_feats = 2 };
 };
 
-struct TwoSampleTest : public BaseTestType
+struct ThreeDistributionTest
 {
-	template <class T> using fetch_type = AllFetcher<T>;
+	enum { num_feats = 3 };
+};
+
+struct TwoSampleTest : TwoDistributionTest
+{
 	using permutation_policy = TwoSampleTestPermutationPolicy;
-	using return_type = shogun::CFeatures*;
+	using return_type = std::shared_ptr<CFeatures>;
 };
 
-struct IndependenceTest : public BaseTestType
+struct IndependenceTest : TwoDistributionTest
 {
-	template <class T> using fetch_type = AllFetcher<T>;
 	using permutation_policy = IndependenceTestPermutationPolicy;
-	using return_type = std::vector<shogun::CFeatures*>;
-};
-
-struct StreamingTwoSampleTest : public BaseTestType
-{
-	template <class T> using fetch_type = BlockFetcher<T>;
-	using permutation_policy = TwoSampleTestPermutationPolicy;
-	using return_type = shogun::CFeatures*;
-};
-
-struct StreamingIndependenceTest : public BaseTestType
-{
-	template <class T> using fetch_type = BlockFetcher<T>;
-	using permutation_policy = IndependenceTestPermutationPolicy;
-	using return_type = std::vector<shogun::CFeatures*>;
+	using return_type = std::vector<std::shared_ptr<CFeatures>>;
 };
 
 }
