@@ -31,11 +31,14 @@ namespace internal
 
 class DataManager;
 
-struct InitPerFeature
+class InitPerFeature
 {
+public:
 	explicit InitPerFeature(DataManager& dm, index_t i);
 	InitPerFeature& operator=(CFeatures* feats);
+	operator CFeatures*() const;
 	~InitPerFeature();
+private:
 	const index_t index;
 	DataManager& data_manager;
 };

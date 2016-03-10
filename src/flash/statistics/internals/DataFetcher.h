@@ -36,6 +36,7 @@ class DataManager;
 class DataFetcher
 {
 	friend class DataManager;
+	friend class InitPerFeature;
 public:
 	DataFetcher(CFeatures* samples);
 	virtual ~DataFetcher();

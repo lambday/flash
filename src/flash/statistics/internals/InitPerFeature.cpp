@@ -43,3 +43,8 @@ InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 	data_manager.fetchers[index] = std::move(fetcher);
 	return *this;
 }
+
+InitPerFeature::operator CFeatures*() const
+{
+	return data_manager.fetchers[index]->m_samples.get();
+}
