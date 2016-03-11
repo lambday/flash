@@ -39,14 +39,14 @@ struct InitPerKernel
 	InitPerKernel(KernelManager& km, index_t i) : kernel_manager(km), index(i)
 	{
 	}
-	operator CKernel*() const
+	operator const CKernel*() const
 	{
-		return kernel_manager[index].get();
+		return kernel_manager.m_kernels[index].get();
 	}
 	InitPerKernel& operator=(CKernel* kernel)
 	{
 		SG_REF(kernel);
-		kernel_manager[index] = std::shared_ptr<CKernel>(kernel, [](auto& ptr) { SG_UNREF(ptr); });
+		kernel_manager.m_kernels[index] = std::shared_ptr<CKernel>(kernel, [](auto& ptr) { SG_UNREF(ptr); });
 		return *this;
 	}
 	const index_t index;
