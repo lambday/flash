@@ -12,5 +12,5 @@ matrix:
 before_install:
   - echo $CC; echo $CXX
 script:
-  - docker exec -t devenv /bin/sh -c "cd /opt/flash/src; make -j2"
-  - docker exec -t devenv /bin/sh -c "cd /opt/flash; ./sanity.sh"
+  - docker exec -t /bin/sh -c "cd /opt/flash/src; make -j2"
+  - docker exec -t /bin/sh -c "cd /opt/flash; ./sanity.sh"
