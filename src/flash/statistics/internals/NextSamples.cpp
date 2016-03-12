@@ -17,30 +17,34 @@
  */
 
 #include <algorithm>
+#include <iostream>
 #include <flash/statistics/internals/NextSamples.h>
 #include <shogun/features/Features.h>
 
 using namespace shogun;
 using namespace internal;
 
-NextSamples::NextSamples(const index_t num_distributions)
-: m_num_distributions(num_distributions)
+NextSamples::NextSamples(index_t num_distributions)
 {
-	next_samples.resize(m_num_distributions);
+	next_samples.resize(num_distributions);
 	std::fill(next_samples.begin(), next_samples.end(), nullptr);
 }
 
-std::shared_ptr<CFeatures>& NextSamples::at(index_t i)
+NextSamples::~NextSamples()
 {
-	REQUIRE(i >= 0 && i < m_num_distributions,
-			"index (%d) must be between [0,%d]!\n", i, m_num_distributions - 1);
+}
+
+std::shared_ptr<CFeatures>& NextSamples::operator[](index_t i)
+{
+	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
+	std::cout << "acessing fetched sample at " << i << " using non-const access operator" << std::endl;
 	return next_samples[i];
 }
 
-std::shared_ptr<CFeatures> NextSamples::get(index_t i)
+const std::shared_ptr<CFeatures> NextSamples::operator[](index_t i) const
 {
-	REQUIRE(i >= 0 && i < m_num_distributions,
-			"index (%d) must be between [0,%d]!\n", i, m_num_distributions - 1);
+	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
+	std::cout << "acessing fetched sample at " << i << " using const access operator" << std::endl;
 	return next_samples[i];
 }
 

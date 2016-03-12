@@ -49,9 +49,9 @@ void test1()
 	mgr.samples_at(0) = feats_p;
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -61,9 +61,9 @@ void test1()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -94,11 +94,11 @@ void test2()
 	mgr.samples_at(1) = feats_q;
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -108,11 +108,11 @@ void test2()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -144,11 +144,11 @@ void test3()
 	mgr.samples_at(1) = feats_q;
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -158,11 +158,11 @@ void test3()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -191,9 +191,9 @@ void test4()
 
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -203,9 +203,9 @@ void test4()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -243,11 +243,11 @@ void test5()
 
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -257,11 +257,11 @@ void test5()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -300,11 +300,11 @@ void test6()
 
 	mgr.start();
 	auto nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}
@@ -314,11 +314,11 @@ void test6()
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
 	nxt_samples = mgr.next();
-	while (!nxt_samples->empty())
+	while (!nxt_samples.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples->get(0).get());
+		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
 		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples->get(1).get());
+		tmp = static_cast<feat_type*>(nxt_samples[1].get());
 		tmp->get_feature_matrix().display_matrix();
 		nxt_samples = mgr.next();
 	}

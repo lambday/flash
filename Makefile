@@ -2,10 +2,8 @@ OPTS	 = -O3 -std=c++14
 INCLUDES = -Isrc
 LIBS	 = -Lsrc -lflash -lshogun
 TESTS    = tests
-all: $(TESTS)/NextSamplesTest $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
+all: $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
 		$(TESTS)/DataFetcherFactoryTest $(TESTS)/DataManagerTest $(TESTS)/InitPerFeatureTest
-$(TESTS)/NextSamplesTest: $(TESTS)/NextSamplesTest.cpp src/libflash.so
-	g++ $(TESTS)/NextSamplesTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/NextSamplesTest
 $(TESTS)/DataFetcherTest: $(TESTS)/DataFetcherTest.cpp src/libflash.so
 	g++ $(TESTS)/DataFetcherTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/DataFetcherTest
 $(TESTS)/StreamingDataFetcherTest: $(TESTS)/StreamingDataFetcherTest.cpp src/libflash.so
@@ -17,5 +15,5 @@ $(TESTS)/InitPerFeatureTest: $(TESTS)/InitPerFeatureTest.cpp src/libflash.so
 $(TESTS)/DataManagerTest: $(TESTS)/DataManagerTest.cpp src/libflash.so
 	g++ $(TESTS)/DataManagerTest.cpp $(OPTS) $(INCLUDES) $(LIBS) -o $(TESTS)/DataManagerTest
 clean:
-	rm $(TESTS)/NextSamplesTest $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
+	rm $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
 	   $(TESTS)/DataFetcherFactoryTest $(TESTS)/DataManagerTest $(TESTS)/InitPerFeatureTest

@@ -117,13 +117,13 @@ void DataManager::start()
 	std::for_each(fetchers.begin(), fetchers.end(), [](auto& f) { f->start(); });
 }
 
-std::shared_ptr<NextSamples> DataManager::next()
+NextSamples DataManager::next()
 {
 	std::cout << "DataManager::next()" << std::endl;
-	auto next_samples = std::make_shared<NextSamples>(fetchers.size());
+	NextSamples next_samples(fetchers.size());
 	for (auto i = 0; i < fetchers.size(); ++i)
 	{
-		next_samples->at(i) = fetchers[i]->next();
+		next_samples[i] = fetchers[i]->next();
 	}
 	return next_samples;
 }

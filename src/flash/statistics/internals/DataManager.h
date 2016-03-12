@@ -55,7 +55,7 @@ public:
 	index_t get_num_samples();
 
 	void start();
-	std::shared_ptr<NextSamples> next();
+	NextSamples next();
 	void end();
 	void reset();
 private:

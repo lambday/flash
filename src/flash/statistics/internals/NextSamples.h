@@ -43,25 +43,27 @@ namespace internal
  * Example usage:
  * @code
  * 		NextSamples next_samples(2);
- * 		next_samples.at(0) = fetchers[0].next();
- * 		next_samples.at(1) = fetchers[1].next();
+ * 		next_samples[0] = fetchers[0].next();
+ * 		next_samples[1] = fetchers[1].next();
  * 		if (!next_samples.empty())
  * 		{
- * 			auto first = next_samples.get(0);
- * 			auto second = next_samples.get(1);
- * 			auto third = next_samples.get(2); // Runtime Error
+ * 			auto first = next_samples[0];
+ * 			auto second = next_samples[1];
+ * 			auto third = next_samples[2]; // Runtime Error
  * 		}
  * @endcode
  */
 class NextSamples
 {
+	friend class DataManager;
+private:
+	NextSamples(index_t num_distributions);
 public:
-	NextSamples(const index_t num_distributions);
-	std::shared_ptr<CFeatures>& at(index_t i);
-	std::shared_ptr<CFeatures> get(index_t i); // try const
+	~NextSamples();
+	std::shared_ptr<CFeatures>& operator[](index_t i);
+	const std::shared_ptr<CFeatures> operator[](index_t i) const;
 	const bool empty() const;
 private:
-	const index_t m_num_distributions;
 	std::vector<std::shared_ptr<CFeatures>> next_samples;
 };
 
