@@ -1,5 +1,5 @@
 SRC			= flash
-INCLUDES	= -I. -I/usr/include/eigen3
+INCLUDES	= -I.
 OPTS		= -O3 -std=c++14 -fPIC
 STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
