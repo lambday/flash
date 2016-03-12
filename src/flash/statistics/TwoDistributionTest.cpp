@@ -36,56 +36,56 @@ CTwoDistributionTest<T>::~CTwoDistributionTest()
 template <typename T>
 void CTwoDistributionTest<T>::set_p(CFeatures* samples_from_p)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.samples_at(0) = samples_from_p;
 }
 
 template <typename T>
 const CFeatures* CTwoDistributionTest<T>::get_p() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(0);
 }
 
 template <typename T>
 void CTwoDistributionTest<T>::set_q(CFeatures* samples_from_q)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.samples_at(1) = samples_from_q;
 }
 
 template <typename T>
 const CFeatures* CTwoDistributionTest<T>::get_q() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(1);
 }
 
 template <typename T>
 void CTwoDistributionTest<T>::set_num_samples_p(index_t num_samples_from_p)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.num_samples_at(0) = num_samples_from_p;
 }
 
 template <typename T>
 const index_t CTwoDistributionTest<T>::get_num_samples_p() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.num_samples_at(0);
 }
 
 template <typename T>
 void CTwoDistributionTest<T>::set_num_samples_q(index_t num_samples_from_q)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.num_samples_at(1) = num_samples_from_q;
 }
 
 template <typename T>
 const index_t CTwoDistributionTest<T>::get_num_samples_q() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.num_samples_at(1);
 }
 

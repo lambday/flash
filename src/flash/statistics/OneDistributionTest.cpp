@@ -36,28 +36,28 @@ COneDistributionTest<T>::~COneDistributionTest()
 template <typename T>
 void COneDistributionTest<T>::set_samples(CFeatures* samples)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.samples_at(0) = samples;
 }
 
 template <typename T>
 const CFeatures* COneDistributionTest<T>::get_samples() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(0);
 }
 
 template <typename T>
 void COneDistributionTest<T>::set_num_samples(index_t num_samples)
 {
-	DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = CHypothesisTest<T>::get_data_manager();
 	dm.num_samples_at(0) = num_samples;
 }
 
 template <typename T>
 index_t COneDistributionTest<T>::get_num_samples() const
 {
-	const DataManager& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.num_samples_at(0);
 }
 
