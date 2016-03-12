@@ -16,46 +16,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <flash/statistics/HypothesisTest.h>
-#include <flash/statistics/internals/TestTypes.h>
+#include <flash/statistics/OneDistributionTest.h>
 #include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-template <class T>
-struct CHypothesisTest<T>::Self
-{
-	Self() : data_manager(num_distributions)
-	{
-	}
-	DataManager data_manager;
-};
-
-template <class T>
-CHypothesisTest<T>::CHypothesisTest() : CSGObject()
-{
-	impl = std::make_unique<Self>();
-}
-
-template <class T>
-DataManager& CHypothesisTest<T>::get_data_manager()
-{
-	return impl->data_manager;
-}
-
-template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
+template <typename T>
+COneDistributionTest<T>::COneDistributionTest() : CHypothesisTest<T>()
 {
 }
 
-template <class T>
-const char* CHypothesisTest<T>::get_name() const
+template <typename T>
+COneDistributionTest<T>::~COneDistributionTest()
 {
-	return "HypothesisTest";
 }
 
-template class CHypothesisTest<GoodnessOfFitTest>;
-template class CHypothesisTest<TwoSampleTest>;
-template class CHypothesisTest<IndependenceTest>;
+template <typename T>
+void COneDistributionTest<T>::set_samples(CFeatures* samples)
+{
+	CHypothesisTest<T>::get_data_manager().samples_at(0) = samples;
+}
+
+template <typename T>
+void COneDistributionTest<T>::set_num_samples(index_t num_samples)
+{
+	CHypothesisTest<T>::get_data_manager().num_samples_at(0) = num_samples;
+}
+
+template <typename T>
+const char* COneDistributionTest<T>::get_name() const
+{
+	return "OneDistributionTest";
+}
+
+template class COneDistributionTest<GoodnessOfFitTest>;

@@ -16,46 +16,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef ONE_DISTRIBUTION_TEST_H_
+#define ONE_DISTRIBUTION_TEST_H_
+
+#include <shogun/lib/common.h>
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
-#include <flash/statistics/internals/DataManager.h>
 
-using namespace shogun;
-using namespace internal;
-using namespace statistics;
-
-template <class T>
-struct CHypothesisTest<T>::Self
+namespace shogun
 {
-	Self() : data_manager(num_distributions)
-	{
-	}
-	DataManager data_manager;
+
+namespace internal
+{
+
+struct OneDistributionTest;
+
+}
+
+namespace statistics
+{
+
+template <typename TestType>
+class COneDistributionTest : public CHypothesisTest<TestType>
+{
+public:
+	COneDistributionTest();
+	virtual ~COneDistributionTest();
+	void set_samples(CFeatures* samples);
+	void set_num_samples(index_t num_samples);
+	virtual const char* get_name() const;
 };
 
-template <class T>
-CHypothesisTest<T>::CHypothesisTest() : CSGObject()
-{
-	impl = std::make_unique<Self>();
 }
 
-template <class T>
-DataManager& CHypothesisTest<T>::get_data_manager()
-{
-	return impl->data_manager;
 }
-
-template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
-{
-}
-
-template <class T>
-const char* CHypothesisTest<T>::get_name() const
-{
-	return "HypothesisTest";
-}
-
-template class CHypothesisTest<GoodnessOfFitTest>;
-template class CHypothesisTest<TwoSampleTest>;
-template class CHypothesisTest<IndependenceTest>;
+#endif // ONE_DISTRIBUTION_TEST_H_

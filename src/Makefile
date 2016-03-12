@@ -4,7 +4,7 @@ OPTS		= -O3 -std=c++14 -fPIC
 STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(STATISTICS)/TwoSampleTest.o \
-			  $(STATISTICS)/IndependenceTest.o \
+			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o \
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
 			  $(INTERNALS)/DataManager.o
@@ -15,6 +15,9 @@ libflash.so: $(OBJECTS)
 	g++ $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
 $(STATISTICS)/HypothesisTest.o: $(STATISTICS)/HypothesisTest.h $(STATISTICS)/HypothesisTest.cpp
 	g++ $(OPTS) -c $(STATISTICS)/HypothesisTest.cpp $(INCLUDES) -o $(STATISTICS)/HypothesisTest.o
+$(STATISTICS)/OneDistributionTest.o: $(STATISTICS)/OneDistributionTest.h $(STATISTICS)/OneDistributionTest.cpp \
+		$(STATISTICS)/HypothesisTest.h $(INTERNALS)/TestTypes.h
+	g++ $(OPTS) -c $(STATISTICS)/OneDistributionTest.cpp $(INCLUDES) -o $(STATISTICS)/OneDistributionTest.o
 $(STATISTICS)/TwoDistributionTest.o: $(STATISTICS)/TwoDistributionTest.h $(STATISTICS)/TwoDistributionTest.cpp \
 		$(STATISTICS)/HypothesisTest.h $(INTERNALS)/TestTypes.h
 	g++ $(OPTS) -c $(STATISTICS)/TwoDistributionTest.cpp $(INCLUDES) -o $(STATISTICS)/TwoDistributionTest.o

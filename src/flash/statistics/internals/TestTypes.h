@@ -48,6 +48,11 @@ struct ThreeDistributionTest
 	enum { num_feats = 3 };
 };
 
+struct GoodnessOfFitTest : OneDistributionTest
+{
+	using return_type = std::shared_ptr<CFeatures>;
+};
+
 struct TwoSampleTest : TwoDistributionTest
 {
 	using permutation_policy = TwoSampleTestPermutationPolicy;
