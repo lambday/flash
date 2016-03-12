@@ -31,11 +31,14 @@ namespace internal
 {
 
 class DataFetcher;
+class DataManager;
 
 class InitPerFeature
 {
-public:
+	friend class DataManager;
+private:
 	explicit InitPerFeature(std::unique_ptr<DataFetcher>& fetcher);
+public:
 	~InitPerFeature();
 	InitPerFeature& operator=(CFeatures* feats);
 	operator const CFeatures*() const;
