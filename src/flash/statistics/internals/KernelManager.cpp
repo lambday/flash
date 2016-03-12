@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <flash/statistics/internals/KernelManager.h>
@@ -39,11 +40,14 @@ KernelManager::~KernelManager()
 
 InitPerKernel KernelManager::kernel_at(index_t i)
 {
+	std::cout << "KernelManager::kernel_at() : setting the kernel " << i << std::endl;
+	ASSERT(i <= m_kernels.size());
 	return InitPerKernel(m_kernels[i]);
 }
 
 CKernel* KernelManager::kernel_at(index_t i) const
 {
+	std::cout << "KernelManager::kernel_at() : getting the kernel " << i << std::endl;
 	ASSERT(i <= m_kernels.size());
 	if (m_precomputed_kernels[i] == nullptr)
 	{
@@ -54,6 +58,7 @@ CKernel* KernelManager::kernel_at(index_t i) const
 
 void KernelManager::precompute_kernel_at(index_t i)
 {
+	std::cout << "KernelManager::precompute_kernel_at() : precomputing the kernel " << i << std::endl;
 	ASSERT(i <= m_kernels.size());
 	auto kernel = m_kernels[i].get();
 	if (kernel->get_kernel_type() != K_CUSTOM)
@@ -64,6 +69,7 @@ void KernelManager::precompute_kernel_at(index_t i)
 
 void KernelManager::restore_kernel_at(index_t i)
 {
+	std::cout << "KernelManager::precompute_kernel_at() : restoring the kernel " << i << std::endl;
 	ASSERT(i <= m_kernels.size());
 	m_precomputed_kernels[i] = nullptr;
 }
