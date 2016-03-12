@@ -36,15 +36,15 @@ NextSamples::~NextSamples()
 
 std::shared_ptr<CFeatures>& NextSamples::operator[](index_t i)
 {
+	std::cout << "NextSamples::acessing fetched sample at " << i << " using non-const access operator" << std::endl;
 	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
-	std::cout << "acessing fetched sample at " << i << " using non-const access operator" << std::endl;
 	return next_samples[i];
 }
 
 const std::shared_ptr<CFeatures> NextSamples::operator[](index_t i) const
 {
+	std::cout << "NextSamples::acessing fetched sample at " << i << " using const access operator" << std::endl;
 	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
-	std::cout << "acessing fetched sample at " << i << " using const access operator" << std::endl;
 	return next_samples[i];
 }
 
