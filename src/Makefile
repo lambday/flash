@@ -13,6 +13,7 @@ INTERNAL	= $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERN
 			  $(INTERNALS)/DataManager.o
 libflash.so: $(OBJECTS)
 	g++ $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
+	rm $(STATISTICS)/*.o $(INTERNALS)/*.o
 $(STATISTICS)/HypothesisTest.o: $(STATISTICS)/HypothesisTest.h $(STATISTICS)/HypothesisTest.cpp
 	g++ $(OPTS) -c $(STATISTICS)/HypothesisTest.cpp $(INCLUDES) -o $(STATISTICS)/HypothesisTest.o
 $(STATISTICS)/OneDistributionTest.o: $(STATISTICS)/OneDistributionTest.h $(STATISTICS)/OneDistributionTest.cpp \
