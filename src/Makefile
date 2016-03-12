@@ -45,4 +45,4 @@ $(INTERNALS)/KernelManager.o: $(INTERNALS)/KernelManager.h $(INTERNALS)/KernelMa
 $(INTERNALS)/InitPerKernel.o: $(INTERNALS)/InitPerKernel.h $(INTERNALS)/InitPerKernel.cpp
 	g++ $(OPTS) -c $(INTERNALS)/InitPerKernel.cpp $(INCLUDES) -o $(INTERNALS)/InitPerKernel.o
 clean:
-	rm $(STATISTICS)/*.o $(INTERNALS)/*.o libflash.so
+	rm libflash.so

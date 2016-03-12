@@ -1,46 +1,31 @@
-rm flash/statistics/*.o flash/statistics/internals/*.o libflash.so
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/HypothesisTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/HypothesisTest.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoDistributionTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/TwoDistributionTest.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoSampleTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/TwoSampleTest.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/IndependenceTest.cpp -I. -I/usr/include/eigen3 -o flash/statistics/IndependenceTest.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcherFactory.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataFetcherFactory.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcher.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataFetcher.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/StreamingDataFetcher.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/StreamingDataFetcher.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/NextSamples.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/NextSamples.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/InitPerFeature.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/InitPerFeature.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/BlockwiseDetails.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/BlockwiseDetails.o
-g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataManager.cpp -I. -I/usr/include/eigen3 -o flash/statistics/internals/DataManager.o
-g++ -O3 -std=c++14 -fPIC -shared flash/statistics/HypothesisTest.o flash/statistics/TwoDistributionTest.o flash/statistics/TwoSampleTest.o flash/statistics/IndependenceTest.o flash/statistics/internals/DataFetcherFactory.o flash/statistics/internals/DataFetcher.o flash/statistics/internals/StreamingDataFetcher.o flash/statistics/internals/NextSamples.o flash/statistics/internals/InitPerFeature.o flash/statistics/internals/BlockwiseDetails.o flash/statistics/internals/DataManager.o -I. -I/usr/include/eigen3 -o libflash.so -lshogun
-g++ tests/NextSamplesTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/NextSamplesTest
-g++ tests/DataFetcherTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataFetcherTest
-g++ tests/StreamingDataFetcherTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/StreamingDataFetcherTest
-g++ tests/DataFetcherFactoryTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataFetcherFactoryTest
-g++ tests/DataManagerTest.cpp -O3 -std=c++14 -Isrc -I/usr/include/eigen3 -Lsrc -lflash -lshogun -o tests/DataManagerTest
-==29637== Memcheck, a memory error detector
-==29637== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==29637== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==29637== Command: tests/NextSamplesTest --leak-check=full --track-origins=yes
-==29637== 
-==29637== 
-==29637== HEAP SUMMARY:
-==29637==     in use at exit: 72,712 bytes in 2 blocks
-==29637==   total heap usage: 496 allocs, 494 frees, 167,079 bytes allocated
-==29637== 
-==29637== LEAK SUMMARY:
-==29637==    definitely lost: 0 bytes in 0 blocks
-==29637==    indirectly lost: 0 bytes in 0 blocks
-==29637==      possibly lost: 0 bytes in 0 blocks
-==29637==    still reachable: 72,712 bytes in 2 blocks
-==29637==         suppressed: 0 bytes in 0 blocks
-==29637== Rerun with --leak-check=full to see details of leaked memory
-==29637== 
-==29637== For counts of detected and suppressed errors, rerun with: -v
-==29637== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==29640== Memcheck, a memory error detector
-==29640== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==29640== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==29640== Command: tests/DataFetcherTest --leak-check=full --track-origins=yes
-==29640== 
+rm libflash.so
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/HypothesisTest.cpp -I. -o flash/statistics/HypothesisTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoDistributionTest.cpp -I. -o flash/statistics/TwoDistributionTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/TwoSampleTest.cpp -I. -o flash/statistics/TwoSampleTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/IndependenceTest.cpp -I. -o flash/statistics/IndependenceTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/OneDistributionTest.cpp -I. -o flash/statistics/OneDistributionTest.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcherFactory.cpp -I. -o flash/statistics/internals/DataFetcherFactory.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataFetcher.cpp -I. -o flash/statistics/internals/DataFetcher.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/StreamingDataFetcher.cpp -I. -o flash/statistics/internals/StreamingDataFetcher.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/NextSamples.cpp -I. -o flash/statistics/internals/NextSamples.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/InitPerFeature.cpp -I. -o flash/statistics/internals/InitPerFeature.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/BlockwiseDetails.cpp -I. -o flash/statistics/internals/BlockwiseDetails.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/DataManager.cpp -I. -o flash/statistics/internals/DataManager.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/InitPerKernel.cpp -I. -o flash/statistics/internals/InitPerKernel.o
+g++ -O3 -std=c++14 -fPIC -c flash/statistics/internals/KernelManager.cpp -I. -o flash/statistics/internals/KernelManager.o
+g++ -O3 -std=c++14 -fPIC -shared flash/statistics/HypothesisTest.o flash/statistics/TwoDistributionTest.o flash/statistics/TwoSampleTest.o flash/statistics/IndependenceTest.o flash/statistics/OneDistributionTest.o flash/statistics/internals/DataFetcherFactory.o flash/statistics/internals/DataFetcher.o flash/statistics/internals/StreamingDataFetcher.o flash/statistics/internals/NextSamples.o flash/statistics/internals/InitPerFeature.o flash/statistics/internals/BlockwiseDetails.o flash/statistics/internals/DataManager.o flash/statistics/internals/InitPerKernel.o flash/statistics/internals/KernelManager.o -I. -o libflash.so -lshogun
+rm flash/statistics/*.o flash/statistics/internals/*.o
+g++ tests/DataFetcherTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/DataFetcherTest
+g++ tests/StreamingDataFetcherTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/StreamingDataFetcherTest
+g++ tests/InitPerFeatureTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/InitPerFeatureTest
+g++ tests/DataFetcherFactoryTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/DataFetcherFactoryTest
+g++ tests/DataManagerTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/DataManagerTest
+g++ tests/KernelManagerTest.cpp -O3 -std=c++14 -Isrc -Lsrc -lflash -lshogun -o tests/KernelManagerTest
+==25345== Memcheck, a memory error detector
+==25345== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25345== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25345== Command: tests/DataFetcherTest --leak-check=full --track-origins=yes
+==25345== 
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -61,26 +46,26 @@ matrix=[
 [	13,	16,	19,	22],
 [	14,	17,	20,	23]
 ]
-==29640== 
-==29640== HEAP SUMMARY:
-==29640==     in use at exit: 72,712 bytes in 2 blocks
-==29640==   total heap usage: 378 allocs, 376 frees, 160,864 bytes allocated
-==29640== 
-==29640== LEAK SUMMARY:
-==29640==    definitely lost: 0 bytes in 0 blocks
-==29640==    indirectly lost: 0 bytes in 0 blocks
-==29640==      possibly lost: 0 bytes in 0 blocks
-==29640==    still reachable: 72,712 bytes in 2 blocks
-==29640==         suppressed: 0 bytes in 0 blocks
-==29640== Rerun with --leak-check=full to see details of leaked memory
-==29640== 
-==29640== For counts of detected and suppressed errors, rerun with: -v
-==29640== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==29641== Memcheck, a memory error detector
-==29641== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==29641== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==29641== Command: tests/StreamingDataFetcherTest --leak-check=full --track-origins=yes
-==29641== 
+==25345== 
+==25345== HEAP SUMMARY:
+==25345==     in use at exit: 72,712 bytes in 2 blocks
+==25345==   total heap usage: 378 allocs, 376 frees, 160,864 bytes allocated
+==25345== 
+==25345== LEAK SUMMARY:
+==25345==    definitely lost: 0 bytes in 0 blocks
+==25345==    indirectly lost: 0 bytes in 0 blocks
+==25345==      possibly lost: 0 bytes in 0 blocks
+==25345==    still reachable: 72,712 bytes in 2 blocks
+==25345==         suppressed: 0 bytes in 0 blocks
+==25345== Rerun with --leak-check=full to see details of leaked memory
+==25345== 
+==25345== For counts of detected and suppressed errors, rerun with: -v
+==25345== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==25346== Memcheck, a memory error detector
+==25346== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25346== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25346== Command: tests/StreamingDataFetcherTest --leak-check=full --track-origins=yes
+==25346== 
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -101,81 +86,123 @@ matrix=[
 [	13,	16,	19,	22],
 [	14,	17,	20,	23]
 ]
-==29641== 
-==29641== HEAP SUMMARY:
-==29641==     in use at exit: 206,246 bytes in 278 blocks
-==29641==   total heap usage: 960 allocs, 682 frees, 308,984 bytes allocated
-==29641== 
-==29641== LEAK SUMMARY:
-==29641==    definitely lost: 152 bytes in 1 blocks
-==29641==    indirectly lost: 119,036 bytes in 13 blocks
-==29641==      possibly lost: 14,230 bytes in 256 blocks
-==29641==    still reachable: 72,828 bytes in 8 blocks
-==29641==         suppressed: 0 bytes in 0 blocks
-==29641== Rerun with --leak-check=full to see details of leaked memory
-==29641== 
-==29641== For counts of detected and suppressed errors, rerun with: -v
-==29641== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==29644== Memcheck, a memory error detector
-==29644== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==29644== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==29644== Command: tests/DataFetcherFactoryTest --leak-check=full --track-origins=yes
-==29644== 
+==25346== 
+==25346== HEAP SUMMARY:
+==25346==     in use at exit: 206,246 bytes in 278 blocks
+==25346==   total heap usage: 960 allocs, 682 frees, 308,984 bytes allocated
+==25346== 
+==25346== LEAK SUMMARY:
+==25346==    definitely lost: 152 bytes in 1 blocks
+==25346==    indirectly lost: 119,036 bytes in 13 blocks
+==25346==      possibly lost: 14,230 bytes in 256 blocks
+==25346==    still reachable: 72,828 bytes in 8 blocks
+==25346==         suppressed: 0 bytes in 0 blocks
+==25346== Rerun with --leak-check=full to see details of leaked memory
+==25346== 
+==25346== For counts of detected and suppressed errors, rerun with: -v
+==25346== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==25349== Memcheck, a memory error detector
+==25349== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25349== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25349== Command: tests/DataFetcherFactoryTest --leak-check=full --track-origins=yes
+==25349== 
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
-==29644== 
-==29644== HEAP SUMMARY:
-==29644==     in use at exit: 205,102 bytes in 263 blocks
-==29644==   total heap usage: 497 allocs, 234 frees, 286,015 bytes allocated
-==29644== 
-==29644== LEAK SUMMARY:
-==29644==    definitely lost: 392 bytes in 1 blocks
-==29644==    indirectly lost: 131,882 bytes in 254 blocks
-==29644==      possibly lost: 0 bytes in 0 blocks
-==29644==    still reachable: 72,828 bytes in 8 blocks
-==29644==         suppressed: 0 bytes in 0 blocks
-==29644== Rerun with --leak-check=full to see details of leaked memory
-==29644== 
-==29644== For counts of detected and suppressed errors, rerun with: -v
-==29644== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==29645== Memcheck, a memory error detector
-==29645== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
-==29645== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
-==29645== Command: tests/DataManagerTest --leak-check=full --track-origins=yes
-==29645== 
+==25349== 
+==25349== HEAP SUMMARY:
+==25349==     in use at exit: 205,102 bytes in 263 blocks
+==25349==   total heap usage: 497 allocs, 234 frees, 286,015 bytes allocated
+==25349== 
+==25349== LEAK SUMMARY:
+==25349==    definitely lost: 392 bytes in 1 blocks
+==25349==    indirectly lost: 131,882 bytes in 254 blocks
+==25349==      possibly lost: 0 bytes in 0 blocks
+==25349==    still reachable: 72,828 bytes in 8 blocks
+==25349==         suppressed: 0 bytes in 0 blocks
+==25349== Rerun with --leak-check=full to see details of leaked memory
+==25349== 
+==25349== For counts of detected and suppressed errors, rerun with: -v
+==25349== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==25350== Memcheck, a memory error detector
+==25350== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25350== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25350== Command: tests/InitPerFeatureTest --leak-check=full --track-origins=yes
+==25350== 
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
+InitPerFeature::Assignment() : setting the fetcher
+InitPerFeature::Destructor()
+DataManager::samples_at()
+InitPerFeature::Constructor()
+InitPerFeature::cast() : casting to feature type
+DataManager::samples_at() const
+InitPerFeature::Destructor()
+==25350== 
+==25350== HEAP SUMMARY:
+==25350==     in use at exit: 72,712 bytes in 2 blocks
+==25350==   total heap usage: 348 allocs, 346 frees, 159,928 bytes allocated
+==25350== 
+==25350== LEAK SUMMARY:
+==25350==    definitely lost: 0 bytes in 0 blocks
+==25350==    indirectly lost: 0 bytes in 0 blocks
+==25350==      possibly lost: 0 bytes in 0 blocks
+==25350==    still reachable: 72,712 bytes in 2 blocks
+==25350==         suppressed: 0 bytes in 0 blocks
+==25350== Rerun with --leak-check=full to see details of leaked memory
+==25350== 
+==25350== For counts of detected and suppressed errors, rerun with: -v
+==25350== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==25351== Memcheck, a memory error detector
+==25351== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25351== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25351== Command: tests/DataManagerTest --leak-check=full --track-origins=yes
+==25351== 
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+DataManager::samples_at()
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 block[0].size = 2
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9],
 [	1,	4,	7,	10],
 [	2,	5,	8,	11]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15,	18,	21],
 [	13,	16,	19,	22],
 [	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -187,72 +214,96 @@ matrix=[
 [	26,	29,	32,	35,	38,	41,	44,	47]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 1
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27,	30,	33,	36,	39,	42,	45],
 [	25,	28,	31,	34,	37,	40,	43,	46],
 [	26,	29,	32,	35,	38,	41,	44,	47]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
 block[0].size = 1
 block[1].size = 1
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3],
 [	1,	4],
 [	2,	5]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27],
 [	25,	28],
 [	26,	29]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	6,	9],
 [	7,	10],
 [	8,	11]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	30,	33],
 [	31,	34],
 [	32,	35]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15],
 [	13,	16],
 [	14,	17]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	36,	39],
 [	37,	40],
 [	38,	41]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	18,	21],
 [	19,	22],
 [	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	42,	45],
 [	43,	46],
 [	44,	47]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -264,132 +315,174 @@ matrix=[
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 1
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
 [	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
 block[0].size = 2
 block[1].size = 3
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3],
 [	1,	4],
 [	2,	5]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27,	30],
 [	25,	28,	31],
 [	26,	29,	32]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	6,	9],
 [	7,	10],
 [	8,	11]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	33,	36,	39],
 [	34,	37,	40],
 [	35,	38,	41]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15],
 [	13,	16],
 [	14,	17]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	42,	45,	48],
 [	43,	46,	49],
 [	44,	47,	50]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	18,	21],
 [	19,	22],
 [	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	51,	54,	57],
 [	52,	55,	58],
 [	53,	56,	59]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
+DataManager::num_samples_at()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 block[0].size = 2
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9],
 [	1,	4,	7,	10],
 [	2,	5,	8,	11]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15,	18,	21],
 [	13,	16,	19,	22],
 [	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
+DataManager::num_samples_at()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 block[0].size = 2
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9],
 [	1,	4,	7,	10],
 [	2,	5,	8,	11]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15,	18,	21],
 [	13,	16,	19,	22],
 [	14,	17,	20,	23]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
@@ -401,84 +494,142 @@ matrix=[
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 0
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
 DataManager::samples_at()
-InitPerFeature::Constructor() with i = 1
+InitPerFeature::Constructor()
 InitPerFeature::Assignment() : setting the fetcher
 InitPerFeature::Destructor()
+DataManager::num_samples_at()
+DataManager::num_samples_at()
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3,	6,	9,	12,	15,	18,	21],
 [	1,	4,	7,	10,	13,	16,	19,	22],
 [	2,	5,	8,	11,	14,	17,	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27,	30,	33,	36,	39,	42,	45,	48,	51,	54,	57],
 [	25,	28,	31,	34,	37,	40,	43,	46,	49,	52,	55,	58],
 [	26,	29,	32,	35,	38,	41,	44,	47,	50,	53,	56,	59]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
 block[0].size = 2
 block[1].size = 3
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	0,	3],
 [	1,	4],
 [	2,	5]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	24,	27,	30],
 [	25,	28,	31],
 [	26,	29,	32]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	6,	9],
 [	7,	10],
 [	8,	11]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	33,	36,	39],
 [	34,	37,	40],
 [	35,	38,	41]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	12,	15],
 [	13,	16],
 [	14,	17]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	42,	45,	48],
 [	43,	46,	49],
 [	44,	47,	50]
 ]
 DataManager::next()
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+acessing fetched sample at 0 using non-const access operator
 matrix=[
 [	18,	21],
 [	19,	22],
 [	20,	23]
 ]
+acessing fetched sample at 1 using non-const access operator
 matrix=[
 [	51,	54,	57],
 [	52,	55,	58],
 [	53,	56,	59]
 ]
 DataManager::next()
-==29645== 
-==29645== HEAP SUMMARY:
-==29645==     in use at exit: 606,596 bytes in 1,088 blocks
-==29645==   total heap usage: 4,967 allocs, 3,879 frees, 852,188 bytes allocated
-==29645== 
-==29645== LEAK SUMMARY:
-==29645==    definitely lost: 608 bytes in 4 blocks
-==29645==    indirectly lost: 476,144 bytes in 52 blocks
-==29645==      possibly lost: 57,016 bytes in 1,024 blocks
-==29645==    still reachable: 72,828 bytes in 8 blocks
-==29645==         suppressed: 0 bytes in 0 blocks
-==29645== Rerun with --leak-check=full to see details of leaked memory
-==29645== 
-==29645== For counts of detected and suppressed errors, rerun with: -v
-==29645== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+acessing fetched sample at 0 using non-const access operator
+acessing fetched sample at 1 using non-const access operator
+==25351== 
+==25351== HEAP SUMMARY:
+==25351==     in use at exit: 606,596 bytes in 1,088 blocks
+==25351==   total heap usage: 4,931 allocs, 3,843 frees, 850,460 bytes allocated
+==25351== 
+==25351== LEAK SUMMARY:
+==25351==    definitely lost: 608 bytes in 4 blocks
+==25351==    indirectly lost: 476,144 bytes in 52 blocks
+==25351==      possibly lost: 57,016 bytes in 1,024 blocks
+==25351==    still reachable: 72,828 bytes in 8 blocks
+==25351==         suppressed: 0 bytes in 0 blocks
+==25351== Rerun with --leak-check=full to see details of leaked memory
+==25351== 
+==25351== For counts of detected and suppressed errors, rerun with: -v
+==25351== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==25360== Memcheck, a memory error detector
+==25360== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==25360== Using Valgrind-3.10.1 and LibVEX; rerun with -h for copyright info
+==25360== Command: tests/KernelManagerTest --leak-check=full --track-origins=yes
+==25360== 
+matrix=[
+[	0,	3,	6,	9,	12,	15,	18,	21],
+[	1,	4,	7,	10,	13,	16,	19,	22],
+[	2,	5,	8,	11,	14,	17,	20,	23]
+]
+KernelManager::kernel_at() : setting the kernel 0
+KernelManager::kernel_at() : getting the kernel 0
+KernelManager::kernel_at() : getting the kernel 0
+KernelManager::precompute_kernel_at() : precomputing the kernel 0
+KernelManager::kernel_at() : getting the kernel 0
+KernelManager::precompute_kernel_at() : restoring the kernel 0
+KernelManager::kernel_at() : getting the kernel 0
+==25360== 
+==25360== HEAP SUMMARY:
+==25360==     in use at exit: 72,712 bytes in 2 blocks
+==25360==   total heap usage: 884 allocs, 882 frees, 185,607 bytes allocated
+==25360== 
+==25360== LEAK SUMMARY:
+==25360==    definitely lost: 0 bytes in 0 blocks
+==25360==    indirectly lost: 0 bytes in 0 blocks
+==25360==      possibly lost: 0 bytes in 0 blocks
+==25360==    still reachable: 72,712 bytes in 2 blocks
+==25360==         suppressed: 0 bytes in 0 blocks
+==25360== Rerun with --leak-check=full to see details of leaked memory
+==25360== 
+==25360== For counts of detected and suppressed errors, rerun with: -v
+==25360== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
