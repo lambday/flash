@@ -16,41 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KERNEL_MANAGER_H__
-#define KERNEL_MANAGER_H__
-
-#include <vector>
-#include <memory>
-#include <shogun/lib/common.h>
+#include <shogun/kernel/Kernel.h>
 #include <flash/statistics/internals/InitPerKernel.h>
 
-namespace shogun
+using namespace shogun;
+using namespace internal;
+
+InitPerKernel::InitPerKernel(std::shared_ptr<CKernel>& kernel) : m_kernel(kernel)
 {
-
-class CKernel;
-class CCustomKernel;
-
-namespace internal
-{
-
-class KernelManager
-{
-public:
-	KernelManager(index_t num_kernels);
-	~KernelManager();
-
-	InitPerKernel set_kernel_at(index_t i);
-	CKernel* get_kernel_at(index_t i) const;
-
-	const CKernel* precompute_kernel_at(index_t i);
-	const CKernel* restore_kernel_at(index_t i);
-private:
-	std::vector<std::shared_ptr<CKernel>> m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
-};
-
 }
 
+InitPerKernel::~InitPerKernel()
+{
 }
 
-#endif // KERNEL_MANAGER_H__
+InitPerKernel& InitPerKernel::operator=(CKernel* kernel)
+{
+	SG_REF(kernel);
+	m_kernel = std::shared_ptr<CKernel>(kernel, [](auto& ptr) { SG_UNREF(ptr); });
+	return *this;
+}
+
+InitPerKernel::operator const CKernel*() const
+{
+	return m_kernel.get();
+}

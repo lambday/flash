@@ -16,41 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KERNEL_MANAGER_H__
-#define KERNEL_MANAGER_H__
+#ifndef INIT_PER_KERNEL_H__
+#define INIT_PER_KERNEL_H__
 
-#include <vector>
 #include <memory>
 #include <shogun/lib/common.h>
-#include <flash/statistics/internals/InitPerKernel.h>
 
 namespace shogun
 {
 
 class CKernel;
-class CCustomKernel;
 
 namespace internal
 {
 
-class KernelManager
+class InitPerKernel
 {
-public:
-	KernelManager(index_t num_kernels);
-	~KernelManager();
-
-	InitPerKernel set_kernel_at(index_t i);
-	CKernel* get_kernel_at(index_t i) const;
-
-	const CKernel* precompute_kernel_at(index_t i);
-	const CKernel* restore_kernel_at(index_t i);
+	friend class KernelManager;
 private:
-	std::vector<std::shared_ptr<CKernel>> m_kernels;
-	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
+	explicit InitPerKernel(std::shared_ptr<CKernel>& kernel);
+public:
+	~InitPerKernel();
+	InitPerKernel& operator=(CKernel* kernel);
+	operator const CKernel*() const;
+private:
+	std::shared_ptr<CKernel>& m_kernel;
 };
 
 }
 
 }
 
-#endif // KERNEL_MANAGER_H__
+#endif // INIT_PER_KERNEL_H__

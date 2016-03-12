@@ -7,10 +7,10 @@ OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(
 			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o \
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o
+			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o
 INTERNAL	= $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o
+			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o
 libflash.so: $(OBJECTS)
 	g++ $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
 	rm $(STATISTICS)/*.o $(INTERNALS)/*.o
@@ -40,5 +40,9 @@ $(INTERNALS)/DataFetcher.o: $(INTERNALS)/DataFetcher.h $(INTERNALS)/DataFetcher.
 	g++ $(OPTS) -c $(INTERNALS)/DataFetcher.cpp $(INCLUDES) -o $(INTERNALS)/DataFetcher.o
 $(INTERNALS)/StreamingDataFetcher.o: $(INTERNALS)/StreamingDataFetcher.h $(INTERNALS)/StreamingDataFetcher.cpp
 	g++ $(OPTS) -c $(INTERNALS)/StreamingDataFetcher.cpp $(INCLUDES) -o $(INTERNALS)/StreamingDataFetcher.o
+$(INTERNALS)/KernelManager.o: $(INTERNALS)/KernelManager.h $(INTERNALS)/KernelManager.cpp $(INTERNALS)/InitPerKernel.h
+	g++ $(OPTS) -c $(INTERNALS)/KernelManager.cpp $(INCLUDES) -o $(INTERNALS)/KernelManager.o
+$(INTERNALS)/InitPerKernel.o: $(INTERNALS)/InitPerKernel.h $(INTERNALS)/InitPerKernel.cpp
+	g++ $(OPTS) -c $(INTERNALS)/InitPerKernel.cpp $(INCLUDES) -o $(INTERNALS)/InitPerKernel.o
 clean:
 	rm $(STATISTICS)/*.o $(INTERNALS)/*.o libflash.so
