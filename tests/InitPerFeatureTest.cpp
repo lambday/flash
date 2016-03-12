@@ -43,10 +43,16 @@ void test1()
 	auto feats_p = new feat_type(data_p);
 
 	DataManager mgr(num_distributions);
+
+	// checking non const samples_at
 	mgr.samples_at(0) = feats_p;
 	auto stored_feats = mgr.samples_at(0);
-
 	ASSERT(feats_p == stored_feats);
+
+	// checking const samples_at
+	const DataManager& cmgr = mgr;
+	auto stored_feats2 = cmgr.samples_at(0);
+	ASSERT(feats_p == stored_feats2);
 }
 
 int main()

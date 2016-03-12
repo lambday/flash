@@ -54,6 +54,7 @@ private:
 	std::unique_ptr<Self> impl;
 protected:
 	internal::DataManager& get_data_manager();
+	const internal::DataManager& get_data_manager() const;
 };
 
 }

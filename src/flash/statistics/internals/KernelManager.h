@@ -33,41 +33,48 @@ class CKernel;
 namespace internal
 {
 
-struct InitPerKernel
+class InitPerKernel
 {
-	friend class KernelManager;
-	InitPerKernel(KernelManager& km, index_t i) : kernel_manager(km), index(i)
+public:
+	explicit InitPerKernel(std::shared_ptr<CKernel>& kernel) : m_kernel(kernel)
 	{
 	}
-	operator const CKernel*() const
+	~InitPerKernel()
 	{
-		return kernel_manager.m_kernels[index].get();
 	}
 	InitPerKernel& operator=(CKernel* kernel)
 	{
 		SG_REF(kernel);
-		kernel_manager.m_kernels[index] = std::shared_ptr<CKernel>(kernel, [](auto& ptr) { SG_UNREF(ptr); });
+		m_kernel = std::shared_ptr<CKernel>(kernel, [](auto& ptr) { SG_UNREF(ptr); });
 		return *this;
 	}
-	const index_t index;
-	KernelManager& kernel_manager;
+	operator const CKernel*() const
+	{
+		return m_kernels.get();
+	}
+private:
+	std::shared_ptr<CKernel>& m_kernel;
 };
 
 struct PrecomputeKernel
 {
-	friend class KernelManager;
-	PrecomputeKernel(KernelManager& km, index_t i) : kernel_manager(km), index(i)
+	PrecomputeKernel(std::shared_ptr<CKernel>& kernel) : m_kernel(kernel)
+	{
+		// ASSERT that the underlying kernel is not of custom kernel or combined kernel type
+		ASSERT(kernel->get_kernel_type() != K_CUSTOM);
+		ASSERT(kernel->get_kernel_type() != K_COMBINED);
+	}
+	~PrecomputeKernel()
 	{
 	}
 	void with_features(CFeature* feats_a, CFeatures* feats_b)
 	{
 		// TODO
-		// ASSERT that the underlying kernel is not of custom kernel or combined kernel type
 		// create a custom kernel init-ing with the features and replace the backend kernel
 		// with the precomputed one.
+		m_kernel = std::shared_ptr<CKernel>(new CCustomKernel(feats_a, feats_b));
 	}
-	const index_t index;
-	KernelManager& kernel_manager;
+	std::shared_ptr<CKernel>& m_kernel;
 };
 
 class KernelManager
@@ -80,11 +87,11 @@ public:
 	}
 	InitPerKernel kernel_at(index_t i)
 	{
-		return InitPerKernel(*this, i);
+		return InitPerKernel(m_kernels[i]);
 	}
 	PrecomputeKernel precompute_kernel_at(index_t i)
 	{
-		return PrecomputeKernel(*this, i);
+		return PrecomputeKernel(m_kernels[i].get());
 	}
 	~KernelManager()
 	{

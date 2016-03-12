@@ -42,10 +42,19 @@ class CTwoDistributionTest : public CHypothesisTest<TestType>
 public:
 	CTwoDistributionTest();
 	virtual ~CTwoDistributionTest();
+
 	void set_p(CFeatures* samples_from_p);
 	void set_q(CFeatures* samples_from_q);
+
+	const CFeatures* get_p() const;
+	const CFeatures* get_q() const;
+
 	void set_num_samples_p(index_t num_samples_from_p);
 	void set_num_samples_q(index_t num_samples_from_q);
+
+	const index_t get_num_samples_p() const;
+	const index_t get_num_samples_q() const;
+
 	virtual const char* get_name() const;
 };
 

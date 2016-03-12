@@ -42,8 +42,13 @@ class COneDistributionTest : public CHypothesisTest<TestType>
 public:
 	COneDistributionTest();
 	virtual ~COneDistributionTest();
+
 	void set_samples(CFeatures* samples);
+	const CFeatures* get_samples() const;
+
 	void set_num_samples(index_t num_samples);
+	index_t get_num_samples() const;
+
 	virtual const char* get_name() const;
 };
 

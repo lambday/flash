@@ -42,15 +42,18 @@ public:
 	DataManager(const DataManager& other) = delete;
 	DataManager& operator=(const DataManager& other) = delete;
 	~DataManager();
+
 	void set_blocksize(index_t blocksize);
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
-	// make it only available for streaming
-	// something like data_manager.streaming().num_samples_at(0) = 10
-	index_t& num_samples_at(index_t i);
-	index_t get_num_samples();
-	// if we provide an opeartor= in init task per feature that
-	// accepts a file, the samples_at(i) = someFileObject will also work!
+
 	InitPerFeature samples_at(index_t i);
+	const CFeatures* samples_at(index_t i) const;
+
+	index_t& num_samples_at(index_t i);
+	const index_t num_samples_at(index_t i) const;
+
+	index_t get_num_samples();
+
 	void start();
 	std::shared_ptr<NextSamples> next();
 	void end();

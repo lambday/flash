@@ -46,6 +46,12 @@ DataManager& CHypothesisTest<T>::get_data_manager()
 }
 
 template <class T>
+const DataManager& CHypothesisTest<T>::get_data_manager() const
+{
+	return impl->data_manager;
+}
+
+template <class T>
 CHypothesisTest<T>::~CHypothesisTest()
 {
 }
