@@ -37,12 +37,12 @@ KernelManager::~KernelManager()
 {
 }
 
-InitPerKernel KernelManager::set_kernel_at(index_t i)
+InitPerKernel KernelManager::kernel_at(index_t i)
 {
 	return InitPerKernel(m_kernels[i]);
 }
 
-CKernel* KernelManager::get_kernel_at(index_t i) const
+CKernel* KernelManager::kernel_at(index_t i) const
 {
 	ASSERT(i <= m_kernels.size());
 	if (m_precomputed_kernels[i] == nullptr)
@@ -52,7 +52,7 @@ CKernel* KernelManager::get_kernel_at(index_t i) const
 	return m_precomputed_kernels[i].get();
 }
 
-const CKernel* KernelManager::precompute_kernel_at(index_t i)
+void KernelManager::precompute_kernel_at(index_t i)
 {
 	ASSERT(i <= m_kernels.size());
 	auto kernel = m_kernels[i].get();
@@ -60,12 +60,10 @@ const CKernel* KernelManager::precompute_kernel_at(index_t i)
 	{
 		m_precomputed_kernels[i] = std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel));
 	}
-	return get_kernel_at(i);
 }
 
-const CKernel* KernelManager::restore_kernel_at(index_t i)
+void KernelManager::restore_kernel_at(index_t i)
 {
 	ASSERT(i <= m_kernels.size());
 	m_precomputed_kernels[i] = nullptr;
-	return get_kernel_at(i);
 }

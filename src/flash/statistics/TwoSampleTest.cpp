@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <shogun/kernel/Kernel.h>
 #include <flash/statistics/TwoSampleTest.h>
+#include <flash/statistics/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
@@ -28,6 +30,18 @@ CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest()
 
 CTwoSampleTest::~CTwoSampleTest()
 {
+}
+
+void CTwoSampleTest::set_kernel(CKernel* kernel)
+{
+	auto& km = get_kernel_manager();
+	km.kernel_at(0) = kernel;
+}
+
+CKernel* CTwoSampleTest::get_kernel() const
+{
+	const auto& km = get_kernel_manager();
+	return km.kernel_at(0);
 }
 
 const char* CTwoSampleTest::get_name() const

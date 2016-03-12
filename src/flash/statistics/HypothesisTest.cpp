@@ -8,7 +8,7 @@
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; without even the selfied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -19,6 +19,7 @@
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
@@ -27,28 +28,41 @@ using namespace statistics;
 template <class T>
 struct CHypothesisTest<T>::Self
 {
-	Self() : data_manager(num_distributions)
+	Self() : data_manager(num_distributions), kernel_manager(num_kernels)
 	{
 	}
 	DataManager data_manager;
+	KernelManager kernel_manager;
 };
 
 template <class T>
 CHypothesisTest<T>::CHypothesisTest() : CSGObject()
 {
-	impl = std::make_unique<Self>();
+	self = std::make_unique<Self>();
 }
 
 template <class T>
 DataManager& CHypothesisTest<T>::get_data_manager()
 {
-	return impl->data_manager;
+	return self->data_manager;
 }
 
 template <class T>
 const DataManager& CHypothesisTest<T>::get_data_manager() const
 {
-	return impl->data_manager;
+	return self->data_manager;
+}
+
+template <class T>
+KernelManager& CHypothesisTest<T>::get_kernel_manager()
+{
+	return self->kernel_manager;
+}
+
+template <class T>
+const KernelManager& CHypothesisTest<T>::get_kernel_manager() const
+{
+	return self->kernel_manager;
 }
 
 template <class T>

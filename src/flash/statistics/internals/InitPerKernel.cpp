@@ -37,7 +37,7 @@ InitPerKernel& InitPerKernel::operator=(CKernel* kernel)
 	return *this;
 }
 
-InitPerKernel::operator const CKernel*() const
+InitPerKernel::operator CKernel*() const
 {
 	return m_kernel.get();
 }

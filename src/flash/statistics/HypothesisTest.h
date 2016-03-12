@@ -32,6 +32,7 @@ namespace internal
 {
 
 class DataManager;
+class KernelManager;
 
 }
 
@@ -44,6 +45,7 @@ class CHypothesisTest : public CSGObject
 public:
 	using test_type = TestType;
 	enum { num_distributions = test_type::num_feats };
+	enum { num_kernels = test_type::num_kernels };
 
 	CHypothesisTest();
 	virtual ~CHypothesisTest();
@@ -51,10 +53,13 @@ public:
 	virtual const char* get_name() const;
 private:
 	struct Self;
-	std::unique_ptr<Self> impl;
+	std::unique_ptr<Self> self;
 protected:
 	internal::DataManager& get_data_manager();
 	const internal::DataManager& get_data_manager() const;
+
+	internal::KernelManager& get_kernel_manager();
+	const internal::KernelManager& get_kernel_manager() const;
 };
 
 }

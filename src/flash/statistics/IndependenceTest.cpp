@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <shogun/kernel/Kernel.h>
 #include <flash/statistics/IndependenceTest.h>
+#include <flash/statistics/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
@@ -28,6 +30,30 @@ CIndependenceTest::CIndependenceTest() : CTwoDistributionTest()
 
 CIndependenceTest::~CIndependenceTest()
 {
+}
+
+void CIndependenceTest::set_kernel_p(CKernel* kernel_p)
+{
+	auto& km = get_kernel_manager();
+	km.kernel_at(0) = kernel_p;
+}
+
+CKernel* CIndependenceTest::get_kernel_p() const
+{
+	const auto& km = get_kernel_manager();
+	return km.kernel_at(0);
+}
+
+void CIndependenceTest::set_kernel_q(CKernel* kernel_q)
+{
+	auto& km = get_kernel_manager();
+	km.kernel_at(1) = kernel_q;
+}
+
+CKernel* CIndependenceTest::get_kernel_q() const
+{
+	const auto& km = get_kernel_manager();
+	return km.kernel_at(1);
 }
 
 const char* CIndependenceTest::get_name() const

@@ -25,6 +25,8 @@
 namespace shogun
 {
 
+class CKernel;
+
 namespace statistics
 {
 
@@ -33,6 +35,10 @@ class CTwoSampleTest : public CTwoDistributionTest<internal::TwoSampleTest>
 public:
 	CTwoSampleTest();
 	virtual ~CTwoSampleTest();
+
+	void set_kernel(CKernel* kernel);
+	CKernel* get_kernel() const;
+
 	virtual const char* get_name() const;
 };
 

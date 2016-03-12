@@ -38,7 +38,7 @@ private:
 public:
 	~InitPerKernel();
 	InitPerKernel& operator=(CKernel* kernel);
-	operator const CKernel*() const;
+	operator CKernel*() const;
 private:
 	std::shared_ptr<CKernel>& m_kernel;
 };

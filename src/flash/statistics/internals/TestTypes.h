@@ -50,17 +50,20 @@ struct ThreeDistributionTest
 
 struct GoodnessOfFitTest : OneDistributionTest
 {
+	enum { num_kernels = 1 };
 	using return_type = std::shared_ptr<CFeatures>;
 };
 
 struct TwoSampleTest : TwoDistributionTest
 {
+	enum { num_kernels = 1 };
 	using permutation_policy = TwoSampleTestPermutationPolicy;
 	using return_type = std::shared_ptr<CFeatures>;
 };
 
 struct IndependenceTest : TwoDistributionTest
 {
+	enum { num_kernels = 2 };
 	using permutation_policy = IndependenceTestPermutationPolicy;
 	using return_type = std::vector<std::shared_ptr<CFeatures>>;
 };

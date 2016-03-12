@@ -39,11 +39,11 @@ public:
 	KernelManager(index_t num_kernels);
 	~KernelManager();
 
-	InitPerKernel set_kernel_at(index_t i);
-	CKernel* get_kernel_at(index_t i) const;
+	InitPerKernel kernel_at(index_t i);
+	CKernel* kernel_at(index_t i) const;
 
-	const CKernel* precompute_kernel_at(index_t i);
-	const CKernel* restore_kernel_at(index_t i);
+	void precompute_kernel_at(index_t i);
+	void restore_kernel_at(index_t i);
 private:
 	std::vector<std::shared_ptr<CKernel>> m_kernels;
 	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;

@@ -44,16 +44,19 @@ void test1()
 	kernel->set_width(0.5);
 
 	KernelManager mgr(num_kernels);
-	mgr.set_kernel_at(0) = kernel;
-	ASSERT(mgr.get_kernel_at(0)->get_kernel_type() == K_GAUSSIAN);
+	const KernelManager& cmgr = mgr;
 
-	mgr.get_kernel_at(0)->init(feats, feats);
+	mgr.kernel_at(0) = kernel;
+	ASSERT(cmgr.kernel_at(0)->get_kernel_type() == K_GAUSSIAN);
+
+	CKernel* k = cmgr.kernel_at(0);
+	k->init(feats, feats);
 
 	mgr.precompute_kernel_at(0);
-	ASSERT(mgr.get_kernel_at(0)->get_kernel_type() == K_CUSTOM);
+	ASSERT(cmgr.kernel_at(0)->get_kernel_type() == K_CUSTOM);
 
 	mgr.restore_kernel_at(0);
-	ASSERT(mgr.get_kernel_at(0)->get_kernel_type() == K_GAUSSIAN);
+	ASSERT(cmgr.kernel_at(0)->get_kernel_type() == K_GAUSSIAN);
 }
 
 int main()

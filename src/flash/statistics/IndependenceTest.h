@@ -25,6 +25,8 @@
 namespace shogun
 {
 
+class CKernel;
+
 namespace statistics
 {
 
@@ -33,6 +35,13 @@ class CIndependenceTest : public CTwoDistributionTest<internal::IndependenceTest
 public:
 	CIndependenceTest();
 	virtual ~CIndependenceTest();
+
+	void set_kernel_p(CKernel* kernel_p);
+	CKernel* get_kernel_p() const;
+
+	void set_kernel_q(CKernel* kernel_q);
+	CKernel* get_kernel_q() const;
+
 	virtual const char* get_name() const;
 };
 
