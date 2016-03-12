@@ -50,7 +50,7 @@ public:
 	}
 	operator const CKernel*() const
 	{
-		return m_kernels.get();
+		return m_kernel->get();
 	}
 private:
 	std::shared_ptr<CKernel>& m_kernel;
@@ -58,47 +58,71 @@ private:
 
 struct PrecomputeKernel
 {
-	PrecomputeKernel(std::shared_ptr<CKernel>& kernel) : m_kernel(kernel)
+	friend class KernelManager;
+private:
+	explicit PrecomputeKernel(std::shared_ptr<CKernel>& kernel, std::shared_ptr<CCustomKernel>& precomputed_kernel)
 	{
-		// ASSERT that the underlying kernel is not of custom kernel or combined kernel type
-		ASSERT(kernel->get_kernel_type() != K_CUSTOM);
-		ASSERT(kernel->get_kernel_type() != K_COMBINED);
+		// if already precomputed, ignore
+		if (kernel->get_kernel_type() != K_CUSTOM)
+		{
+			precomputed_kernel = kernel;
+		}
+		else
+		{
+			m_precomputed_kernel = std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel));
+		}
 	}
+public:
 	~PrecomputeKernel()
 	{
 	}
-	void with_features(CFeature* feats_a, CFeatures* feats_b)
+	opeartor const CCustomKernel*() const
 	{
-		// TODO
-		// create a custom kernel init-ing with the features and replace the backend kernel
-		// with the precomputed one.
-		m_kernel = std::shared_ptr<CKernel>(new CCustomKernel(feats_a, feats_b));
+		return m_precomputed_kernel->get();
 	}
-	std::shared_ptr<CKernel>& m_kernel;
+private:
+	std::shared_ptr<CCustomKernel>& m_precomputed_kernel;
 };
 
 class KernelManager
 {
 public:
-	KernelManager(index_t num_kernels) : m_num_kernels(num_kernels)
+	KernelManager(index_t num_kernels)
 	{
-		m_kernels.resize(m_num_kernels);
+		m_kernels.resize(num_kernels);
+		m_precomputed_kernels.resize(num_kernels);
 		std::fill(m_kernels.begin(), m_kernels.end(), nullptr);
+		std::fill(m_precomputed_kernels.begin(), m_precomputed_kernels.end(), nullptr);
+	}
+	~KernelManager()
+	{
 	}
 	InitPerKernel kernel_at(index_t i)
 	{
 		return InitPerKernel(m_kernels[i]);
 	}
+	const CKernel* kernel_at(index_t i) const
+	{
+		ASSERT(i <= m_kernels.size());
+		if (m_precomputed_kernels[i] == nullptr)
+		{
+			return m_kernels[i].get();
+		}
+		return m_precomputed_kernels[i].get();
+	}
 	PrecomputeKernel precompute_kernel_at(index_t i)
 	{
-		return PrecomputeKernel(m_kernels[i].get());
+		return PrecomputeKernel(m_kernels[i], m_precomputed_kernels[i]);
 	}
-	~KernelManager()
+	const CKernel* restore_kernel_at(index_t i)
 	{
+		ASSERT(i <= m_kernels.size());
+		m_precomputed_kernels[i] = nullptr;
+		return m_kernels[i];
 	}
 private:
-	const index_t m_num_kernels;
 	std::vector<std::shared_ptr<CKernel>> m_kernels;
+	std::vector<std::shared_ptr<CCustomKernel>> m_precomputed_kernels;
 };
 
 }
