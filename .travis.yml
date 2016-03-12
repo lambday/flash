@@ -1,7 +1,9 @@
+sudo: required
 language: cpp
-
 compiler:
   - gcc
-
+before_script:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y valgrind
 script:
   - ./sanity.sh
