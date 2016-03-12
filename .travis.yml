@@ -4,4 +4,5 @@ compiler:
   - gcc
 
 script:
-  - ./sanity.sh
+  - cd src; make; cd ..
+  - make

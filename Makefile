@@ -1,5 +1,5 @@
 OPTS	 = -O3 -std=c++14
-INCLUDES = -Isrc -I/usr/include/eigen3
+INCLUDES = -Isrc
 LIBS	 = -Lsrc -lflash -lshogun
 TESTS    = tests
 all: $(TESTS)/NextSamplesTest $(TESTS)/DataFetcherTest $(TESTS)/StreamingDataFetcherTest \
