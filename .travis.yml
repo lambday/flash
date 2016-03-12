@@ -1,1 +1,16 @@
-
+sudo: required
+language: cpp
+notifications:
+  email: false
+matrix:
+  fast_finish: true
+  include:
+    - compiler: gcc
+      services: docker
+    - compiler: clang
+      services: docker
+before_install:
+  - echo $CC; echo $CXX
+script:
+  - docker exec -t devenv /bin/sh -c "cd /opt/flash/src; make -j2"
+  - docker exec -t devenv /bin/sh -c "cd /opt/flash; ./sanity.sh"
