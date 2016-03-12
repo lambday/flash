@@ -1,17 +1,7 @@
-sudo: required
 language: cpp
-notifications:
-  email: false
-matrix:
-  fast_finish: true
-  include:
-    - compiler: gcc
-      services: docker
-    - compiler: clang
-      services: docker
-before_install:
-  - docker pull lambday/flash-dev
-  - echo $CC; echo $CXX
-  - docker run -t -d -P -e "CC=$CC" -e "CXX=$CXX" --name devenv -v "$PWD" lambday/flash-dev /bin/sh -c "bash"
+
+compiler:
+  - gcc
+
 script:
-  - docker exec -t devenv /bin/sh -c "./sanity.sh"
+  - make
