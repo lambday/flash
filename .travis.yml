@@ -11,6 +11,6 @@ matrix:
       services: docker
 before_install:
   - echo $CC; echo $CXX
-    docker run -t -d -P -e "CC=$CC" -e "CXX=$CXX" --name devenv -v "$PWD"
+  - docker run -t -d -P -e "CC=$CC" -e "CXX=$CXX" --name devenv -v "$PWD"
 script:
   - docker exec -t devenv /bin/sh -c "./sanity.sh"
