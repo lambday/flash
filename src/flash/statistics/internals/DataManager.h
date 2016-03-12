@@ -59,8 +59,6 @@ public:
 	void end();
 	void reset();
 private:
-	const index_t m_num_distributions;
-	// multiple fetchers option is there for heterogenous features
 	std::vector<std::unique_ptr<DataFetcher>> fetchers;
 };
 

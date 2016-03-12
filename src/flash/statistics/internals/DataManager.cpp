@@ -26,9 +26,9 @@
 using namespace shogun;
 using namespace internal;
 
-DataManager::DataManager(index_t num_distributions) : m_num_distributions(num_distributions)
+DataManager::DataManager(index_t num_distributions)
 {
-	fetchers.resize(m_num_distributions);
+	fetchers.resize(num_distributions);
 	std::fill(fetchers.begin(), fetchers.end(), nullptr);
 }
 
@@ -120,7 +120,7 @@ void DataManager::start()
 std::shared_ptr<NextSamples> DataManager::next()
 {
 	std::cout << "DataManager::next()" << std::endl;
-	auto next_samples = std::make_shared<NextSamples>(m_num_distributions);
+	auto next_samples = std::make_shared<NextSamples>(fetchers.size());
 	for (auto i = 0; i < fetchers.size(); ++i)
 	{
 		next_samples->at(i) = fetchers[i]->next();
