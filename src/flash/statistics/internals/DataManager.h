@@ -37,7 +37,6 @@ class NextSamples;
 
 class DataManager
 {
-	friend class InitPerFeature;
 public:
 	DataManager(index_t num_distributions);
 	DataManager(const DataManager& other) = delete;

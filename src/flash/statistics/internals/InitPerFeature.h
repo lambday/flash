@@ -19,6 +19,7 @@
 #ifndef INIT_PER_FEATURE_H__
 #define INIT_PER_FEATURE_H__
 
+#include <memory>
 #include <shogun/lib/common.h>
 
 namespace shogun
@@ -29,19 +30,19 @@ class CFeatures;
 namespace internal
 {
 
-class DataManager;
+class DataFetcher;
 
 class InitPerFeature
 {
 public:
-	explicit InitPerFeature(DataManager& dm, index_t i);
+	explicit InitPerFeature(std::unique_ptr<DataFetcher>& fetcher);
 	InitPerFeature& operator=(CFeatures* feats);
 	operator const CFeatures*() const;
 	~InitPerFeature();
 private:
-	const index_t index;
-	DataManager& data_manager;
+	std::unique_ptr<DataFetcher>& m_fetcher;
 };
+
 }
 
 }

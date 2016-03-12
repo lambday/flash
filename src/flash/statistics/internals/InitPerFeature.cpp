@@ -17,7 +17,7 @@
  */
 
 #include <iostream> // TODO remove
-#include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/internals/InitPerFeature.h>
 #include <flash/statistics/internals/DataFetcher.h>
 #include <flash/statistics/internals/DataFetcherFactory.h>
 #include <shogun/features/Features.h>
@@ -25,10 +25,9 @@
 using namespace shogun;
 using namespace internal;
 
-InitPerFeature::InitPerFeature(DataManager& dm, index_t i) : data_manager(dm), index(i)
+InitPerFeature::InitPerFeature(std::unique_ptr<DataFetcher>& fetcher) : m_fetcher(fetcher)
 {
-	std::cout << "InitPerFeature::Constructor() with i = " << i << std::endl;
-	ASSERT(i < data_manager.fetchers.size());
+	std::cout << "InitPerFeature::Constructor()" << std::endl;
 }
 
 InitPerFeature::~InitPerFeature()
@@ -39,12 +38,12 @@ InitPerFeature::~InitPerFeature()
 InitPerFeature& InitPerFeature::operator=(CFeatures* feats)
 {
 	std::cout << "InitPerFeature::Assignment() : setting the fetcher" << std::endl;
-	std::unique_ptr<DataFetcher> fetcher(DataFetcherFactory::get_instance(feats));
-	data_manager.fetchers[index] = std::move(fetcher);
+	m_fetcher = std::unique_ptr<DataFetcher>(DataFetcherFactory::get_instance(feats));
 	return *this;
 }
 
 InitPerFeature::operator const CFeatures*() const
 {
-	return data_manager.fetchers[index]->m_samples.get();
+	std::cout << "InitPerFeature::cast() : casting to feature type" << std::endl;
+	return m_fetcher->m_samples.get();
 }

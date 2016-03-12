@@ -36,12 +36,6 @@ DataManager::~DataManager()
 {
 }
 
-index_t& DataManager::num_samples_at(index_t i)
-{
-	ASSERT(i < fetchers.size());
-	return fetchers[i]->m_num_samples;
-}
-
 index_t DataManager::get_num_samples()
 {
 	int n = 0;
@@ -93,7 +87,15 @@ void DataManager::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 InitPerFeature DataManager::samples_at(index_t i)
 {
 	std::cout << "DataManager::samples_at()" << std::endl;
-	return InitPerFeature(*this, i);
+	ASSERT(i < fetchers.size());
+	return InitPerFeature(fetchers[i]);
+}
+
+index_t& DataManager::num_samples_at(index_t i)
+{
+	std::cout << "DataManager::num_samples_at()" << std::endl;
+	ASSERT(i < fetchers.size());
+	return fetchers[i]->m_num_samples;
 }
 
 void DataManager::start()
