@@ -63,6 +63,9 @@ void KernelManager::precompute_kernel_at(index_t i)
 	auto kernel = m_kernels[i].get();
 	if (kernel->get_kernel_type() != K_CUSTOM)
 	{
+		// TODO give option to use different policies to precompute the kernel matrix
+		// this one here is default setting : use shogun's pthread parallelism to compute
+		// the kernel matrix.
 		m_precomputed_kernels[i] = std::shared_ptr<CCustomKernel>(new CCustomKernel(kernel));
 	}
 }
