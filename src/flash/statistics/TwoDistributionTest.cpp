@@ -41,7 +41,7 @@ void CTwoDistributionTest<T>::set_p(CFeatures* samples_from_p)
 }
 
 template <typename T>
-const CFeatures* CTwoDistributionTest<T>::get_p() const
+CFeatures* CTwoDistributionTest<T>::get_p() const
 {
 	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(0);
@@ -55,7 +55,7 @@ void CTwoDistributionTest<T>::set_q(CFeatures* samples_from_q)
 }
 
 template <typename T>
-const CFeatures* CTwoDistributionTest<T>::get_q() const
+CFeatures* CTwoDistributionTest<T>::get_q() const
 {
 	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(1);

@@ -41,7 +41,7 @@ void COneDistributionTest<T>::set_samples(CFeatures* samples)
 }
 
 template <typename T>
-const CFeatures* COneDistributionTest<T>::get_samples() const
+CFeatures* COneDistributionTest<T>::get_samples() const
 {
 	const auto& dm = CHypothesisTest<T>::get_data_manager();
 	return dm.samples_at(0);

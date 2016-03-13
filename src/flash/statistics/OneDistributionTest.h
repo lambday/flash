@@ -44,7 +44,7 @@ public:
 	virtual ~COneDistributionTest();
 
 	void set_samples(CFeatures* samples);
-	const CFeatures* get_samples() const;
+	CFeatures* get_samples() const;
 
 	void set_num_samples(index_t num_samples);
 	index_t get_num_samples() const;

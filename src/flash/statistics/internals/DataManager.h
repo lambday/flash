@@ -47,7 +47,7 @@ public:
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 
 	InitPerFeature samples_at(index_t i);
-	const CFeatures* samples_at(index_t i) const;
+	CFeatures* samples_at(index_t i) const;
 
 	index_t& num_samples_at(index_t i);
 	const index_t num_samples_at(index_t i) const;

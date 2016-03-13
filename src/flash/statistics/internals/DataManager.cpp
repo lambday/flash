@@ -91,7 +91,7 @@ InitPerFeature DataManager::samples_at(index_t i)
 	return InitPerFeature(fetchers[i]);
 }
 
-const CFeatures* DataManager::samples_at(index_t i) const
+CFeatures* DataManager::samples_at(index_t i) const
 {
 	std::cout << "DataManager::samples_at() const" << std::endl;
 	ASSERT(i < fetchers.size());
