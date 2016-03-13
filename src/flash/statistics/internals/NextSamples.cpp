@@ -24,31 +24,35 @@
 using namespace shogun;
 using namespace internal;
 
-NextSamples::NextSamples(index_t num_distributions)
+NextSamples::NextSamples(index_t num_distributions) : m_num_blocks(0)
 {
 	next_samples.resize(num_distributions);
-	std::fill(next_samples.begin(), next_samples.end(), nullptr);
 }
 
 NextSamples::~NextSamples()
 {
 }
 
-std::shared_ptr<CFeatures>& NextSamples::operator[](index_t i)
+std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i)
 {
 	std::cout << "NextSamples::acessing fetched sample at " << i << " using non-const access operator" << std::endl;
 	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
 	return next_samples[i];
 }
 
-const std::shared_ptr<CFeatures> NextSamples::operator[](index_t i) const
+const std::vector<std::shared_ptr<CFeatures>>& NextSamples::operator[](index_t i) const
 {
 	std::cout << "NextSamples::acessing fetched sample at " << i << " using const access operator" << std::endl;
 	REQUIRE(i >= 0 && i < next_samples.size(), "index (%d) must be between [0,%d]!\n", i, next_samples.size() - 1);
 	return next_samples[i];
 }
 
+const index_t NextSamples::num_blocks() const
+{
+	return m_num_blocks;
+}
+
 const bool NextSamples::empty() const
 {
-	return std::any_of(next_samples.cbegin(), next_samples.cend(), [](const auto& ptr) { return ptr == nullptr; });
+	return std::any_of(next_samples.cbegin(), next_samples.cend(), [](const auto& f) { return f.size() == 0; });
 }

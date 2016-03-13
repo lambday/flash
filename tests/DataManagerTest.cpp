@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 #include <algorithm>
 #include <shogun/base/init.h>
 #include <shogun/lib/SGMatrix.h>
@@ -48,24 +49,32 @@ void test1()
 	DataManager mgr(num_distributions);
 	mgr.samples_at(0) = feats_p;
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
 
@@ -93,28 +102,36 @@ void test2()
 	mgr.samples_at(0) = feats_p;
 	mgr.samples_at(1) = feats_q;
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
 
@@ -124,7 +141,7 @@ void test3()
 	const index_t num_vec_p = 8;
 	const index_t num_vec_q = 12;
 	const index_t blocksize = 5;
-	const index_t num_blocks_per_burst = 1;
+	const index_t num_blocks_per_burst = 3;
 	const index_t num_distributions = 2;
 
 	SGMatrix<float64_t> data_p(dim, num_vec_p);
@@ -143,28 +160,36 @@ void test3()
 	mgr.samples_at(0) = feats_p;
 	mgr.samples_at(1) = feats_q;
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
 
@@ -190,24 +215,32 @@ void test4()
 	mgr.num_samples_at(0) = num_vec;
 
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
 
@@ -242,28 +275,36 @@ void test5()
 	mgr.num_samples_at(1) = num_vec;
 
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
 
@@ -273,7 +314,7 @@ void test6()
 	const index_t num_vec_p = 8;
 	const index_t num_vec_q = 12;
 	const index_t blocksize = 5;
-	const index_t num_blocks_per_burst = 1;
+	const index_t num_blocks_per_burst = 3;
 	const index_t num_distributions = 2;
 
 	SGMatrix<float64_t> data_p(dim, num_vec_p);
@@ -299,30 +340,39 @@ void test6()
 	mgr.num_samples_at(1) = num_vec_q;
 
 	mgr.start();
-	auto nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	auto next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 
 	mgr.reset();
 	mgr.set_blocksize(blocksize);
 	mgr.set_num_blocks_per_burst(num_blocks_per_burst);
 
-	nxt_samples = mgr.next();
-	while (!nxt_samples.empty())
+	next_burst = mgr.next();
+	while (!next_burst.empty())
 	{
-		auto tmp = static_cast<feat_type*>(nxt_samples[0].get());
-		tmp->get_feature_matrix().display_matrix();
-		tmp = static_cast<feat_type*>(nxt_samples[1].get());
-		tmp->get_feature_matrix().display_matrix();
-		nxt_samples = mgr.next();
+		for (auto i = 0; i < next_burst.num_blocks(); ++i)
+		{
+			std::cout << "block " << i << std::endl;
+			auto tmp = static_cast<feat_type*>(next_burst[0][i].get());
+			tmp->get_feature_matrix().display_matrix();
+			tmp = static_cast<feat_type*>(next_burst[1][i].get());
+			tmp->get_feature_matrix().display_matrix();
+		}
+		next_burst = mgr.next();
 	}
 }
+
 int main()
 {
 	init_shogun_with_defaults();

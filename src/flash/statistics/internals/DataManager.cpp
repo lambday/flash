@@ -121,9 +121,37 @@ NextSamples DataManager::next()
 {
 	std::cout << "DataManager::next()" << std::endl;
 	NextSamples next_samples(fetchers.size());
+	// fetch a number of blocks (per burst) from each distribution
 	for (auto i = 0; i < fetchers.size(); ++i)
 	{
-		next_samples[i] = fetchers[i]->next();
+		auto feats = fetchers[i]->next();
+		if (feats != nullptr)
+		{
+			auto blocksize = fetchers[i]->m_block_details.m_blocksize;
+			auto num_blocks_curr_burst = feats->get_num_vectors() / blocksize;
+			if (next_samples.m_num_blocks == 0)
+			{
+				next_samples.m_num_blocks = num_blocks_curr_burst;
+			}
+			else
+			{
+				ASSERT(next_samples.m_num_blocks == num_blocks_curr_burst);
+			}
+
+			// next samples are gonna hold one feats obj per block for this burst
+			next_samples[i].resize(num_blocks_curr_burst);
+			SGVector<index_t> inds(blocksize);
+			std::iota(inds.vector, inds.vector + inds.vlen, 0);
+			for (auto j = 0; j < num_blocks_curr_burst; ++j)
+			{
+				// subset each block and clone it separately
+				feats->add_subset(inds);
+				auto block = static_cast<CFeatures*>(feats->clone());
+				next_samples[i][j] = std::shared_ptr<CFeatures>(block, [](auto& ptr) { SG_UNREF(ptr); });
+				feats->remove_subset();
+				std::for_each(inds.vector, inds.vector + inds.vlen, [&blocksize](auto& val) { val += blocksize; });
+			}
+		}
 	}
 	return next_samples;
 }

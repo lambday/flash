@@ -60,11 +60,38 @@ private:
 	NextSamples(index_t num_distributions);
 public:
 	~NextSamples();
-	std::shared_ptr<CFeatures>& operator[](index_t i);
-	const std::shared_ptr<CFeatures> operator[](index_t i) const;
+	/**
+	 * Contains a number of blocks (of samples) fetched in the current burst from a
+	 * specified distribution.
+	 *
+	 * @param i determines samples from which distribution
+	 * @return a vector of fetched blocks of features from the specified distribution
+	 */
+	std::vector<std::shared_ptr<CFeatures>>& operator[](index_t i);
+
+	/**
+	 * Const version of the above. This is called when a const instance of NextSamples
+	 * is returned.
+	 */
+	const std::vector<std::shared_ptr<CFeatures>>& operator[](index_t i) const;
+
+	/**
+	 * @return number of blocks fetched from each of the distribution. It is assumed
+	 * that this number is same for all the distributions.
+	 */
+	const index_t num_blocks() const;
+
+	/**
+	 * This returns true if any of the distribution fetched 0 blocks (checked from the
+	 * size of the vector for that distribution)
+	 *
+	 * @return whether this instance does not contain any blocks of samples from any
+	 * of the distribution
+	 */
 	const bool empty() const;
 private:
-	std::vector<std::shared_ptr<CFeatures>> next_samples;
+	index_t m_num_blocks;
+	std::vector<std::vector<std::shared_ptr<CFeatures>>> next_samples;
 };
 
 }
