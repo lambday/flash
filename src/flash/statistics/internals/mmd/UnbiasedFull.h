@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MMD_UNBIASED_FULL_H_
-#define MMD_UNBIASED_FULL_H_
+#ifndef UNBIASED_FULL_H_
+#define UNBIASED_FULL_H_
 
 #include <shogun/lib/common.h>
 
@@ -27,16 +27,35 @@ namespace shogun
 namespace internal
 {
 
-struct MMDUnbiasedFull
+namespace mmd
 {
-	using return_type = float64_t;
 
-	template <typename MatrixType>
-	return_type operator()(MatrixType kernel_matrix, index_t n_x);
+template <class MatrixType>
+struct UnbiasedFull
+{
+	using return_type = typename MatrixType::Scalar;
+	UnbiasedFull(index_t n);
+
+	return_type operator()(MatrixType kernel_matrix);
+
+	index_t n_x;
+};
+
+template <class T>
+struct UnbiasedFull<SGMatrix<T>>
+{
+	using return_type = T;
+	UnbiasedFull(index_t n);
+
+	T operator()(SGMatrix<T> kernel_matrix);
+
+	index_t n_x;
 };
 
 }
 
 }
 
-#endif // MMD_UNBIASED_FULL_H_
+}
+
+#endif // UNBIASED_FULL_H_
