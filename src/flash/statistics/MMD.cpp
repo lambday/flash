@@ -32,7 +32,7 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false)
+CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false), simulate_h0(false)
 {
 }
 
@@ -52,11 +52,12 @@ float64_t CMMD::compute_statistic()
 	DataManager& dm = get_data_manager();
 	const KernelManager& km = get_kernel_manager();
 
-	dm.start();
-	auto next_burst = dm.next();
-
 	auto num_samples_p = 0;
 	float64_t statistic = 0;
+	auto term_counter = 1;
+
+	dm.start();
+	auto next_burst = dm.next();
 
 	while (!next_burst.empty())
 	{
@@ -107,6 +108,11 @@ float64_t CMMD::compute_statistic()
 		}
 
 		// TODO averaging of the mmds logic does here
+		for (auto i = 0; i < mmds.size(); ++i)
+		{
+			auto delta = mmds[i] - statistic;
+			statistic += delta / term_counter++;
+		}
 
 		next_burst = dm.next();
 	}

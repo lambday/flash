@@ -35,7 +35,6 @@ float64_t UnbiasedFull::operator()(SGMatrix<float64_t> km)
 	using Block = const Eigen::Block<Eigen::Map<MatrixXt>>;
 
 	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
-
 	index_t n_y = km.num_rows - n_x;
 
 	Block& b_x = map.block(0, 0, n_x, n_x);

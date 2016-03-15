@@ -35,18 +35,17 @@ using namespace internal;
 
 void test1()
 {
-	const index_t dim = 3;
-	const index_t num_vec = 8;
-	const index_t blocksize = 2;
-	const index_t num_blocks_per_burst = 2;
-	const index_t num_distributions = 2;
+	const index_t dim = 2;
+	const index_t num_vec = 6;
 
 	SGMatrix<float64_t> data_p(dim, num_vec);
-	std::iota(data_p.matrix, data_p.matrix + dim * num_vec, 0);
+	std::iota(data_p.matrix, data_p.matrix + dim * num_vec, 2);
+	std::for_each(data_p.matrix, data_p.matrix + dim * num_vec, [](auto& v) { v = sin(v); });
 	data_p.display_matrix();
 
 	SGMatrix<float64_t> data_q(dim, num_vec);
-	std::iota(data_q.matrix, data_q.matrix + dim * num_vec, dim * num_vec);
+	std::iota(data_q.matrix, data_q.matrix + dim * num_vec, 2);
+	std::for_each(data_q.matrix, data_q.matrix + dim * num_vec, [](auto& v) { v = log(v); });
 	data_q.display_matrix();
 
 	auto feats_p = new CDenseFeatures<float64_t>(data_p);
@@ -61,6 +60,7 @@ void test1()
 	mmd->set_kernel(kernel);
 
 	auto statistic = mmd->compute_statistic_unbiased_full();
+	std::cout << statistic << std::endl;
 }
 
 int main()
