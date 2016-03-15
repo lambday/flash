@@ -58,8 +58,9 @@ void test1()
 	mmd->set_p(feats_p);
 	mmd->set_q(feats_q);
 	mmd->set_kernel(kernel);
+	mmd->set_statistic_type(S_TYPE::S_UNBIASED_FULL);
 
-	auto statistic = mmd->compute_statistic_unbiased_full();
+	auto statistic = mmd->compute_statistic();
 	std::cout << statistic << std::endl;
 }
 

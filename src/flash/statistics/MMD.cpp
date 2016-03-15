@@ -32,7 +32,8 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false), simulate_h0(false)
+CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false),
+simulate_h0(false), statistic_type(S_TYPE::S_UNBIASED_FULL)
 {
 }
 
@@ -40,9 +41,13 @@ CMMD::~CMMD()
 {
 }
 
-float64_t CMMD::compute_statistic_unbiased_full()
+float64_t CMMD::compute_statistic()
 {
-	return compute_statistic<mmd::UnbiasedFull>();
+	switch (statistic_type)
+	{
+		case S_TYPE::S_UNBIASED_FULL: return compute_statistic<mmd::UnbiasedFull>();
+		default : return 0 ; // TODO write some error msg
+	};
 }
 
 template <class Statistic>
@@ -107,7 +112,6 @@ float64_t CMMD::compute_statistic()
 			mmds = cm.use_cpu().compute(Statistic(num_samples_p));
 		}
 
-		// TODO averaging of the mmds logic does here
 		for (auto i = 0; i < mmds.size(); ++i)
 		{
 			auto delta = mmds[i] - statistic;
@@ -130,6 +134,11 @@ void CMMD::use_gpu(bool gpu)
 void CMMD::set_simulate_h0(bool h0)
 {
 	simulate_h0 = h0;
+}
+
+void CMMD::set_statistic_type(S_TYPE stype)
+{
+	statistic_type = stype;
 }
 
 const char* CMMD::get_name() const

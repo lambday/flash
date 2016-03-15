@@ -29,23 +29,32 @@ class CKernel;
 namespace statistics
 {
 
+enum class S_TYPE
+{
+	S_UNBIASED_FULL,
+	S_UNBIASED_INCOMPLETE,
+	S_BIASED
+};
+
 class CMMD : public CTwoSampleTest
 {
 public:
 	CMMD();
 	virtual ~CMMD();
 
-	float64_t compute_statistic_unbiased_full();
+	float64_t compute_statistic();
 //	float64_t compute_statistic(bool multiple_kernels);
 
 	void use_gpu(bool gpu);
 	void set_simulate_h0(bool h0);
+	void set_statistic_type(S_TYPE stype);
 	virtual const char* get_name() const;
 
 protected:
 	template <class Statistic> float64_t compute_statistic();
 	bool use_gpu_for_computation;
 	bool simulate_h0;
+	S_TYPE statistic_type;
 };
 
 }
