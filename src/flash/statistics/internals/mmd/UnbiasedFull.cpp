@@ -25,15 +25,13 @@ using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-template <class MatrixType>
-UnbiasedFull<MatrixType>::UnbiasedFull(index_t n) : n_x(n)
+UnbiasedFull::UnbiasedFull(index_t n) : n_x(n)
 {
 }
 
-template <typename T>
-T UnbiasedFull<SGMatrix<T>>::operator()(SGMatrix<T> km)
+float64_t UnbiasedFull::operator()(SGMatrix<float64_t> km)
 {
-	using MatrixXt = const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
+	using MatrixXt = const Eigen::MatrixXd;
 	using Block = const Eigen::Block<Eigen::Map<MatrixXt>>;
 
 	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
@@ -54,6 +52,3 @@ T UnbiasedFull<SGMatrix<T>>::operator()(SGMatrix<T> km)
 	return statistic;
 
 }
-
-template struct UnbiasedFull<SGMatrix<float32_t>>;
-template struct UnbiasedFull<SGMatrix<float64_t>>;

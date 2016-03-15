@@ -24,30 +24,22 @@
 namespace shogun
 {
 
+template <typename T> class SGMatrix;
+template <typename T> class CGPUMatrix;
+
 namespace internal
 {
 
 namespace mmd
 {
 
-template <class MatrixType>
 struct UnbiasedFull
 {
-	using return_type = typename MatrixType::Scalar;
+	using return_type = float64_t;
 	UnbiasedFull(index_t n);
 
-	return_type operator()(MatrixType kernel_matrix);
-
-	index_t n_x;
-};
-
-template <class T>
-struct UnbiasedFull<SGMatrix<T>>
-{
-	using return_type = T;
-	UnbiasedFull(index_t n);
-
-	T operator()(SGMatrix<T> kernel_matrix);
+	return_type operator()(SGMatrix<float64_t> kernel_matrix);
+//	return_type operator()(CGPUMatrix<float64_t> kernel_matrix);
 
 	index_t n_x;
 };

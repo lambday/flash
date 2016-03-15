@@ -38,7 +38,11 @@ public:
 	float64_t compute_statistic();
 //	float64_t compute_statistic(bool multiple_kernels);
 
+	void use_gpu(bool gpu);
 	virtual const char* get_name() const;
+
+private:
+	bool use_gpu_for_computation;
 };
 
 }
