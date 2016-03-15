@@ -60,7 +60,7 @@ void test1()
 	mmd->set_q(feats_q);
 	mmd->set_kernel(kernel);
 
-	auto statistic = mmd->compute_statistic();
+	auto statistic = mmd->compute_statistic_unbiased_full();
 }
 
 int main()

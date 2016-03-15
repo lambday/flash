@@ -40,6 +40,12 @@ CMMD::~CMMD()
 {
 }
 
+float64_t CMMD::compute_statistic_unbiased_full()
+{
+	return compute_statistic<mmd::UnbiasedFull>();
+}
+
+template <class Statistic>
 float64_t CMMD::compute_statistic()
 {
 	ComputationManager cm;
@@ -83,15 +89,15 @@ float64_t CMMD::compute_statistic()
 			}
 		}
 
-		std::vector<typename mmd::UnbiasedFull::return_type> mmds;
+		std::vector<typename Statistic::return_type> mmds;
 
 		if (use_gpu_for_computation)
 		{
-			mmds = cm.use_gpu().compute(mmd::UnbiasedFull(num_samples_p));
+			mmds = cm.use_gpu().compute(Statistic(num_samples_p));
 		}
 		else
 		{
-			mmds = cm.use_cpu().compute(mmd::UnbiasedFull(num_samples_p));
+			mmds = cm.use_cpu().compute(Statistic(num_samples_p));
 		}
 
 		// TODO averaging of the mmds logic does here
