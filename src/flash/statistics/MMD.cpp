@@ -20,6 +20,7 @@
 #include <memory>
 #include <iostream>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
 #include <shogun/features/Features.h>
 #include <flash/statistics/MMD.h>
 #include <flash/statistics/internals/NextSamples.h>
@@ -67,6 +68,7 @@ float64_t CMMD::compute_statistic()
 	while (!next_burst.empty())
 	{
 		cm.num_data(next_burst.num_blocks());
+#pragma omp parallel for
 		for (auto i = 0; i < next_burst.num_blocks(); ++i)
 		{
 			auto block_p = next_burst[0][i];
@@ -88,11 +90,10 @@ float64_t CMMD::compute_statistic()
 
 			try
 			{
-				km.kernel_at(0)->init(block_p_q, block_p_q);
-				get_kernel_manager().precompute_kernel_at(0);
-				cm.data(i) = km.kernel_at(0)->get_kernel_matrix();
-				get_kernel_manager().restore_kernel_at(0);
-				km.kernel_at(0)->remove_lhs_and_rhs();
+				auto kernel = std::unique_ptr<CKernel>(static_cast<CKernel*>(km.kernel_at(0)->clone()));
+				kernel->init(block_p_q, block_p_q);
+				cm.data(i) = std::make_unique<CCustomKernel>(kernel.get())->get_kernel_matrix();
+				kernel->remove_lhs_and_rhs();
 			}
 			catch (ShogunException e)
 			{
