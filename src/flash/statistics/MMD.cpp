@@ -46,13 +46,13 @@ float64_t CMMD::compute_statistic()
 {
 	switch (statistic_type)
 	{
-		case S_TYPE::S_UNBIASED_FULL: return compute_statistic<mmd::UnbiasedFull>();
+		case S_TYPE::S_UNBIASED_FULL: return compute_statistic_variance<mmd::UnbiasedFull>();
 		default : return 0 ; // TODO write some error msg
 	};
 }
 
 template <class Statistic>
-float64_t CMMD::compute_statistic()
+float64_t CMMD::compute_statistic_variance()
 {
 	ComputationManager cm;
 	DataManager& dm = get_data_manager();

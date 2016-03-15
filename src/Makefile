@@ -9,11 +9,11 @@ OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
 			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
-			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o
+			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o
 INTERNAL	= $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
 			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
-			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o
+			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o
 libflash.so: $(OBJECTS)
 	$(CC) $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
 	rm $(OBJECTS)
@@ -53,5 +53,7 @@ $(INTERNALS)/ComputationManager.o: $(INTERNALS)/ComputationManager.h $(INTERNALS
 	$(CC) $(OPTS) -c $(INTERNALS)/ComputationManager.cpp $(INCLUDES) -o $(INTERNALS)/ComputationManager.o
 $(INTERNALS)/mmd/UnbiasedFull.o: $(INTERNALS)/mmd/UnbiasedFull.h $(INTERNALS)/mmd/UnbiasedFull.cpp
 	$(CC) $(OPTS) -c $(INTERNALS)/mmd/UnbiasedFull.cpp $(INCLUDES) -o $(INTERNALS)/mmd/UnbiasedFull.o
+$(INTERNALS)/mmd/WithinBlockDirect.o: $(INTERNALS)/mmd/WithinBlockDirect.h $(INTERNALS)/mmd/WithinBlockDirect.cpp
+	$(CC) $(OPTS) -c $(INTERNALS)/mmd/WithinBlockDirect.cpp $(INCLUDES) -o $(INTERNALS)/mmd/WithinBlockDirect.o
 clean:
 	rm libflash.so

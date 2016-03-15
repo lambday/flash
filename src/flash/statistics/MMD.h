@@ -55,7 +55,7 @@ public:
 	virtual const char* get_name() const;
 
 protected:
-	template <class Statistic> float64_t compute_statistic();
+	template <class Statistic> float64_t compute_statistic_variance();
 	bool use_gpu_for_computation;
 	bool simulate_h0;
 	index_t num_null_samples;
