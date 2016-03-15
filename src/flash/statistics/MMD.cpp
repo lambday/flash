@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <memory>
+#include <iostream>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/features/Features.h>
 #include <flash/statistics/MMD.h>
@@ -62,18 +63,24 @@ float64_t CMMD::compute_statistic()
 			num_samples_p = block_p->get_num_vectors();
 
 			// TODO permutation logic goes here
-			auto block_p_q = std::shared_ptr<CFeatures>(block_p->create_merged_copy(block_q.get()),
-					[](auto& ptr) { SG_UNREF(ptr); });
+			auto block_p_q = block_p->create_merged_copy(block_q.get());
 
 			block_p = nullptr;
 			block_q = nullptr;
 
-			km.kernel_at(0)->init(block_p_q.get(), block_p_q.get());
-			get_kernel_manager().precompute_kernel_at(0);
-
-			block_p_q = nullptr;
-
-			cm.data(i) = km.kernel_at(0)->get_kernel_matrix();
+			try
+			{
+				km.kernel_at(0)->init(block_p_q, block_p_q);
+				get_kernel_manager().precompute_kernel_at(0);
+				cm.data(i) = km.kernel_at(0)->get_kernel_matrix();
+				get_kernel_manager().restore_kernel_at(0);
+				km.kernel_at(0)->remove_lhs_and_rhs();
+			}
+			catch (ShogunException e)
+			{
+				std::cerr << e.get_exception_string() << std::endl;
+				std::cerr << "Try using less number of blocks per burst" << std::endl;
+			}
 		}
 
 		std::vector<typename mmd::UnbiasedFull::return_type> mmds;

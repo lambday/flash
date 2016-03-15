@@ -7,3 +7,4 @@ valgrind tests/DataFetcherFactoryTest --leak-check=full --track-origins=yes
 valgrind tests/InitPerFeatureTest --leak-check=full --track-origins=yes
 valgrind tests/DataManagerTest --leak-check=full --track-origins=yes
 valgrind tests/KernelManagerTest --leak-check=full --track-origins=yes
+valgrind tests/MMDTest --leak-check=full --track-origins=yes
