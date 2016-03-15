@@ -18,12 +18,10 @@
 
 #include <shogun/lib/SGMatrix.h>
 #include <flash/statistics/internals/ComputationManager.h>
+#include <flash/statistics/internals/mmd/UnbiasedFull.h>
 
-namespace shogun
-{
-
-namespace internal
-{
+using namespace shogun;
+using namespace internal;
 
 ComputationManager::ComputationManager()
 {
@@ -76,6 +74,4 @@ const ComputationManager& ComputationManager::use_cpu()
 	return *this;
 }
 
-}
-
-}
+template std::vector<typename mmd::UnbiasedFull::return_type> ComputationManager::compute(mmd::UnbiasedFull operation) const;

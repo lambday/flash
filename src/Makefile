@@ -1,16 +1,18 @@
 SRC			= flash
-INCLUDES	= -I.
+INCLUDES	= -I. -I/usr/include/eigen3
 OPTS		= -O3 -std=c++14 -fPIC
 STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(STATISTICS)/TwoSampleTest.o \
-			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o \
+			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o $(STATISTICS)/MMD.o \
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o
+			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
+			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o
 INTERNAL	= $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o
+			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
+			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o
 libflash.so: $(OBJECTS)
 	g++ $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
 	rm $(STATISTICS)/*.o $(INTERNALS)/*.o
@@ -26,6 +28,8 @@ $(STATISTICS)/TwoSampleTest.o: $(STATISTICS)/TwoSampleTest.h $(STATISTICS)/TwoSa
 	g++ $(OPTS) -c $(STATISTICS)/TwoSampleTest.cpp $(INCLUDES) -o $(STATISTICS)/TwoSampleTest.o
 $(STATISTICS)/IndependenceTest.o: $(STATISTICS)/IndependenceTest.h $(STATISTICS)/IndependenceTest.cpp
 	g++ $(OPTS) -c $(STATISTICS)/IndependenceTest.cpp $(INCLUDES) -o $(STATISTICS)/IndependenceTest.o
+$(STATISTICS)/MMD.o: $(STATISTICS)/MMD.h $(STATISTICS)/MMD.cpp
+	g++ $(OPTS) -c $(STATISTICS)/MMD.cpp $(INCLUDES) -o $(STATISTICS)/MMD.o
 $(INTERNALS)/DataManager.o: $(INTERNALS)/DataManager.h $(INTERNALS)/DataManager.cpp $(INTERNALS)/InitPerFeature.h
 	g++ $(OPTS) -c $(INTERNALS)/DataManager.cpp $(INCLUDES) -o $(INTERNALS)/DataManager.o
 $(INTERNALS)/InitPerFeature.o: $(INTERNALS)/InitPerFeature.h $(INTERNALS)/InitPerFeature.cpp
@@ -44,5 +48,9 @@ $(INTERNALS)/KernelManager.o: $(INTERNALS)/KernelManager.h $(INTERNALS)/KernelMa
 	g++ $(OPTS) -c $(INTERNALS)/KernelManager.cpp $(INCLUDES) -o $(INTERNALS)/KernelManager.o
 $(INTERNALS)/InitPerKernel.o: $(INTERNALS)/InitPerKernel.h $(INTERNALS)/InitPerKernel.cpp
 	g++ $(OPTS) -c $(INTERNALS)/InitPerKernel.cpp $(INCLUDES) -o $(INTERNALS)/InitPerKernel.o
+$(INTERNALS)/ComputationManager.o: $(INTERNALS)/ComputationManager.h $(INTERNALS)/ComputationManager.cpp
+	g++ $(OPTS) -c $(INTERNALS)/ComputationManager.cpp $(INCLUDES) -o $(INTERNALS)/ComputationManager.o
+$(INTERNALS)/mmd/UnbiasedFull.o: $(INTERNALS)/mmd/UnbiasedFull.h $(INTERNALS)/mmd/UnbiasedFull.cpp
+	g++ $(OPTS) -c $(INTERNALS)/mmd/UnbiasedFull.cpp $(INCLUDES) -o $(INTERNALS)/mmd/UnbiasedFull.o
 clean:
 	rm libflash.so
