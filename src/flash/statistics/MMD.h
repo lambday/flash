@@ -39,11 +39,13 @@ public:
 //	float64_t compute_statistic(bool multiple_kernels);
 
 	void use_gpu(bool gpu);
+	void set_simulate_h0(bool h0);
 	virtual const char* get_name() const;
 
-private:
+protected:
 	template <class Statistic> float64_t compute_statistic();
 	bool use_gpu_for_computation;
+	bool simulate_h0;
 };
 
 }

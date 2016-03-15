@@ -68,8 +68,14 @@ float64_t CMMD::compute_statistic()
 
 			num_samples_p = block_p->get_num_vectors();
 
-			// TODO permutation logic goes here
 			auto block_p_q = block_p->create_merged_copy(block_q.get());
+			if (simulate_h0)
+			{
+				SGVector<index_t> inds(block_p_q->get_num_vectors());
+				std::iota(inds.vector, inds.vector + inds.vlen, 0);
+				CMath::permute(inds);
+				block_p_q->add_subset(inds);
+			}
 
 			block_p = nullptr;
 			block_q = nullptr;
@@ -113,6 +119,11 @@ float64_t CMMD::compute_statistic()
 void CMMD::use_gpu(bool gpu)
 {
 	use_gpu_for_computation = gpu;
+}
+
+void CMMD::set_simulate_h0(bool h0)
+{
+	simulate_h0 = h0;
 }
 
 const char* CMMD::get_name() const
