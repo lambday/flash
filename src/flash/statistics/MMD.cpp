@@ -34,7 +34,7 @@ using namespace internal;
 using namespace statistics;
 
 CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false),
-simulate_h0(false), statistic_type(S_TYPE::S_UNBIASED_FULL)
+simulate_h0(false), statistic_type(S_TYPE::S_UNBIASED_FULL), num_null_samples(0)
 {
 }
 
@@ -125,6 +125,24 @@ float64_t CMMD::compute_statistic()
 	dm.end();
 
 	return statistic;
+}
+
+SGVector<float64_t> CMMD::sample_null()
+{
+	SGVector<float64_t> null_samples(num_null_samples);
+	auto old = simulate_h0;
+	simulate_h0 = true;
+	for (auto i = 0; i < num_null_samples; ++i)
+	{
+		null_samples[i] = compute_statistic();
+	}
+	simulate_h0 = old;
+	return null_samples;
+}
+
+void CMMD::set_num_null_samples(index_t null_samples)
+{
+	num_null_samples = null_samples;
 }
 
 void CMMD::use_gpu(bool gpu)

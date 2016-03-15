@@ -48,12 +48,17 @@ public:
 	void use_gpu(bool gpu);
 	void set_simulate_h0(bool h0);
 	void set_statistic_type(S_TYPE stype);
+
+	void set_num_null_samples(index_t null_samples);
+	SGVector<float64_t> sample_null();
+
 	virtual const char* get_name() const;
 
 protected:
 	template <class Statistic> float64_t compute_statistic();
 	bool use_gpu_for_computation;
 	bool simulate_h0;
+	index_t num_null_samples;
 	S_TYPE statistic_type;
 };
 
