@@ -94,6 +94,9 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 	statistic = SGVector<float64_t>(num_kernels);
 	variance = SGVector<float64_t>(num_kernels);
 
+	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
+	std::fill(variance.vector, variance.vector + variance.vlen, 0);
+
 	std::vector<index_t> s_term_counters(statistic.vlen);
 	std::vector<index_t> v_term_counters(statistic.vlen);
 
@@ -120,6 +123,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 			num_samples_p = block_p->get_num_vectors();
 
 			auto block_p_q = block_p->create_merged_copy(block_q.get());
+			SG_REF(block_p_q);
 			if (simulate_h0)
 			{
 				SGVector<index_t> inds(block_p_q->get_num_vectors());
