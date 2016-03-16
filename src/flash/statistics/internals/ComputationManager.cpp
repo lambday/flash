@@ -41,37 +41,54 @@ SGMatrix<float64_t>& ComputationManager::data(index_t i)
 	return kernel_matrices[i];
 }
 
-template <class Operation> // the operation also has to support gpu
-std::vector<typename Operation::return_type> ComputationManager::compute(Operation operation) const
+void ComputationManager::enqueue_job(std::function<float64_t(SGMatrix<float64_t>)> job)
 {
-	std::vector<typename Operation::return_type> results;
-
-	if (gpu)
-	{
-		// TODO results = operation.compute_using_gpu(kernel_matrices);
-	}
-	else
-	{
-		results.resize(kernel_matrices.size());
-#pragma omp parallel for
-		for (auto i = 0; i < kernel_matrices.size(); ++i)
-		{
-			results[i] = operation(kernel_matrices[i]);
-		}
-	}
-	return results;
+	jobq.push(job);
 }
 
-const ComputationManager& ComputationManager::use_gpu()
+void ComputationManager::compute()
+{
+	while (!jobq.empty())
+	{
+		std::vector<float64_t> results;
+		if (gpu)
+		{
+			// TODO results = operation.compute_using_gpu(kernel_matrices);
+		}
+		else
+		{
+			results.resize(kernel_matrices.size());
+#pragma omp parallel for
+			for (auto i = 0; i < kernel_matrices.size(); ++i)
+			{
+				const auto& operation = jobq.front();
+				results[i] = operation(kernel_matrices[i]);
+			}
+		}
+		resultq.push(results);
+		jobq.pop();
+	}
+}
+
+std::vector<float64_t> ComputationManager::next_result()
+{
+	std::vector<float64_t> result;
+	if (!resultq.empty())
+	{
+		result = resultq.front();
+		resultq.pop();
+	}
+	return result;
+}
+
+ComputationManager& ComputationManager::use_gpu()
 {
 	gpu = true;
 	return *this;
 }
 
-const ComputationManager& ComputationManager::use_cpu()
+ComputationManager& ComputationManager::use_cpu()
 {
 	gpu = false;
 	return *this;
 }
-
-template std::vector<typename mmd::UnbiasedFull::return_type> ComputationManager::compute(mmd::UnbiasedFull operation) const;

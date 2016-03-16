@@ -62,6 +62,9 @@ void test1()
 
 	auto statistic = mmd->compute_statistic();
 	std::cout << statistic << std::endl;
+
+	auto variance = mmd->compute_variance();
+	std::cout << variance << std::endl;
 }
 
 int main()

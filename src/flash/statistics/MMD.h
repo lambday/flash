@@ -19,6 +19,7 @@
 #ifndef MMD_H_
 #define MMD_H_
 
+#include <map>
 #include <flash/statistics/TwoSampleTest.h>
 
 namespace shogun
@@ -36,6 +37,12 @@ enum class S_TYPE
 	S_BIASED
 };
 
+enum class V_EST_METHOD
+{
+	V_DIRECT,
+	V_PERMUTATION
+};
+
 class CMMD : public CTwoSampleTest
 {
 public:
@@ -43,11 +50,20 @@ public:
 	virtual ~CMMD();
 
 	float64_t compute_statistic();
+	virtual float64_t compute_variance();
+	// ^ overridden by subclasses with appropriate normalization
+	// constant
+
 //	float64_t compute_statistic(bool multiple_kernels);
 
 	void use_gpu(bool gpu);
+
 	void set_simulate_h0(bool h0);
+
 	void set_statistic_type(S_TYPE stype);
+
+	// make sure that quadratic time mmd does not set permutation method
+	void set_variance_estimation_method(V_EST_METHOD vmethod);
 
 	void set_num_null_samples(index_t null_samples);
 	SGVector<float64_t> sample_null();
@@ -55,11 +71,12 @@ public:
 	virtual const char* get_name() const;
 
 protected:
-	template <class Statistic> float64_t compute_statistic_variance();
+	std::pair<float64_t, float64_t> compute_statistic_variance();
 	bool use_gpu_for_computation;
 	bool simulate_h0;
 	index_t num_null_samples;
 	S_TYPE statistic_type;
+	V_EST_METHOD variance_estimation_method;
 };
 
 }
