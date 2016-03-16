@@ -19,37 +19,30 @@
 #include <shogun/lib/SGMatrix.h>
 #include <shogun/lib/GPUMatrix.h>
 #include <shogun/mathematics/eigen3.h>
-#include <flash/statistics/internals/mmd/WithinBlockPermutation.h>
 #include <flash/statistics/internals/mmd/BiasedFull.h>
-#include <flash/statistics/internals/mmd/UnbiasedFull.h>
-#include <flash/statistics/internals/mmd/UnbiasedIncomplete.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace mmd;
 
-template <class T>
-WithinBlockPermutation<T>::WithinBlockPermutation(index_t n) : n_x(n)
+BiasedFull::BiasedFull(index_t n) : n_x(n)
 {
 }
 
-template <class T>
-typename T::return_type WithinBlockPermutation<T>::operator()(SGMatrix<float64_t> km)
+float64_t BiasedFull::operator()(SGMatrix<float64_t> km)
 {
-	// http://stackoverflow.com/questions/15858569/randomly-permute-rows-columns-of-a-matrix-with-eigen
+	using MatrixXt = const Eigen::MatrixXd;
+	using Block = const Eigen::Block<Eigen::Map<MatrixXt>>;
 
-	Eigen::Map<Eigen::MatrixXd> map(km.matrix, km.num_rows, km.num_cols);
+	Eigen::Map<MatrixXt> map(km.matrix, km.num_rows, km.num_cols);
+	index_t n_y = km.num_rows - n_x;
 
-	Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> perm(km.num_rows);
-	perm.setIdentity();
-	std::random_shuffle(perm.indices().data(), perm.indices().data() + perm.indices().size());
+	auto term_1 = map.block(0, 0, n_x, n_x).sum();
+	auto term_2 = map.block(n_x, n_x, n_y, n_y).sum();
+	auto term_3 = map.block(n_x, 0, n_y, n_x).sum();
 
-	map = perm.transpose() * map * perm;
+	auto statistic = term_1/n_x/(n_x-1) + term_2/n_y/(n_y-1) - 2*term_3/n_x/n_y;
 
-	T statistic(n_x);
-	return statistic(km);
+	return statistic;
+
 }
-
-template class WithinBlockPermutation<BiasedFull>;
-template class WithinBlockPermutation<UnbiasedFull>;
-template class WithinBlockPermutation<UnbiasedIncomplete>;

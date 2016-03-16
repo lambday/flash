@@ -30,7 +30,9 @@
 #include <flash/statistics/internals/DataManager.h>
 #include <flash/statistics/internals/KernelManager.h>
 #include <flash/statistics/internals/ComputationManager.h>
+#include <flash/statistics/internals/mmd/BiasedFull.h>
 #include <flash/statistics/internals/mmd/UnbiasedFull.h>
+#include <flash/statistics/internals/mmd/UnbiasedIncomplete.h>
 #include <flash/statistics/internals/mmd/WithinBlockDirect.h>
 #include <flash/statistics/internals/mmd/WithinBlockPermutation.h>
 
@@ -163,6 +165,12 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 				case S_TYPE::S_UNBIASED_FULL:
 					cm.enqueue_job(mmd::UnbiasedFull(num_samples_p));
 					break;
+				case S_TYPE::S_UNBIASED_INCOMPLETE:
+					cm.enqueue_job(mmd::UnbiasedIncomplete(num_samples_p));
+					break;
+				case S_TYPE::S_BIASED_FULL:
+					cm.enqueue_job(mmd::BiasedFull(num_samples_p));
+					break;
 				default : break;
 			};
 
@@ -173,8 +181,17 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 					break;
 				case V_EST_METHOD::V_PERMUTATION:
 					if (S_TYPE::S_UNBIASED_FULL == statistic_type)
+					{
 						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
-					// else TODO
+					}
+					else if (S_TYPE::S_UNBIASED_INCOMPLETE == statistic_type)
+					{
+						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(num_samples_p));
+					}
+					else if (S_TYPE::S_BIASED_FULL == statistic_type)
+					{
+						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::BiasedFull>(num_samples_p));
+					}
 					break;
 				default : break;
 			};
