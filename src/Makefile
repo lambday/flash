@@ -7,15 +7,15 @@ INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(STATISTICS)/TwoSampleTest.o \
 			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o $(STATISTICS)/MMD.o \
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
-			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
-			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o \
-			  $(INTERNALS)/mmd/WithinBlockPermutation.o $(INTERNALS)/mmd/UnbiasedIncomplete.o $(INTERNALS)/mmd/BiasedFull.o
+			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o $(INTERNALS)/DataManager.o \
+			  $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o $(INTERNALS)/ComputationManager.o \
+			  $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o $(INTERNALS)/mmd/WithinBlockPermutation.o \
+			  $(INTERNALS)/mmd/UnbiasedIncomplete.o $(INTERNALS)/mmd/BiasedFull.o $(INTERNALS)/mmd/FullDirect.o
 INTERNAL	= $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
-			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o \
-			  $(INTERNALS)/DataManager.o $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o \
-			  $(INTERNALS)/ComputationManager.o $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o \
-			  $(INTERNALS)/mmd/WithinBlockPermutation.o $(INTERNALS)/mmd/UnbiasedIncomplete.o $(INTERNALS)/mmd/BiasedFull.o
+			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o $(INTERNALS)/DataManager.o \
+			  $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o $(INTERNALS)/ComputationManager.o \
+			  $(INTERNALS)/mmd/UnbiasedFull.o $(INTERNALS)/mmd/WithinBlockDirect.o $(INTERNALS)/mmd/WithinBlockPermutation.o \
+	          $(INTERNALS)/mmd/UnbiasedIncomplete.o $(INTERNALS)/mmd/BiasedFull.o $(INTERNALS)/mmd/FullDirect.o
 libflash.so: $(OBJECTS)
 	$(CC) $(OPTS) -shared $(OBJECTS) $(INCLUDES) -o libflash.so -lshogun
 	rm $(OBJECTS)
@@ -59,6 +59,8 @@ $(INTERNALS)/mmd/UnbiasedFull.o: $(INTERNALS)/mmd/UnbiasedFull.h $(INTERNALS)/mm
 	$(CC) $(OPTS) -c $(INTERNALS)/mmd/UnbiasedFull.cpp $(INCLUDES) -o $(INTERNALS)/mmd/UnbiasedFull.o
 $(INTERNALS)/mmd/UnbiasedIncomplete.o: $(INTERNALS)/mmd/UnbiasedIncomplete.h $(INTERNALS)/mmd/UnbiasedIncomplete.cpp
 	$(CC) $(OPTS) -c $(INTERNALS)/mmd/UnbiasedIncomplete.cpp $(INCLUDES) -o $(INTERNALS)/mmd/UnbiasedIncomplete.o
+$(INTERNALS)/mmd/FullDirect.o: $(INTERNALS)/mmd/FullDirect.h $(INTERNALS)/mmd/FullDirect.cpp
+	$(CC) $(OPTS) -c $(INTERNALS)/mmd/FullDirect.cpp $(INCLUDES) -o $(INTERNALS)/mmd/FullDirect.o
 $(INTERNALS)/mmd/WithinBlockDirect.o: $(INTERNALS)/mmd/WithinBlockDirect.h $(INTERNALS)/mmd/WithinBlockDirect.cpp
 	$(CC) $(OPTS) -c $(INTERNALS)/mmd/WithinBlockDirect.cpp $(INCLUDES) -o $(INTERNALS)/mmd/WithinBlockDirect.o
 $(INTERNALS)/mmd/WithinBlockPermutation.o: $(INTERNALS)/mmd/WithinBlockPermutation.h $(INTERNALS)/mmd/WithinBlockPermutation.cpp
