@@ -66,7 +66,8 @@ std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 	auto num_samples_p = 0;
 	float64_t statistic = 0;
 	float64_t variance = 0;
-	auto term_counter = 1;
+	auto s_term_counter = 1;
+	auto v_term_counter = 1;
 
 	dm.start();
 	auto next_burst = dm.next();
@@ -147,7 +148,7 @@ std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 		for (auto i = 0; i < mmds.size(); ++i)
 		{
 			auto delta = mmds[i] - statistic;
-			statistic += delta / term_counter++;
+			statistic += delta / s_term_counter++;
 		}
 
 		if (variance_estimation_method == V_EST_METHOD::V_DIRECT)
@@ -155,7 +156,7 @@ std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 			for (auto i = 0; i < mmds.size(); ++i)
 			{
 				auto delta = vars[i] - variance;
-				variance += delta / term_counter++;
+				variance += delta / v_term_counter++;
 			}
 		}
 		else
