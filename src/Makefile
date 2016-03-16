@@ -6,6 +6,7 @@ STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(STATISTICS)/TwoSampleTest.o \
 			  $(STATISTICS)/IndependenceTest.o $(STATISTICS)/OneDistributionTest.o $(STATISTICS)/MMD.o \
+			  $(STATISTICS)/QuadraticTimeMMD.o $(STATISTICS)/BTestMMD.o $(STATISTICS)/LinearTimeMMD.o \
 			  $(INTERNALS)/DataFetcherFactory.o $(INTERNALS)/DataFetcher.o $(INTERNALS)/StreamingDataFetcher.o \
 			  $(INTERNALS)/NextSamples.o $(INTERNALS)/InitPerFeature.o $(INTERNALS)/BlockwiseDetails.o $(INTERNALS)/DataManager.o \
 			  $(INTERNALS)/InitPerKernel.o $(INTERNALS)/KernelManager.o $(INTERNALS)/ComputationManager.o \
@@ -33,6 +34,12 @@ $(STATISTICS)/IndependenceTest.o: $(STATISTICS)/IndependenceTest.h $(STATISTICS)
 	$(CC) $(OPTS) -c $(STATISTICS)/IndependenceTest.cpp $(INCLUDES) -o $(STATISTICS)/IndependenceTest.o
 $(STATISTICS)/MMD.o: $(STATISTICS)/MMD.h $(STATISTICS)/MMD.cpp
 	$(CC) $(OPTS) -c $(STATISTICS)/MMD.cpp $(INCLUDES) -o $(STATISTICS)/MMD.o
+$(STATISTICS)/QuadraticTimeMMD.o: $(STATISTICS)/QuadraticTimeMMD.h $(STATISTICS)/QuadraticTimeMMD.cpp
+	$(CC) $(OPTS) -c $(STATISTICS)/QuadraticTimeMMD.cpp $(INCLUDES) -o $(STATISTICS)/QuadraticTimeMMD.o
+$(STATISTICS)/BTestMMD.o: $(STATISTICS)/BTestMMD.h $(STATISTICS)/BTestMMD.cpp
+	$(CC) $(OPTS) -c $(STATISTICS)/BTestMMD.cpp $(INCLUDES) -o $(STATISTICS)/BTestMMD.o
+$(STATISTICS)/LinearTimeMMD.o: $(STATISTICS)/LinearTimeMMD.h $(STATISTICS)/LinearTimeMMD.cpp
+	$(CC) $(OPTS) -c $(STATISTICS)/LinearTimeMMD.cpp $(INCLUDES) -o $(STATISTICS)/LinearTimeMMD.o
 $(INTERNALS)/DataManager.o: $(INTERNALS)/DataManager.h $(INTERNALS)/DataManager.cpp $(INTERNALS)/InitPerFeature.h
 	$(CC) $(OPTS) -c $(INTERNALS)/DataManager.cpp $(INCLUDES) -o $(INTERNALS)/DataManager.o
 $(INTERNALS)/InitPerFeature.o: $(INTERNALS)/InitPerFeature.h $(INTERNALS)/InitPerFeature.cpp
