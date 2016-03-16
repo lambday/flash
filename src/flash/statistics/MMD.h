@@ -71,7 +71,7 @@ public:
 	virtual const char* get_name() const;
 
 protected:
-	std::pair<float64_t, float64_t> compute_statistic_variance();
+	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
 	bool use_gpu_for_computation;
 	bool simulate_h0;
 	index_t num_null_samples;

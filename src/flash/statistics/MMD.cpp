@@ -23,6 +23,7 @@
 #include <functional>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
+#include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/Features.h>
 #include <flash/statistics/MMD.h>
 #include <flash/statistics/internals/NextSamples.h>
@@ -49,32 +50,66 @@ CMMD::~CMMD()
 
 float64_t CMMD::compute_statistic()
 {
-	return compute_statistic_variance().first;
+	return compute_statistic_variance().first[0];
 }
 
 float64_t CMMD::compute_variance()
 {
-	return compute_statistic_variance().second;
+	return compute_statistic_variance().second[0];
 }
 
-std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
+std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::compute_statistic_variance()
 {
 	ComputationManager cm;
 	DataManager& dm = get_data_manager();
 	const KernelManager& km = get_kernel_manager();
 
 	auto num_samples_p = 0;
-	float64_t statistic = 0;
-	float64_t variance = 0;
-	auto s_term_counter = 1;
-	auto v_term_counter = 1;
+
+	SGVector<float64_t> statistic;
+	SGVector<float64_t> variance;
+
+	auto kernel = km.kernel_at(0);
+	ASSERT(kernel != nullptr);
+	auto num_kernels = 1;
+
+	std::vector<CKernel*> kernels;
+
+	if (kernel->get_kernel_type() == K_COMBINED)
+	{
+		auto combined_kernel = static_cast<CCombinedKernel*>(kernel);
+		num_kernels = combined_kernel->get_num_subkernels();
+
+		kernels = std::vector<CKernel*>(num_kernels);
+		for (auto i = 0; i < num_kernels; ++i)
+		{
+			kernels[i] = combined_kernel->get_kernel(i);
+		}
+	}
+	else
+	{
+		kernels.push_back(kernel);
+	}
+
+	statistic = SGVector<float64_t>(num_kernels);
+	variance = SGVector<float64_t>(num_kernels);
+
+	std::vector<index_t> s_term_counters(statistic.vlen);
+	std::vector<index_t> v_term_counters(statistic.vlen);
+
+	std::fill(s_term_counters.data(), s_term_counters.data() + s_term_counters.size(), 1);
+	std::fill(v_term_counters.data(), v_term_counters.data() + v_term_counters.size(), 1);
 
 	dm.start();
 	auto next_burst = dm.next();
 
+	std::vector<std::shared_ptr<CFeatures>> blocks;
+
 	while (!next_burst.empty())
 	{
 		cm.num_data(next_burst.num_blocks());
+		blocks.resize(next_burst.num_blocks());
+
 #pragma omp parallel for
 		for (auto i = 0; i < next_burst.num_blocks(); ++i)
 		{
@@ -95,73 +130,80 @@ std::pair<float64_t, float64_t> CMMD::compute_statistic_variance()
 			block_p = nullptr;
 			block_q = nullptr;
 
-			try
+			blocks[i] = std::shared_ptr<CFeatures>(block_p_q, [](auto& ptr) { SG_UNREF(ptr); });
+		}
+
+		for (auto i = 0; i < kernels.size(); ++i)
+		{
+#pragma omp parallel for
+			for (auto j = 0; j < blocks.size(); ++j)
 			{
-				auto kernel = std::unique_ptr<CKernel>(static_cast<CKernel*>(km.kernel_at(0)->clone()));
-				kernel->init(block_p_q, block_p_q);
-				cm.data(i) = std::make_unique<CCustomKernel>(kernel.get())->get_kernel_matrix();
-				kernel->remove_lhs_and_rhs();
+				try
+				{
+					auto curr_kernel = std::unique_ptr<CKernel>(static_cast<CKernel*>(kernels[i]->clone()));
+					curr_kernel->init(blocks[j].get(), blocks[j].get());
+					cm.data(j) = std::make_unique<CCustomKernel>(curr_kernel.get())->get_kernel_matrix();
+					curr_kernel->remove_lhs_and_rhs();
+				}
+				catch (ShogunException e)
+				{
+					std::cerr << e.get_exception_string() << std::endl;
+					std::cerr << "Try using less number of blocks per burst" << std::endl;
+				}
 			}
-			catch (ShogunException e)
+
+			// enqueue statistic and variance computation jobs on the computed kernel matrices
+			switch(statistic_type)
 			{
-				std::cerr << e.get_exception_string() << std::endl;
-				std::cerr << "Try using less number of blocks per burst" << std::endl;
-			}
-		}
+				case S_TYPE::S_UNBIASED_FULL:
+					cm.enqueue_job(mmd::UnbiasedFull(num_samples_p));
+					break;
+				default : break;
+			};
 
-		std::vector<float64_t> mmds;
-		std::vector<float64_t> vars;
-
-		switch(statistic_type)
-		{
-			case S_TYPE::S_UNBIASED_FULL:
-				cm.enqueue_job(mmd::UnbiasedFull(num_samples_p));
-				break;
-			default : break;
-		};
-
-		switch(variance_estimation_method)
-		{
-			case V_EST_METHOD::V_DIRECT:
-				cm.enqueue_job(mmd::WithinBlockDirect());
-				break;
-			case V_EST_METHOD::V_PERMUTATION:
-				if (S_TYPE::S_UNBIASED_FULL == statistic_type)
-					cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
-				// else TODO
-				break;
-			default : break;
-		};
-
-		if (use_gpu_for_computation)
-		{
-			cm.use_gpu().compute();
-		}
-		else
-		{
-			cm.use_cpu().compute();
-		}
-
-		mmds = cm.next_result();
-		vars = cm.next_result();
-
-		for (auto i = 0; i < mmds.size(); ++i)
-		{
-			auto delta = mmds[i] - statistic;
-			statistic += delta / s_term_counter++;
-		}
-
-		if (variance_estimation_method == V_EST_METHOD::V_DIRECT)
-		{
-			for (auto i = 0; i < mmds.size(); ++i)
+			switch(variance_estimation_method)
 			{
-				auto delta = vars[i] - variance;
-				variance += delta / v_term_counter++;
+				case V_EST_METHOD::V_DIRECT:
+					cm.enqueue_job(mmd::WithinBlockDirect());
+					break;
+				case V_EST_METHOD::V_PERMUTATION:
+					if (S_TYPE::S_UNBIASED_FULL == statistic_type)
+						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
+					// else TODO
+					break;
+				default : break;
+			};
+
+			if (use_gpu_for_computation)
+			{
+				cm.use_gpu().compute();
 			}
-		}
-		else
-		{
-			// TODO write the logic for permutation
+			else
+			{
+				cm.use_cpu().compute();
+			}
+
+			auto mmds = cm.next_result();
+			auto vars = cm.next_result();
+
+			for (auto j = 0; j < mmds.size(); ++j)
+			{
+				auto delta = mmds[j] - statistic[i];
+				statistic[i] += delta / s_term_counters[i]++;
+			}
+
+			if (variance_estimation_method == V_EST_METHOD::V_DIRECT)
+			{
+				for (auto j = 0; j < mmds.size(); ++j)
+				{
+					auto delta = vars[j] - variance[i];
+					variance[i] += delta / v_term_counters[i]++;
+				}
+			}
+			else
+			{
+				// TODO write the logic for permutation
+			}
 		}
 
 		next_burst = dm.next();
