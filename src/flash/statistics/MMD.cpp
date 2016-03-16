@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <iostream>
@@ -38,31 +38,31 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CMMD::CMMD() : CTwoSampleTest(), use_gpu_for_computation(false),
-simulate_h0(false), statistic_type(S_TYPE::S_UNBIASED_FULL),
-variance_estimation_method(V_EST_METHOD::V_DIRECT), num_null_samples(0)
+struct CMMD::Self
+{
+	Self(CMMD& cmmd);
+
+	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
+
+	CMMD& owner;
+
+	bool use_gpu_for_computation;
+	bool simulate_h0;
+	index_t num_null_samples;
+	S_TYPE statistic_type;
+	V_EST_METHOD variance_estimation_method;
+};
+
+CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
+	use_gpu_for_computation(false), simulate_h0(false), num_null_samples(0),
+	statistic_type(S_TYPE::S_UNBIASED_FULL), variance_estimation_method(V_EST_METHOD::V_DIRECT)
 {
 }
 
-CMMD::~CMMD()
+std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statistic_variance()
 {
-}
-
-float64_t CMMD::compute_statistic()
-{
-	return compute_statistic_variance().first[0];
-}
-
-float64_t CMMD::compute_variance()
-{
-	return compute_statistic_variance().second[0];
-}
-
-std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::compute_statistic_variance()
-{
-	ComputationManager cm;
-	DataManager& dm = get_data_manager();
-	const KernelManager& km = get_kernel_manager();
+	DataManager& dm = owner.get_data_manager();
+	const KernelManager& km = owner.get_kernel_manager();
 
 	auto num_samples_p = 0;
 
@@ -100,6 +100,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::compute_statistic_vari
 	std::fill(s_term_counters.data(), s_term_counters.data() + s_term_counters.size(), 1);
 	std::fill(v_term_counters.data(), v_term_counters.data() + v_term_counters.size(), 1);
 
+	ComputationManager cm;
 	dm.start();
 	auto next_burst = dm.next();
 
@@ -214,42 +215,73 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::compute_statistic_vari
 	return std::make_pair(statistic, variance);
 }
 
+CMMD::CMMD() : CTwoSampleTest()
+{
+	self = std::make_unique<Self>(*this);
+}
+
+CMMD::~CMMD()
+{
+}
+
+float64_t CMMD::compute_statistic()
+{
+	return self->compute_statistic_variance().first[0];
+}
+
+float64_t CMMD::compute_variance()
+{
+	return self->compute_statistic_variance().second[0];
+}
+
+SGVector<float64_t> CMMD::compute_statistic(bool multiple_kernels)
+{
+	// ASSERT
+	return self->compute_statistic_variance().first;
+}
+
+SGVector<float64_t> CMMD::compute_variance(bool multiple_kernels)
+{
+	// ASSERT
+	return self->compute_statistic_variance().second;
+}
+
 SGVector<float64_t> CMMD::sample_null()
 {
-	SGVector<float64_t> null_samples(num_null_samples);
-	auto old = simulate_h0;
-	simulate_h0 = true;
-	for (auto i = 0; i < num_null_samples; ++i)
+	SGVector<float64_t> null_samples(self->num_null_samples);
+	auto old = self->simulate_h0;
+	self->simulate_h0 = true;
+	for (auto i = 0; i < self->num_null_samples; ++i)
 	{
 		null_samples[i] = compute_statistic();
 	}
-	simulate_h0 = old;
+	self->simulate_h0 = old;
 	return null_samples;
 }
 
 void CMMD::set_num_null_samples(index_t null_samples)
 {
-	num_null_samples = null_samples;
+	self->num_null_samples = null_samples;
 }
 
 void CMMD::use_gpu(bool gpu)
 {
-	use_gpu_for_computation = gpu;
+	self->use_gpu_for_computation = gpu;
 }
 
 void CMMD::set_simulate_h0(bool h0)
 {
-	simulate_h0 = h0;
+	self->simulate_h0 = h0;
 }
 
 void CMMD::set_statistic_type(S_TYPE stype)
 {
-	statistic_type = stype;
+	self->statistic_type = stype;
 }
 
 void CMMD::set_variance_estimation_method(V_EST_METHOD vmethod)
 {
-	variance_estimation_method = vmethod;
+	self->variance_estimation_method = vmethod;
 }
 
 const char* CMMD::get_name() const

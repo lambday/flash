@@ -19,13 +19,14 @@
 #ifndef MMD_H_
 #define MMD_H_
 
-#include <map>
+#include <memory>
 #include <flash/statistics/TwoSampleTest.h>
 
 namespace shogun
 {
 
 class CKernel;
+template <typename T> class SGVector;
 
 namespace statistics
 {
@@ -50,11 +51,10 @@ public:
 	virtual ~CMMD();
 
 	float64_t compute_statistic();
-	virtual float64_t compute_variance();
-	// ^ overridden by subclasses with appropriate normalization
-	// constant
+	SGVector<float64_t> compute_statistic(bool multiple_kernels);
 
-//	float64_t compute_statistic(bool multiple_kernels);
+	float64_t compute_variance();
+	SGVector<float64_t> compute_variance(bool multiple_kernels);
 
 	void use_gpu(bool gpu);
 
@@ -70,13 +70,10 @@ public:
 
 	virtual const char* get_name() const;
 
-protected:
-	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
-	bool use_gpu_for_computation;
-	bool simulate_h0;
-	index_t num_null_samples;
-	S_TYPE statistic_type;
-	V_EST_METHOD variance_estimation_method;
+private:
+	struct Self;
+	std::unique_ptr<Self> self;
+
 };
 
 }
