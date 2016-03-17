@@ -48,6 +48,10 @@ struct CMMD<Derived>::Self
 {
 	Self(CMMD<Derived>& cmmd);
 
+	void update(index_t Bx);
+	void update_statistic_job(index_t Bx);
+	void update_variance_job(index_t Bx);
+
 	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
 
 	CMMD<Derived>& owner;
@@ -57,13 +61,69 @@ struct CMMD<Derived>::Self
 	index_t num_null_samples;
 	S_TYPE statistic_type;
 	V_METHOD variance_estimation_method;
+
+	std::function<float64_t(SGMatrix<float64_t>)> statistic_job;
+	std::function<float64_t(SGMatrix<float64_t>)> variance_job;
 };
 
 template <class Derived>
 CMMD<Derived>::Self::Self(CMMD<Derived>& cmmd) : owner(cmmd),
 	use_gpu_for_computation(false), simulate_null(false), num_null_samples(0),
-	statistic_type(S_TYPE::UNBIASED_FULL), variance_estimation_method(V_METHOD::DIRECT)
+	statistic_type(S_TYPE::UNBIASED_FULL), variance_estimation_method(V_METHOD::DIRECT),
+	statistic_job(nullptr), variance_job(nullptr)
 {
+}
+
+template <class Derived>
+void CMMD<Derived>::Self::update(index_t Bx)
+{
+	update_statistic_job(Bx);
+	update_variance_job(Bx);
+}
+
+template <class Derived>
+void CMMD<Derived>::Self::update_statistic_job(index_t Bx)
+{
+	switch (statistic_type)
+	{
+		case S_TYPE::UNBIASED_FULL:
+			statistic_job = mmd::UnbiasedFull(Bx);
+			break;
+		case S_TYPE::UNBIASED_INCOMPLETE:
+			statistic_job = mmd::UnbiasedIncomplete(Bx);
+			break;
+		case S_TYPE::BIASED_FULL:
+			statistic_job = mmd::BiasedFull(Bx);
+			break;
+		default : break;
+	};
+}
+
+template <class Derived>
+void CMMD<Derived>::Self::update_variance_job(index_t Bx)
+{
+	switch (variance_estimation_method)
+	{
+		case V_METHOD::DIRECT:
+			variance_job = Derived::get_direct_estimation_method();
+			break;
+		case V_METHOD::PERMUTATION:
+			switch(statistic_type)
+			{
+				case S_TYPE::UNBIASED_FULL:
+					variance_job = mmd::WithinBlockPermutation<mmd::UnbiasedFull>(Bx);
+					break;
+				case S_TYPE::UNBIASED_INCOMPLETE:
+					variance_job = mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(Bx);
+					break;
+				case S_TYPE::BIASED_FULL:
+					variance_job = mmd::WithinBlockPermutation<mmd::BiasedFull>(Bx);
+					break;
+				default : break;
+			}
+			break;
+		default : break;
+	};
 }
 
 template <class Derived>
@@ -71,8 +131,6 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 {
 	DataManager& dm = owner.get_data_manager();
 	const KernelManager& km = owner.get_kernel_manager();
-
-	auto num_samples_p = 0;
 
 	SGVector<float64_t> statistic;
 	SGVector<float64_t> variance;
@@ -114,6 +172,10 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 	ComputationManager cm;
 	dm.start();
 	auto next_burst = dm.next();
+	// number of samples in a block is not going to change, no matter how many blocks
+	// there are in a burst
+	auto num_samples_p = next_burst[0][0]->get_num_vectors();
+	update(num_samples_p);
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
@@ -127,8 +189,6 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 		{
 			auto block_p = next_burst[0][i];
 			auto block_q = next_burst[1][i];
-
-			num_samples_p = block_p->get_num_vectors();
 
 			auto block_p_q = block_p->create_merged_copy(block_q.get());
 			SG_REF(block_p_q);
@@ -166,43 +226,8 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 			}
 
 			// enqueue statistic and variance computation jobs on the computed kernel matrices
-			switch(statistic_type)
-			{
-				case S_TYPE::UNBIASED_FULL:
-					cm.enqueue_job(mmd::UnbiasedFull(num_samples_p));
-					break;
-				case S_TYPE::UNBIASED_INCOMPLETE:
-					cm.enqueue_job(mmd::UnbiasedIncomplete(num_samples_p));
-					break;
-				case S_TYPE::BIASED_FULL:
-					cm.enqueue_job(mmd::BiasedFull(num_samples_p));
-					break;
-				default : break;
-			};
-
-			auto DirectEstimationMethod = Derived::get_direct_estimation_method();
-
-			switch(variance_estimation_method)
-			{
-				case V_METHOD::DIRECT:
-					cm.enqueue_job(DirectEstimationMethod);
-					break;
-				case V_METHOD::PERMUTATION:
-					if (S_TYPE::UNBIASED_FULL == statistic_type)
-					{
-						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
-					}
-					else if (S_TYPE::UNBIASED_INCOMPLETE == statistic_type)
-					{
-						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(num_samples_p));
-					}
-					else if (S_TYPE::BIASED_FULL == statistic_type)
-					{
-						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::BiasedFull>(num_samples_p));
-					}
-					break;
-				default : break;
-			};
+			cm.enqueue_job(statistic_job);
+			cm.enqueue_job(variance_job);
 
 			if (use_gpu_for_computation)
 			{
