@@ -22,12 +22,18 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CBTestMMD::CBTestMMD() : CMMD()
+CBTestMMD::CBTestMMD() : CMMD<CBTestMMD>()
 {
 }
 
 CBTestMMD::~CBTestMMD()
 {
+}
+
+internal::mmd::WithinBlockDirect CBTestMMD::get_direct_estimation_method()
+{
+	static internal::mmd::WithinBlockDirect method;
+	return method;
 }
 
 const char* CBTestMMD::get_name() const

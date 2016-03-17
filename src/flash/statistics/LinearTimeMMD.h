@@ -20,6 +20,7 @@
 #define LINEAR_TIME_MMD_H_
 
 #include <flash/statistics/MMD.h>
+#include <flash/statistics/internals/mmd/WithinBlockDirect.h>
 
 namespace shogun
 {
@@ -27,12 +28,15 @@ namespace shogun
 namespace statistics
 {
 
-class CLinearTimeMMD : public CMMD
+class CLinearTimeMMD : public CMMD<CLinearTimeMMD>
 {
+	friend class CMMD;
 public:
 	CLinearTimeMMD();
 	virtual ~CLinearTimeMMD();
 	virtual const char* get_name() const;
+private:
+	static internal::mmd::WithinBlockDirect get_direct_estimation_method();
 };
 
 }

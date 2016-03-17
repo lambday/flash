@@ -30,6 +30,12 @@ CLinearTimeMMD::~CLinearTimeMMD()
 {
 }
 
+internal::mmd::WithinBlockDirect CLinearTimeMMD::get_direct_estimation_method()
+{
+	static internal::mmd::WithinBlockDirect method;
+	return method;
+}
+
 const char* CLinearTimeMMD::get_name() const
 {
 	return "LinearTimeMMD";

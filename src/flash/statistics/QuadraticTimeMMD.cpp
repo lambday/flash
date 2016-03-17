@@ -22,12 +22,18 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD()
+CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD<CQuadraticTimeMMD>()
 {
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
 {
+}
+
+internal::mmd::FullDirect CQuadraticTimeMMD::get_direct_estimation_method()
+{
+	static internal::mmd::FullDirect method;
+	return method;
 }
 
 const char* CQuadraticTimeMMD::get_name() const

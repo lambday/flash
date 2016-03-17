@@ -20,12 +20,14 @@
 #include <vector>
 #include <memory>
 #include <iostream>
-#include <functional>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
 #include <shogun/features/Features.h>
 #include <flash/statistics/MMD.h>
+#include <flash/statistics/QuadraticTimeMMD.h>
+#include <flash/statistics/BTestMMD.h>
+#include <flash/statistics/LinearTimeMMD.h>
 #include <flash/statistics/internals/NextSamples.h>
 #include <flash/statistics/internals/DataManager.h>
 #include <flash/statistics/internals/KernelManager.h>
@@ -40,13 +42,14 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-struct CMMD::Self
+template <class Derived>
+struct CMMD<Derived>::Self
 {
-	Self(CMMD& cmmd);
+	Self(CMMD<Derived>& cmmd);
 
 	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
 
-	CMMD& owner;
+	CMMD<Derived>& owner;
 
 	bool use_gpu_for_computation;
 	bool simulate_h0;
@@ -55,13 +58,15 @@ struct CMMD::Self
 	V_METHOD variance_estimation_method;
 };
 
-CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
+template <class Derived>
+CMMD<Derived>::Self::Self(CMMD<Derived>& cmmd) : owner(cmmd),
 	use_gpu_for_computation(false), simulate_h0(false), num_null_samples(0),
-	statistic_type(S_TYPE::S_UNBIASED_FULL), variance_estimation_method(V_METHOD::V_DIRECT)
+	statistic_type(S_TYPE::UNBIASED_FULL), variance_estimation_method(V_METHOD::DIRECT)
 {
 }
 
-std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statistic_variance()
+template <class Derived>
+std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute_statistic_variance()
 {
 	DataManager& dm = owner.get_data_manager();
 	const KernelManager& km = owner.get_kernel_manager();
@@ -162,33 +167,35 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 			// enqueue statistic and variance computation jobs on the computed kernel matrices
 			switch(statistic_type)
 			{
-				case S_TYPE::S_UNBIASED_FULL:
+				case S_TYPE::UNBIASED_FULL:
 					cm.enqueue_job(mmd::UnbiasedFull(num_samples_p));
 					break;
-				case S_TYPE::S_UNBIASED_INCOMPLETE:
+				case S_TYPE::UNBIASED_INCOMPLETE:
 					cm.enqueue_job(mmd::UnbiasedIncomplete(num_samples_p));
 					break;
-				case S_TYPE::S_BIASED_FULL:
+				case S_TYPE::BIASED_FULL:
 					cm.enqueue_job(mmd::BiasedFull(num_samples_p));
 					break;
 				default : break;
 			};
 
+			auto DirectEstimationMethod = Derived::get_direct_estimation_method();
+
 			switch(variance_estimation_method)
 			{
-				case V_METHOD::V_DIRECT:
-					cm.enqueue_job(mmd::WithinBlockDirect());
+				case V_METHOD::DIRECT:
+					cm.enqueue_job(DirectEstimationMethod);
 					break;
-				case V_METHOD::V_PERMUTATION:
-					if (S_TYPE::S_UNBIASED_FULL == statistic_type)
+				case V_METHOD::PERMUTATION:
+					if (S_TYPE::UNBIASED_FULL == statistic_type)
 					{
 						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
 					}
-					else if (S_TYPE::S_UNBIASED_INCOMPLETE == statistic_type)
+					else if (S_TYPE::UNBIASED_INCOMPLETE == statistic_type)
 					{
 						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedIncomplete>(num_samples_p));
 					}
-					else if (S_TYPE::S_BIASED_FULL == statistic_type)
+					else if (S_TYPE::BIASED_FULL == statistic_type)
 					{
 						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::BiasedFull>(num_samples_p));
 					}
@@ -214,7 +221,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 				statistic[i] += delta / s_term_counters[i]++;
 			}
 
-			if (variance_estimation_method == V_METHOD::V_DIRECT)
+			if (variance_estimation_method == V_METHOD::DIRECT)
 			{
 				for (auto j = 0; j < mmds.size(); ++j)
 				{
@@ -236,38 +243,45 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 	return std::make_pair(statistic, variance);
 }
 
-CMMD::CMMD() : CTwoSampleTest()
+template <class Derived>
+CMMD<Derived>::CMMD() : CTwoSampleTest()
 {
 	self = std::make_unique<Self>(*this);
 }
 
-CMMD::~CMMD()
+template <class Derived>
+CMMD<Derived>::~CMMD()
 {
 }
 
-float64_t CMMD::compute_statistic()
+template <class Derived>
+float64_t CMMD<Derived>::compute_statistic()
 {
 	return self->compute_statistic_variance().first[0];
 }
 
-float64_t CMMD::compute_variance()
+template <class Derived>
+float64_t CMMD<Derived>::compute_variance()
 {
 	return self->compute_statistic_variance().second[0];
 }
 
-SGVector<float64_t> CMMD::compute_statistic(bool multiple_kernels)
+template <class Derived>
+SGVector<float64_t> CMMD<Derived>::compute_statistic(bool multiple_kernels)
 {
 	// ASSERT
 	return self->compute_statistic_variance().first;
 }
 
-SGVector<float64_t> CMMD::compute_variance(bool multiple_kernels)
+template <class Derived>
+SGVector<float64_t> CMMD<Derived>::compute_variance(bool multiple_kernels)
 {
 	// ASSERT
 	return self->compute_statistic_variance().second;
 }
 
-SGVector<float64_t> CMMD::sample_null()
+template <class Derived>
+SGVector<float64_t> CMMD<Derived>::sample_null()
 {
 	SGVector<float64_t> null_samples(self->num_null_samples);
 	auto old = self->simulate_h0;
@@ -280,32 +294,42 @@ SGVector<float64_t> CMMD::sample_null()
 	return null_samples;
 }
 
-void CMMD::set_num_null_samples(index_t null_samples)
+template <class Derived>
+void CMMD<Derived>::set_num_null_samples(index_t null_samples)
 {
 	self->num_null_samples = null_samples;
 }
 
-void CMMD::use_gpu(bool gpu)
+template <class Derived>
+void CMMD<Derived>::use_gpu(bool gpu)
 {
 	self->use_gpu_for_computation = gpu;
 }
 
-void CMMD::set_simulate_h0(bool h0)
+template <class Derived>
+void CMMD<Derived>::set_simulate_h0(bool h0)
 {
 	self->simulate_h0 = h0;
 }
 
-void CMMD::set_statistic_type(S_TYPE stype)
+template <class Derived>
+void CMMD<Derived>::set_statistic_type(S_TYPE stype)
 {
 	self->statistic_type = stype;
 }
 
-void CMMD::set_variance_estimation_method(V_METHOD vmethod)
+template <class Derived>
+void CMMD<Derived>::set_variance_estimation_method(V_METHOD vmethod)
 {
 	self->variance_estimation_method = vmethod;
 }
 
-const char* CMMD::get_name() const
+template <class Derived>
+const char* CMMD<Derived>::get_name() const
 {
 	return "MMD";
 }
+
+template class CMMD<CQuadraticTimeMMD>;
+template class CMMD<CBTestMMD>;
+template class CMMD<CLinearTimeMMD>;

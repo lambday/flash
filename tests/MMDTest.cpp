@@ -27,14 +27,48 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
-#include <flash/statistics/MMD.h>
+#include <flash/statistics/QuadraticTimeMMD.h>
 
 using namespace shogun;
 using namespace statistics;
 using namespace internal;
 
-void test1()
+void test1(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
 {
+	auto mmd = std::make_unique<CQuadraticTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
+	mmd->set_kernel(kernel);
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_FULL);
+
+	auto statistic = mmd->compute_statistic();
+	std::cout << statistic << std::endl;
+
+	auto variance = mmd->compute_variance();
+	std::cout << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_INCOMPLETE);
+
+	statistic = mmd->compute_statistic();
+	std::cout << statistic << std::endl;
+
+	variance = mmd->compute_variance();
+	std::cout << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::BIASED_FULL);
+
+	statistic = mmd->compute_statistic();
+	std::cout << statistic << std::endl;
+
+	variance = mmd->compute_variance();
+	std::cout << variance << std::endl;
+}
+
+int main()
+{
+	init_shogun_with_defaults();
+
 	const index_t dim = 2;
 	const index_t num_vec = 6;
 
@@ -54,40 +88,8 @@ void test1()
 	auto kernel = new CGaussianKernel();
 	kernel->set_width(0.5);
 
-	auto mmd = std::make_unique<CMMD>();
-	mmd->set_p(feats_p);
-	mmd->set_q(feats_q);
-	mmd->set_kernel(kernel);
+	test1(feats_p, feats_q, kernel);
 
-	mmd->set_statistic_type(S_TYPE::S_UNBIASED_FULL);
-
-	auto statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
-	auto variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
-
-	mmd->set_statistic_type(S_TYPE::S_UNBIASED_INCOMPLETE);
-
-	statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
-	variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
-
-	mmd->set_statistic_type(S_TYPE::S_BIASED_FULL);
-
-	statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
-	variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
-}
-
-int main()
-{
-	init_shogun_with_defaults();
-	test1();
 	exit_shogun();
 	return 0;
 }

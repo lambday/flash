@@ -20,6 +20,7 @@
 #define QUADRATIC_TIME_MMD_H_
 
 #include <flash/statistics/MMD.h>
+#include <flash/statistics/internals/mmd/FullDirect.h>
 
 namespace shogun
 {
@@ -27,12 +28,15 @@ namespace shogun
 namespace statistics
 {
 
-class CQuadraticTimeMMD : public CMMD
+class CQuadraticTimeMMD : public CMMD<CQuadraticTimeMMD>
 {
+	friend class CMMD;
 public:
 	CQuadraticTimeMMD();
 	virtual ~CQuadraticTimeMMD();
 	virtual const char* get_name() const;
+private:
+	static internal::mmd::FullDirect get_direct_estimation_method();
 };
 
 }

@@ -33,17 +33,18 @@ namespace statistics
 
 enum class S_TYPE
 {
-	S_UNBIASED_FULL,
-	S_UNBIASED_INCOMPLETE,
-	S_BIASED_FULL
+	UNBIASED_FULL,
+	UNBIASED_INCOMPLETE,
+	BIASED_FULL
 };
 
 enum class V_METHOD
 {
-	V_DIRECT,
-	V_PERMUTATION
+	DIRECT,
+	PERMUTATION
 };
 
+template <class Derived>
 class CMMD : public CTwoSampleTest
 {
 public:
@@ -69,7 +70,6 @@ public:
 	SGVector<float64_t> sample_null();
 
 	virtual const char* get_name() const;
-
 private:
 	struct Self;
 	std::unique_ptr<Self> self;

@@ -20,6 +20,7 @@
 #define B_TEST_MMD_H_
 
 #include <flash/statistics/MMD.h>
+#include <flash/statistics/internals/mmd/WithinBlockDirect.h>
 
 namespace shogun
 {
@@ -27,12 +28,15 @@ namespace shogun
 namespace statistics
 {
 
-class CBTestMMD : public CMMD
+class CBTestMMD : public CMMD<CBTestMMD>
 {
+	friend class CMMD;
 public:
 	CBTestMMD();
 	virtual ~CBTestMMD();
 	virtual const char* get_name() const;
+private:
+	static internal::mmd::WithinBlockDirect get_direct_estimation_method();
 };
 
 }
