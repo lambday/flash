@@ -38,7 +38,7 @@ enum class S_TYPE
 	S_BIASED_FULL
 };
 
-enum class V_EST_METHOD
+enum class V_METHOD
 {
 	V_DIRECT,
 	V_PERMUTATION
@@ -63,7 +63,7 @@ public:
 	void set_statistic_type(S_TYPE stype);
 
 	// make sure that quadratic time mmd does not set permutation method
-	void set_variance_estimation_method(V_EST_METHOD vmethod);
+	void set_variance_estimation_method(V_METHOD vmethod);
 
 	void set_num_null_samples(index_t null_samples);
 	SGVector<float64_t> sample_null();

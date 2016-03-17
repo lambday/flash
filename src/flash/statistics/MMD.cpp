@@ -52,12 +52,12 @@ struct CMMD::Self
 	bool simulate_h0;
 	index_t num_null_samples;
 	S_TYPE statistic_type;
-	V_EST_METHOD variance_estimation_method;
+	V_METHOD variance_estimation_method;
 };
 
 CMMD::Self::Self(CMMD& cmmd) : owner(cmmd),
 	use_gpu_for_computation(false), simulate_h0(false), num_null_samples(0),
-	statistic_type(S_TYPE::S_UNBIASED_FULL), variance_estimation_method(V_EST_METHOD::V_DIRECT)
+	statistic_type(S_TYPE::S_UNBIASED_FULL), variance_estimation_method(V_METHOD::V_DIRECT)
 {
 }
 
@@ -176,10 +176,10 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 
 			switch(variance_estimation_method)
 			{
-				case V_EST_METHOD::V_DIRECT:
+				case V_METHOD::V_DIRECT:
 					cm.enqueue_job(mmd::WithinBlockDirect());
 					break;
-				case V_EST_METHOD::V_PERMUTATION:
+				case V_METHOD::V_PERMUTATION:
 					if (S_TYPE::S_UNBIASED_FULL == statistic_type)
 					{
 						cm.enqueue_job(mmd::WithinBlockPermutation<mmd::UnbiasedFull>(num_samples_p));
@@ -214,7 +214,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD::Self::compute_statisti
 				statistic[i] += delta / s_term_counters[i]++;
 			}
 
-			if (variance_estimation_method == V_EST_METHOD::V_DIRECT)
+			if (variance_estimation_method == V_METHOD::V_DIRECT)
 			{
 				for (auto j = 0; j < mmds.size(); ++j)
 				{
@@ -300,7 +300,7 @@ void CMMD::set_statistic_type(S_TYPE stype)
 	self->statistic_type = stype;
 }
 
-void CMMD::set_variance_estimation_method(V_EST_METHOD vmethod)
+void CMMD::set_variance_estimation_method(V_METHOD vmethod)
 {
 	self->variance_estimation_method = vmethod;
 }
