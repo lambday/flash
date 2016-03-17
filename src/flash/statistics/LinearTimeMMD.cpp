@@ -33,6 +33,7 @@ CLinearTimeMMD::~CLinearTimeMMD()
 
 void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
 {
+	get_data_manager().set_blocksize(get_data_manager().get_min_blocksize());
 	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 

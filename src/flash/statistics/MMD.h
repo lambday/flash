@@ -57,17 +57,14 @@ public:
 	float64_t compute_variance();
 	SGVector<float64_t> compute_variance(bool multiple_kernels);
 
-	void use_gpu(bool gpu);
-
-	void set_simulate_h0(bool h0);
-
 	void set_statistic_type(S_TYPE stype);
-
-	// make sure that quadratic time mmd does not set permutation method
 	void set_variance_estimation_method(V_METHOD vmethod);
 
+	void set_simulate_null(bool null);
 	void set_num_null_samples(index_t null_samples);
 	SGVector<float64_t> sample_null();
+
+	void use_gpu(bool gpu);
 
 	virtual const char* get_name() const;
 private:

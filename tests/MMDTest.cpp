@@ -28,6 +28,8 @@
 #include <shogun/kernel/GaussianKernel.h>
 #include <shogun/features/streaming/StreamingDenseFeatures.h>
 #include <flash/statistics/QuadraticTimeMMD.h>
+#include <flash/statistics/LinearTimeMMD.h>
+#include <flash/statistics/BTestMMD.h>
 
 using namespace shogun;
 using namespace statistics;
@@ -41,54 +43,126 @@ void test1(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
 	mmd->set_kernel(kernel);
 
 	mmd->set_statistic_type(S_TYPE::UNBIASED_FULL);
-
+	std::cout << "Quadratic time MMD : Unbiased Full" << std::endl;
 	auto statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
+	std::cout << "statistic = " << statistic << std::endl;
 	auto variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
+	std::cout << "variance = " << variance << std::endl;
 
 	mmd->set_statistic_type(S_TYPE::UNBIASED_INCOMPLETE);
-
+	std::cout << "Quadratic time MMD : Unbiased Incomplete" << std::endl;
 	statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
+	std::cout << "statistic = " << statistic << std::endl;
 	variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
+	std::cout << "variance = " << variance << std::endl;
 
 	mmd->set_statistic_type(S_TYPE::BIASED_FULL);
-
+	std::cout << "Quadratic time MMD : Biased Full" << std::endl;
 	statistic = mmd->compute_statistic();
-	std::cout << statistic << std::endl;
-
+	std::cout << "statistic = " << statistic << std::endl;
 	variance = mmd->compute_variance();
-	std::cout << variance << std::endl;
+	std::cout << "variance = " << variance << std::endl;
 }
 
+void test2(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
+{
+	auto mmd = std::make_unique<CBTestMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
+	mmd->set_kernel(kernel);
+
+	const index_t total_num_feats = feats_p->get_num_vectors() + feats_q->get_num_vectors();
+	mmd->set_blocksize(total_num_feats / 5);
+	mmd->set_num_blocks_per_burst(3);
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_FULL);
+	std::cout << "B-test : Unbiased Full" << std::endl;
+	auto statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	auto variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_INCOMPLETE);
+	std::cout << "B-test : Unbiased Incomplete" << std::endl;
+	statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::BIASED_FULL);
+	std::cout << "B-test : Biased Full" << std::endl;
+	statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+}
+
+void test3(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
+{
+	auto mmd = std::make_unique<CLinearTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
+	mmd->set_kernel(kernel);
+
+	const index_t total_num_feats = feats_p->get_num_vectors() + feats_q->get_num_vectors();
+	mmd->set_num_blocks_per_burst(5);
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_FULL);
+	std::cout << "Linear time MMD : Unbiased Full" << std::endl;
+	auto statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	auto variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_INCOMPLETE);
+	std::cout << "Linear time MMD : Unbiased Incomplete" << std::endl;
+	statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+
+	mmd->set_statistic_type(S_TYPE::BIASED_FULL);
+	std::cout << "Linear time MMD : Biased Full" << std::endl;
+	statistic = mmd->compute_statistic();
+	std::cout << "statistic = " << statistic << std::endl;
+	variance = mmd->compute_variance();
+	std::cout << "variance = " << variance << std::endl;
+}
 int main()
 {
 	init_shogun_with_defaults();
 
 	const index_t dim = 2;
-	const index_t num_vec = 6;
+	const index_t num_vec_p = 20;
+	const index_t num_vec_q = 30;
 
-	SGMatrix<float64_t> data_p(dim, num_vec);
-	std::iota(data_p.matrix, data_p.matrix + dim * num_vec, 2);
-	std::for_each(data_p.matrix, data_p.matrix + dim * num_vec, [](auto& v) { v = sin(v); });
+	SGMatrix<float64_t> data_p(dim, num_vec_p);
+	std::iota(data_p.matrix, data_p.matrix + dim * num_vec_p, 2);
+	std::for_each(data_p.matrix, data_p.matrix + dim * num_vec_p, [](auto& v) { v = sin(v); });
 	data_p.display_matrix();
 
-	SGMatrix<float64_t> data_q(dim, num_vec);
-	std::iota(data_q.matrix, data_q.matrix + dim * num_vec, 2);
-	std::for_each(data_q.matrix, data_q.matrix + dim * num_vec, [](auto& v) { v = log(v); });
+	SGMatrix<float64_t> data_q(dim, num_vec_q);
+	std::iota(data_q.matrix, data_q.matrix + dim * num_vec_q, 2);
+	std::for_each(data_q.matrix, data_q.matrix + dim * num_vec_q, [](auto& v) { v = log(v); });
 	data_q.display_matrix();
 
 	auto feats_p = new CDenseFeatures<float64_t>(data_p);
 	auto feats_q = new CDenseFeatures<float64_t>(data_q);
 
+	SG_REF(feats_p);
+	SG_REF(feats_q);
+
 	auto kernel = new CGaussianKernel();
+	SG_REF(kernel);
 	kernel->set_width(0.5);
 
 	test1(feats_p, feats_q, kernel);
+	test2(feats_p, feats_q, kernel);
+	test3(feats_p, feats_q, kernel);
+
+	SG_UNREF(feats_p);
+	SG_UNREF(feats_q);
+	SG_UNREF(kernel);
 
 	exit_shogun();
 	return 0;

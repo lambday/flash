@@ -36,9 +36,9 @@ DataManager::~DataManager()
 {
 }
 
-index_t DataManager::get_num_samples()
+index_t DataManager::get_num_samples() const
 {
-	int n = 0;
+	index_t n = 0;
 	if (std::any_of(fetchers.begin(), fetchers.end(), [](auto& f) { return f->m_num_samples == 0; }))
 	{
 		std::cout << "number of samples from all the distributions are not set" << std::endl;
@@ -48,6 +48,30 @@ index_t DataManager::get_num_samples()
 		std::for_each(fetchers.begin(), fetchers.end(), [&n](auto &f) { n+= f->m_num_samples; });
 	}
 	return n;
+}
+
+index_t DataManager::get_min_blocksize() const
+{
+	index_t min_blocksize = 0;
+	if (std::any_of(fetchers.begin(), fetchers.end(), [](auto& f) { return f->m_num_samples == 0; }))
+	{
+		std::cout << "number of samples from all the distributions are not set" << std::endl;
+	}
+	else
+	{
+		index_t divisor = 0;
+		std::function<index_t(index_t, index_t)> gcd = [&gcd](index_t m, index_t n)
+		{
+			return n == 0 ? m : gcd(n, m % n);
+		};
+		for (auto i = 0; i < fetchers.size(); ++i)
+		{
+			divisor = gcd(divisor, fetchers[i]->m_num_samples);
+		}
+		min_blocksize = get_num_samples() / divisor;
+	}
+	std::cout << "min blocksize is " << min_blocksize << std::endl;
+	return min_blocksize;
 }
 
 void DataManager::set_blocksize(index_t blocksize)

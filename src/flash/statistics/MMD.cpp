@@ -53,7 +53,7 @@ struct CMMD<Derived>::Self
 	CMMD<Derived>& owner;
 
 	bool use_gpu_for_computation;
-	bool simulate_h0;
+	bool simulate_null;
 	index_t num_null_samples;
 	S_TYPE statistic_type;
 	V_METHOD variance_estimation_method;
@@ -61,7 +61,7 @@ struct CMMD<Derived>::Self
 
 template <class Derived>
 CMMD<Derived>::Self::Self(CMMD<Derived>& cmmd) : owner(cmmd),
-	use_gpu_for_computation(false), simulate_h0(false), num_null_samples(0),
+	use_gpu_for_computation(false), simulate_null(false), num_null_samples(0),
 	statistic_type(S_TYPE::UNBIASED_FULL), variance_estimation_method(V_METHOD::DIRECT)
 {
 }
@@ -132,7 +132,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 
 			auto block_p_q = block_p->create_merged_copy(block_q.get());
 			SG_REF(block_p_q);
-			if (simulate_h0)
+			if (simulate_null)
 			{
 				SGVector<index_t> inds(block_p_q->get_num_vectors());
 				std::iota(inds.vector, inds.vector + inds.vlen, 0);
@@ -285,13 +285,13 @@ template <class Derived>
 SGVector<float64_t> CMMD<Derived>::sample_null()
 {
 	SGVector<float64_t> null_samples(self->num_null_samples);
-	auto old = self->simulate_h0;
-	self->simulate_h0 = true;
+	auto old = self->simulate_null;
+	self->simulate_null = true;
 	for (auto i = 0; i < self->num_null_samples; ++i)
 	{
 		null_samples[i] = compute_statistic();
 	}
-	self->simulate_h0 = old;
+	self->simulate_null = old;
 	return null_samples;
 }
 
@@ -308,9 +308,9 @@ void CMMD<Derived>::use_gpu(bool gpu)
 }
 
 template <class Derived>
-void CMMD<Derived>::set_simulate_h0(bool h0)
+void CMMD<Derived>::set_simulate_null(bool null)
 {
-	self->simulate_h0 = h0;
+	self->simulate_null = null;
 }
 
 template <class Derived>
