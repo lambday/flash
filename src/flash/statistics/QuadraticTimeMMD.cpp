@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <shogun/io/SGIO.h>
 #include <flash/statistics/QuadraticTimeMMD.h>
 
 using namespace shogun;
@@ -34,6 +35,12 @@ internal::mmd::FullDirect CQuadraticTimeMMD::get_direct_estimation_method()
 {
 	static internal::mmd::FullDirect method;
 	return method;
+}
+
+float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+{
+	SG_SNOTIMPLEMENTED;
+	return variance;
 }
 
 const char* CQuadraticTimeMMD::get_name() const

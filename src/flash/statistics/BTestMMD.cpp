@@ -18,6 +18,7 @@
 
 #include <flash/statistics/BTestMMD.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 using namespace internal;
@@ -45,6 +46,11 @@ internal::mmd::WithinBlockDirect CBTestMMD::get_direct_estimation_method()
 {
 	static internal::mmd::WithinBlockDirect method;
 	return method;
+}
+
+float64_t CBTestMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+{
+	return variance * CMath::sq(Bx * By / float64_t(Bx + By));
 }
 
 const char* CBTestMMD::get_name() const

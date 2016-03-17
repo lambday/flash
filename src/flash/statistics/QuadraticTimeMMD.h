@@ -37,6 +37,7 @@ public:
 	virtual const char* get_name() const;
 private:
 	static internal::mmd::FullDirect get_direct_estimation_method();
+	static float64_t normalize_variance(float64_t variance, index_t Bx, index_t By);
 };
 
 }

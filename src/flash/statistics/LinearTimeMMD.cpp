@@ -43,6 +43,12 @@ internal::mmd::WithinBlockDirect CLinearTimeMMD::get_direct_estimation_method()
 	return method;
 }
 
+float64_t CLinearTimeMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+{
+	index_t B = Bx + By;
+	return variance * Bx * By * (Bx - 1) * (By - 1) / (B - 1) / (B - 2);
+}
+
 const char* CLinearTimeMMD::get_name() const
 {
 	return "LinearTimeMMD";

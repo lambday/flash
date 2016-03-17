@@ -133,6 +133,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 	const KernelManager& km = owner.get_kernel_manager();
 
 	SGVector<float64_t> statistic;
+	SGVector<float64_t> stat_perm;
 	SGVector<float64_t> variance;
 
 	auto kernel = km.kernel_at(0);
@@ -158,24 +159,28 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 	}
 
 	statistic = SGVector<float64_t>(num_kernels);
+	stat_perm = SGVector<float64_t>(num_kernels);
 	variance = SGVector<float64_t>(num_kernels);
 
 	std::fill(statistic.vector, statistic.vector + statistic.vlen, 0);
+	std::fill(stat_perm.vector, stat_perm.vector + stat_perm.vlen, 0);
 	std::fill(variance.vector, variance.vector + variance.vlen, 0);
 
-	std::vector<index_t> s_term_counters(statistic.vlen);
-	std::vector<index_t> v_term_counters(statistic.vlen);
-
-	std::fill(s_term_counters.data(), s_term_counters.data() + s_term_counters.size(), 1);
-	std::fill(v_term_counters.data(), v_term_counters.data() + v_term_counters.size(), 1);
+	std::vector<index_t> term_counters(statistic.vlen);
+	std::fill(term_counters.data(), term_counters.data() + term_counters.size(), 1);
 
 	ComputationManager cm;
 	dm.start();
 	auto next_burst = dm.next();
-	// number of samples in a block is not going to change, no matter how many blocks
-	// there are in a burst
-	auto num_samples_p = next_burst[0][0]->get_num_vectors();
-	update(num_samples_p);
+
+	auto num_samples_p = 0;
+	auto num_samples_q = 0;
+	if (!next_burst.empty())
+	{
+		num_samples_p = next_burst[0][0]->get_num_vectors();
+		num_samples_q = next_burst[1][0]->get_num_vectors();
+		update(num_samples_p);
+	}
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
@@ -244,7 +249,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 			for (auto j = 0; j < mmds.size(); ++j)
 			{
 				auto delta = mmds[j] - statistic[i];
-				statistic[i] += delta / s_term_counters[i]++;
+				statistic[i] += delta / term_counters[i];
 			}
 
 			if (variance_estimation_method == V_METHOD::DIRECT)
@@ -252,19 +257,33 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 				for (auto j = 0; j < mmds.size(); ++j)
 				{
 					auto delta = vars[j] - variance[i];
-					variance[i] += delta / v_term_counters[i]++;
+					variance[i] += delta / term_counters[i];
 				}
 			}
 			else
 			{
-				// TODO write the logic for permutation
+				for (auto j = 0; j < mmds.size(); ++j)
+				{
+					auto delta = vars[j] - stat_perm[i];
+					stat_perm[i] += delta / term_counters[i];
+					variance[i] += delta * (vars[j] - stat_perm[i]);
+				}
 			}
+			term_counters[i]++;
 		}
 
 		next_burst = dm.next();
 	}
 
 	dm.end();
+
+	if (variance_estimation_method == V_METHOD::PERMUTATION)
+	{
+		std::for_each(variance.vector, variance.vector + variance.vlen, [&num_samples_p, &num_samples_q](auto& v)
+		{
+			v = Derived::normalize_variance(v, num_samples_p, num_samples_q);
+		});
+	}
 
 	return std::make_pair(statistic, variance);
 }
