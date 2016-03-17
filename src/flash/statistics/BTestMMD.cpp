@@ -17,6 +17,7 @@
  */
 
 #include <flash/statistics/BTestMMD.h>
+#include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;
@@ -28,6 +29,16 @@ CBTestMMD::CBTestMMD() : CMMD<CBTestMMD>()
 
 CBTestMMD::~CBTestMMD()
 {
+}
+
+void CBTestMMD::set_blocksize(index_t blocksize)
+{
+	get_data_manager().set_blocksize(blocksize);
+}
+
+void CBTestMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+{
+	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
 internal::mmd::WithinBlockDirect CBTestMMD::get_direct_estimation_method()

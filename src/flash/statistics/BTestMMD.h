@@ -34,6 +34,8 @@ class CBTestMMD : public CMMD<CBTestMMD>
 public:
 	CBTestMMD();
 	virtual ~CBTestMMD();
+	void set_blocksize(index_t blocksize);
+	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
 	virtual const char* get_name() const;
 private:
 	static internal::mmd::WithinBlockDirect get_direct_estimation_method();

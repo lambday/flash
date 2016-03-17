@@ -20,6 +20,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <type_traits>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/kernel/CombinedKernel.h>
@@ -321,6 +322,10 @@ void CMMD<Derived>::set_statistic_type(S_TYPE stype)
 template <class Derived>
 void CMMD<Derived>::set_variance_estimation_method(V_METHOD vmethod)
 {
+	if (std::is_same<Derived, CQuadraticTimeMMD>::value && vmethod == V_METHOD::PERMUTATION)
+	{
+		std::cerr << "cannot use permutation method for quadratic time MMD" << std::endl;
+	}
 	self->variance_estimation_method = vmethod;
 }
 

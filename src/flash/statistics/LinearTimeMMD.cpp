@@ -17,17 +17,23 @@
  */
 
 #include <flash/statistics/LinearTimeMMD.h>
+#include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CLinearTimeMMD::CLinearTimeMMD() : CMMD()
+CLinearTimeMMD::CLinearTimeMMD() : CMMD<CLinearTimeMMD>()
 {
 }
 
 CLinearTimeMMD::~CLinearTimeMMD()
 {
+}
+
+void CLinearTimeMMD::set_num_blocks_per_burst(index_t num_blocks_per_burst)
+{
+	get_data_manager().set_num_blocks_per_burst(num_blocks_per_burst);
 }
 
 internal::mmd::WithinBlockDirect CLinearTimeMMD::get_direct_estimation_method()
