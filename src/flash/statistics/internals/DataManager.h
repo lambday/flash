@@ -52,6 +52,8 @@ public:
 	index_t& num_samples_at(index_t i);
 	const index_t num_samples_at(index_t i) const;
 
+	const index_t blocksize_at(index_t i) const;
+
 	index_t get_num_samples() const;
 	index_t get_min_blocksize() const;
 

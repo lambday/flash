@@ -48,8 +48,21 @@ internal::mmd::WithinBlockDirect CBTestMMD::get_direct_estimation_method()
 	return method;
 }
 
-float64_t CBTestMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+const float64_t CBTestMMD::normalize_statistic(float64_t statistic) const
 {
+	const DataManager& dm = get_data_manager();
+	const index_t Nx = dm.num_samples_at(0);
+	const index_t Ny = dm.num_samples_at(1);
+	const index_t Bx = dm.blocksize_at(0);
+	const index_t By = dm.blocksize_at(1);
+	return Nx * Ny * statistic * CMath::sqrt((Bx + By)/float64_t(Nx + Ny)) / (Nx + Ny);
+}
+
+const float64_t CBTestMMD::normalize_variance(float64_t variance) const
+{
+	const DataManager& dm = get_data_manager();
+	const index_t Bx = dm.blocksize_at(0);
+	const index_t By = dm.blocksize_at(1);
 	return variance * CMath::sq(Bx * By / float64_t(Bx + By));
 }
 

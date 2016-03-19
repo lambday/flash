@@ -18,6 +18,7 @@
 
 #include <shogun/io/SGIO.h>
 #include <flash/statistics/QuadraticTimeMMD.h>
+#include <flash/statistics/internals/DataManager.h>
 
 using namespace shogun;
 using namespace internal;
@@ -37,7 +38,15 @@ internal::mmd::FullDirect CQuadraticTimeMMD::get_direct_estimation_method()
 	return method;
 }
 
-float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+const float64_t CQuadraticTimeMMD::normalize_statistic(float64_t statistic) const
+{
+	const DataManager& dm = get_data_manager();
+	const index_t Nx = dm.num_samples_at(0);
+	const index_t Ny = dm.num_samples_at(1);
+	return Nx * Ny * statistic / (Nx + Ny);
+}
+
+const float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance) const
 {
 	SG_SNOTIMPLEMENTED;
 	return variance;

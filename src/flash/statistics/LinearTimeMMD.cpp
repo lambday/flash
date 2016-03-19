@@ -18,6 +18,7 @@
 
 #include <flash/statistics/LinearTimeMMD.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 using namespace internal;
@@ -43,9 +44,20 @@ internal::mmd::WithinBlockDirect CLinearTimeMMD::get_direct_estimation_method()
 	return method;
 }
 
-float64_t CLinearTimeMMD::normalize_variance(float64_t variance, index_t Bx, index_t By)
+const float64_t CLinearTimeMMD::normalize_statistic(float64_t statistic) const
 {
-	index_t B = Bx + By;
+	const DataManager& dm = get_data_manager();
+	const index_t Nx = dm.num_samples_at(0);
+	const index_t Ny = dm.num_samples_at(1);
+	return CMath::sqrt(Nx * Ny / float64_t(Nx + Ny)) * statistic;
+}
+
+const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
+{
+	const DataManager& dm = get_data_manager();
+	const index_t Bx = dm.blocksize_at(0);
+	const index_t By = dm.blocksize_at(1);
+	const index_t B = Bx + By;
 	return variance * Bx * By * (Bx - 1) * (By - 1) / (B - 1) / (B - 2);
 }
 

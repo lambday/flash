@@ -173,14 +173,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 	dm.start();
 	auto next_burst = dm.next();
 
-	auto num_samples_p = 0;
-	auto num_samples_q = 0;
-	if (!next_burst.empty())
-	{
-		num_samples_p = next_burst[0][0]->get_num_vectors();
-		num_samples_q = next_burst[1][0]->get_num_vectors();
-		update(num_samples_p);
-	}
+	update(owner.get_data_manager().blocksize_at(0));
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
@@ -277,11 +270,17 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 
 	dm.end();
 
+	// normalize statistic and variance
+	std::for_each(statistic.vector, statistic.vector + statistic.vlen, [this](auto& v)
+	{
+		v = static_cast<Derived*>(&(this->owner))->normalize_statistic(v);
+	});
+
 	if (variance_estimation_method == V_METHOD::PERMUTATION)
 	{
-		std::for_each(variance.vector, variance.vector + variance.vlen, [&num_samples_p, &num_samples_q](auto& v)
+		std::for_each(variance.vector, variance.vector + variance.vlen, [this](auto& v)
 		{
-			v = Derived::normalize_variance(v, num_samples_p, num_samples_q);
+			v = static_cast<Derived*>(&(this->owner))->normalize_variance(v);
 		});
 	}
 

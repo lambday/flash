@@ -136,6 +136,13 @@ const index_t DataManager::num_samples_at(index_t i) const
 	return fetchers[i]->m_num_samples;
 }
 
+const index_t DataManager::blocksize_at(index_t i) const
+{
+	std::cout << "DataManager::blocksize_at() const" << std::endl;
+	ASSERT(i < fetchers.size());
+	return fetchers[i]->m_block_details.m_blocksize;
+}
+
 void DataManager::start()
 {
 	std::for_each(fetchers.begin(), fetchers.end(), [](auto& f) { f->start(); });
