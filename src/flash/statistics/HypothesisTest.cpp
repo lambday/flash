@@ -16,6 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+#include <shogun/lib/SGVector.h>
+#include <shogun/mathematics/Math.h>
 #include <flash/statistics/HypothesisTest.h>
 #include <flash/statistics/internals/TestTypes.h>
 #include <flash/statistics/internals/DataManager.h>
@@ -39,6 +42,11 @@ template <class T>
 CHypothesisTest<T>::CHypothesisTest() : CSGObject()
 {
 	self = std::make_unique<Self>();
+}
+
+template <class T>
+CHypothesisTest<T>::~CHypothesisTest()
+{
 }
 
 template <class T>
@@ -66,8 +74,37 @@ const KernelManager& CHypothesisTest<T>::get_kernel_manager() const
 }
 
 template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
+float64_t CHypothesisTest<T>::compute_p_value(float64_t statistic)
 {
+	SGVector<float64_t> values = sample_null();
+
+	std::sort(values.vector, values.vector + values.vlen);
+	float64_t i = values.find_position_to_insert(statistic);
+
+	return 1.0 - i / values.vlen;
+}
+
+template <class T>
+float64_t CHypothesisTest<T>::compute_threshold(float64_t alpha)
+{
+	float64_t result = 0;
+	SGVector<float64_t> values = sample_null();
+
+	std::sort(values.vector, values.vector + values.vlen);
+	return values[index_t(CMath::floor(values.vlen * (1 - alpha)))];
+}
+
+template <class T>
+float64_t CHypothesisTest<T>::perform_test()
+{
+	return compute_p_value(compute_statistic());
+}
+
+template <class T>
+bool CHypothesisTest<T>::perform_test(float64_t alpha)
+{
+	float64_t p_value = perform_test();
+	return p_value < alpha;
 }
 
 template <class T>

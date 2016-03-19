@@ -373,6 +373,12 @@ void CMMD<Derived>::set_statistic_type(S_TYPE stype)
 }
 
 template <class Derived>
+const S_TYPE CMMD<Derived>::get_statistic_type() const
+{
+	return self->statistic_type;
+}
+
+template <class Derived>
 void CMMD<Derived>::set_variance_estimation_method(V_METHOD vmethod)
 {
 	if (std::is_same<Derived, CQuadraticTimeMMD>::value && vmethod == V_METHOD::PERMUTATION)
@@ -380,6 +386,12 @@ void CMMD<Derived>::set_variance_estimation_method(V_METHOD vmethod)
 		std::cerr << "cannot use permutation method for quadratic time MMD" << std::endl;
 	}
 	self->variance_estimation_method = vmethod;
+}
+
+template <class Derived>
+const V_METHOD CMMD<Derived>::get_variance_estimation_method() const
+{
+	return self->variance_estimation_method;
 }
 
 template <class Derived>

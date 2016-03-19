@@ -58,6 +58,10 @@ const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 	const index_t Bx = dm.blocksize_at(0);
 	const index_t By = dm.blocksize_at(1);
 	const index_t B = Bx + By;
+	if (get_statistic_type() == S_TYPE::UNBIASED_INCOMPLETE)
+	{
+		return variance * B * (B - 2) / 16;
+	}
 	return variance * Bx * By * (Bx - 1) * (By - 1) / (B - 1) / (B - 2);
 }
 

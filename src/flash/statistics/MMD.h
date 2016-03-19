@@ -51,18 +51,22 @@ public:
 	CMMD();
 	virtual ~CMMD();
 
-	float64_t compute_statistic();
+	virtual float64_t compute_statistic() override;
 	SGVector<float64_t> compute_statistic(bool multiple_kernels);
 
 	float64_t compute_variance();
 	SGVector<float64_t> compute_variance(bool multiple_kernels);
 
 	void set_statistic_type(S_TYPE stype);
+	const S_TYPE get_statistic_type() const;
+
 	void set_variance_estimation_method(V_METHOD vmethod);
+	const V_METHOD get_variance_estimation_method() const;
 
 	void set_simulate_null(bool null);
 	void set_num_null_samples(index_t null_samples);
-	SGVector<float64_t> sample_null();
+
+	virtual SGVector<float64_t> sample_null() override;
 
 	void use_gpu(bool gpu);
 
