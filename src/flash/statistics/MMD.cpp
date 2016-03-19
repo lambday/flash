@@ -313,14 +313,24 @@ float64_t CMMD<Derived>::compute_variance()
 template <class Derived>
 SGVector<float64_t> CMMD<Derived>::compute_statistic(bool multiple_kernels)
 {
-	// ASSERT
+	if (multiple_kernels)
+	{
+		const KernelManager& km = get_kernel_manager();
+		auto kernel = km.kernel_at(0);
+		ASSERT(kernel->get_kernel_type() == K_COMBINED);
+	}
 	return self->compute_statistic_variance().first;
 }
 
 template <class Derived>
 SGVector<float64_t> CMMD<Derived>::compute_variance(bool multiple_kernels)
 {
-	// ASSERT
+	if (multiple_kernels)
+	{
+		const KernelManager& km = get_kernel_manager();
+		auto kernel = km.kernel_at(0);
+		ASSERT(kernel->get_kernel_type() == K_COMBINED);
+	}
 	return self->compute_statistic_variance().second;
 }
 
