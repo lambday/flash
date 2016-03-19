@@ -48,9 +48,9 @@ struct CMMD<Derived>::Self
 {
 	Self(CMMD<Derived>& cmmd);
 
-	void update(index_t Bx);
-	void update_statistic_job(index_t Bx);
-	void update_variance_job(index_t Bx);
+	void create_computation_jobs(index_t Bx);
+	void create_statistic_job(index_t Bx);
+	void create_variance_job(index_t Bx);
 
 	std::pair<SGVector<float64_t>, SGVector<float64_t>> compute_statistic_variance();
 
@@ -75,14 +75,14 @@ CMMD<Derived>::Self::Self(CMMD<Derived>& cmmd) : owner(cmmd),
 }
 
 template <class Derived>
-void CMMD<Derived>::Self::update(index_t Bx)
+void CMMD<Derived>::Self::create_computation_jobs(index_t Bx)
 {
-	update_statistic_job(Bx);
-	update_variance_job(Bx);
+	create_statistic_job(Bx);
+	create_variance_job(Bx);
 }
 
 template <class Derived>
-void CMMD<Derived>::Self::update_statistic_job(index_t Bx)
+void CMMD<Derived>::Self::create_statistic_job(index_t Bx)
 {
 	switch (statistic_type)
 	{
@@ -100,7 +100,7 @@ void CMMD<Derived>::Self::update_statistic_job(index_t Bx)
 }
 
 template <class Derived>
-void CMMD<Derived>::Self::update_variance_job(index_t Bx)
+void CMMD<Derived>::Self::create_variance_job(index_t Bx)
 {
 	switch (variance_estimation_method)
 	{
@@ -173,7 +173,7 @@ std::pair<SGVector<float64_t>, SGVector<float64_t>> CMMD<Derived>::Self::compute
 	dm.start();
 	auto next_burst = dm.next();
 
-	update(owner.get_data_manager().blocksize_at(0));
+	create_computation_jobs(owner.get_data_manager().blocksize_at(0));
 
 	std::vector<std::shared_ptr<CFeatures>> blocks;
 
