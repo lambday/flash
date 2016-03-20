@@ -19,6 +19,7 @@
 #include <flash/statistics/BTestMMD.h>
 #include <flash/statistics/internals/DataManager.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 using namespace internal;
@@ -64,6 +65,44 @@ const float64_t CBTestMMD::normalize_variance(float64_t variance) const
 	const index_t Bx = dm.blocksize_at(0);
 	const index_t By = dm.blocksize_at(1);
 	return variance * CMath::sq(Bx * By / float64_t(Bx + By));
+}
+
+float64_t CBTestMMD::compute_p_value(float64_t statistic)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD1_GAUSSIAN:
+		{
+			float64_t sigma_sq = compute_variance();
+			float64_t std_dev = CMath::sqrt(sigma_sq);
+			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_p_value(statistic);
+		break;
+	}
+	return result;
+}
+
+float64_t CBTestMMD::compute_threshold(float64_t alpha)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD1_GAUSSIAN:
+		{
+			float64_t sigma_sq = compute_variance();
+			float64_t std_dev = CMath::sqrt(sigma_sq);
+			result = 1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_threshold(alpha);
+		break;
+	}
+	return result;
 }
 
 const char* CBTestMMD::get_name() const

@@ -61,6 +61,7 @@ struct CMMD<Derived>::Self
 	index_t num_null_samples;
 	S_TYPE statistic_type;
 	V_METHOD variance_estimation_method;
+	N_METHOD null_approximation_method;
 
 	std::function<float64_t(SGMatrix<float64_t>)> statistic_job;
 	std::function<float64_t(SGMatrix<float64_t>)> variance_job;
@@ -70,7 +71,7 @@ template <class Derived>
 CMMD<Derived>::Self::Self(CMMD<Derived>& cmmd) : owner(cmmd),
 	use_gpu_for_computation(false), simulate_null(false), num_null_samples(0),
 	statistic_type(S_TYPE::UNBIASED_FULL), variance_estimation_method(V_METHOD::DIRECT),
-	statistic_job(nullptr), variance_job(nullptr)
+	null_approximation_method(N_METHOD::PERMUTATION), statistic_job(nullptr), variance_job(nullptr)
 {
 }
 
@@ -392,6 +393,27 @@ template <class Derived>
 const V_METHOD CMMD<Derived>::get_variance_estimation_method() const
 {
 	return self->variance_estimation_method;
+}
+
+template <class Derived>
+void CMMD<Derived>::set_null_approximation_method(N_METHOD nmethod)
+{
+	if (std::is_same<Derived, CQuadraticTimeMMD>::value && nmethod == N_METHOD::MMD1_GAUSSIAN)
+	{
+		std::cerr << "cannot use gaussian method for quadratic time MMD" << std::endl;
+	}
+	else if ((std::is_same<Derived, CBTestMMD>::value || std::is_same<Derived, CLinearTimeMMD>::value) &&
+			(nmethod == N_METHOD::MMD2_SPECTRUM || nmethod == N_METHOD::MMD2_GAMMA))
+	{
+		std::cerr << "cannot use spectrum/gamma method for B-test/linear time MMD" << std::endl;
+	}
+	self->null_approximation_method = nmethod;
+}
+
+template <class Derived>
+const N_METHOD CMMD<Derived>::get_null_approximation_method() const
+{
+	return self->null_approximation_method;
 }
 
 template <class Derived>

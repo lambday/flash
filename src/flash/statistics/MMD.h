@@ -44,6 +44,14 @@ enum class V_METHOD
 	PERMUTATION
 };
 
+enum class N_METHOD
+{
+	PERMUTATION,
+	MMD1_GAUSSIAN,
+	MMD2_SPECTRUM,
+	MMD2_GAMMA
+};
+
 template <class Derived>
 class CMMD : public CTwoSampleTest
 {
@@ -67,6 +75,9 @@ public:
 	void set_num_null_samples(index_t null_samples);
 
 	virtual SGVector<float64_t> sample_null() override;
+
+	void set_null_approximation_method(N_METHOD nmethod);
+	const N_METHOD get_null_approximation_method() const;
 
 	void use_gpu(bool gpu);
 
