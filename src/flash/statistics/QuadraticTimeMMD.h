@@ -19,11 +19,14 @@
 #ifndef QUADRATIC_TIME_MMD_H_
 #define QUADRATIC_TIME_MMD_H_
 
+#include <memory>
 #include <flash/statistics/MMD.h>
 #include <flash/statistics/internals/mmd/FullDirect.h>
 
 namespace shogun
 {
+
+template <typename> class SGVector;
 
 namespace statistics
 {
@@ -34,8 +37,15 @@ class CQuadraticTimeMMD : public CMMD<CQuadraticTimeMMD>
 public:
 	CQuadraticTimeMMD();
 	virtual ~CQuadraticTimeMMD();
+
+	virtual SGVector<float64_t> sample_null() override;
+	void set_num_eigenvalues(index_t num_eigenvalues);
+
 	virtual const char* get_name() const;
 private:
+	struct Self;
+	std::unique_ptr<Self> self;
+
 	static internal::mmd::FullDirect get_direct_estimation_method();
 	const float64_t normalize_statistic(float64_t statistic) const;
 	const float64_t normalize_variance(float64_t variance) const;

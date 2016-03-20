@@ -1,5 +1,5 @@
 CC		 = ccache g++
-OPTS	 = -O3 -std=c++14 -fopenmp
+OPTS	 = -g3 -std=c++14 -fopenmp
 INCLUDES = -Isrc
 LIBS	 = -Lsrc -lflash -lshogun
 TESTS    = tests

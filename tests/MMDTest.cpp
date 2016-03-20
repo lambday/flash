@@ -64,6 +64,30 @@ void test1(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
 	std::cout << "variance = " << variance << std::endl;
 }
 
+void test4(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
+{
+	auto mmd = std::make_unique<CQuadraticTimeMMD>();
+	mmd->set_p(feats_p);
+	mmd->set_q(feats_q);
+	mmd->set_kernel(kernel);
+
+	mmd->set_statistic_type(S_TYPE::UNBIASED_FULL);
+	mmd->set_null_approximation_method(N_METHOD::MMD2_SPECTRUM);
+	mmd->set_num_null_samples(10);
+	mmd->set_num_eigenvalues(2);
+
+	SGVector<float64_t> null_samples = mmd->sample_null();
+
+	std::cout << "Computed null samples using Spectrum" << std::endl;
+	null_samples.display_vector();
+
+	mmd->set_null_approximation_method(N_METHOD::PERMUTATION);
+	null_samples = mmd->sample_null();
+
+	std::cout << "Computed null samples using permutation" << std::endl;
+	null_samples.display_vector();
+}
+
 void test2(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
 {
 	auto mmd = std::make_unique<CBTestMMD>();
@@ -128,6 +152,7 @@ void test3(CFeatures* feats_p, CFeatures* feats_q, CKernel* kernel)
 	variance = mmd->compute_variance();
 	std::cout << "variance = " << variance << std::endl;
 }
+
 int main()
 {
 	init_shogun_with_defaults();
@@ -156,9 +181,10 @@ int main()
 	SG_REF(kernel);
 	kernel->set_width(0.5);
 
-	test1(feats_p, feats_q, kernel);
-	test2(feats_p, feats_q, kernel);
-	test3(feats_p, feats_q, kernel);
+//	test1(feats_p, feats_q, kernel);
+//	test2(feats_p, feats_q, kernel);
+//	test3(feats_p, feats_q, kernel);
+	test4(feats_p, feats_q, kernel);
 
 	SG_UNREF(feats_p);
 	SG_UNREF(feats_q);

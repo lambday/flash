@@ -1,7 +1,7 @@
 CC			= ccache g++
 SRC			= flash
 INCLUDES	= -I. -I/usr/include/eigen3
-OPTS		= -O3 -std=c++14 -fPIC -fopenmp
+OPTS		= -g3 -std=c++14 -fPIC -fopenmp
 STATISTICS	= $(SRC)/statistics
 INTERNALS	= $(STATISTICS)/internals
 OBJECTS		= $(STATISTICS)/HypothesisTest.o $(STATISTICS)/TwoDistributionTest.o $(STATISTICS)/TwoSampleTest.o \

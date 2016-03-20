@@ -356,6 +356,12 @@ void CMMD<Derived>::set_num_null_samples(index_t null_samples)
 }
 
 template <class Derived>
+const index_t CMMD<Derived>::get_num_null_samples() const
+{
+	return self->num_null_samples;
+}
+
+template <class Derived>
 void CMMD<Derived>::use_gpu(bool gpu)
 {
 	self->use_gpu_for_computation = gpu;

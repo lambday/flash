@@ -73,6 +73,7 @@ public:
 
 	void set_simulate_null(bool null);
 	void set_num_null_samples(index_t null_samples);
+	const index_t get_num_null_samples() const;
 
 	virtual SGVector<float64_t> sample_null() override;
 

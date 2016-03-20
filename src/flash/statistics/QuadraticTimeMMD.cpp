@@ -17,15 +17,32 @@
  */
 
 #include <shogun/io/SGIO.h>
+#include <shogun/lib/SGVector.h>
+#include <shogun/kernel/Kernel.h>
+#include <shogun/kernel/CustomKernel.h>
+#include <shogun/mathematics/eigen3.h>
 #include <flash/statistics/QuadraticTimeMMD.h>
+#include <flash/statistics/internals/NextSamples.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/internals/KernelManager.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
+struct CQuadraticTimeMMD::Self
+{
+	Self();
+	index_t num_eigenvalues;
+};
+
+CQuadraticTimeMMD::Self::Self() : num_eigenvalues(0)
+{
+}
+
 CQuadraticTimeMMD::CQuadraticTimeMMD() : CMMD<CQuadraticTimeMMD>()
 {
+	self = std::make_unique<Self>();
 }
 
 CQuadraticTimeMMD::~CQuadraticTimeMMD()
@@ -50,6 +67,95 @@ const float64_t CQuadraticTimeMMD::normalize_variance(float64_t variance) const
 {
 	SG_SNOTIMPLEMENTED;
 	return variance;
+}
+
+void CQuadraticTimeMMD::set_num_eigenvalues(index_t num_eigenvalues)
+{
+	self->num_eigenvalues = num_eigenvalues;
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::sample_null()
+{
+	if (get_null_approximation_method() == N_METHOD::MMD2_SPECTRUM)
+	{
+		DataManager& dm = get_data_manager();
+		index_t m = dm.num_samples_at(0);
+		index_t n = dm.num_samples_at(1);
+
+		if (self->num_eigenvalues > m + n - 1)
+		{
+			SG_ERROR("Number of Eigenvalues too large\n");
+		}
+
+		if (self->num_eigenvalues < 1)
+		{
+			SG_ERROR("Number of Eigenvalues too small\n");
+		}
+
+		dm.start();
+		auto next_samples = dm.next();
+
+		SGVector<float64_t> null_samples(get_num_null_samples());
+		std::fill(null_samples.vector, null_samples.vector + null_samples.vlen, 0);
+
+		if (!next_samples.empty())
+		{
+			auto feats_p = next_samples[0][0];
+			auto feats_q = next_samples[1][0];
+
+			auto feats_p_q = feats_p->create_merged_copy(feats_q.get());
+
+			CKernel *kernel = get_kernel_manager().kernel_at(0);
+			kernel->init(feats_p_q, feats_p_q);
+			auto precomputed = std::make_unique<CCustomKernel>(kernel);
+			kernel->remove_lhs_and_rhs();
+
+			/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
+			 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
+			 * works since X and Y are concatenated here */
+			SGMatrix<float64_t> K = precomputed->get_kernel_matrix();
+
+			/* center matrix K=H*K*H */
+			K.center();
+
+			/* compute eigenvalues and select num_eigenvalues largest ones */
+			Eigen::Map<Eigen::MatrixXd> c_kernel_matrix(K.matrix, K.num_rows, K.num_cols);
+			Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigen_solver(c_kernel_matrix);
+			REQUIRE(eigen_solver.info() == Eigen::Success, "Eigendecomposition failed!\n");
+			index_t max_num_eigenvalues = eigen_solver.eigenvalues().rows();
+
+			/* finally, sample from null distribution */
+
+#pragma omp parallel for
+			for (auto i = 0; i < null_samples.vlen; ++i)
+			{
+				float64_t null_sample = 0;
+				for (index_t j = 0; j < self->num_eigenvalues; ++j)
+				{
+					float64_t z_j = CMath::randn_double();
+					float64_t multiple = CMath::sq(z_j);
+
+					/* take largest EV, scale by 1/(m+n) on the fly and take abs value*/
+					float64_t eigenvalue_estimate = eigen_solver.eigenvalues()[max_num_eigenvalues-1-j];
+					eigenvalue_estimate /= (m + n);
+
+					if (get_statistic_type() == S_TYPE::UNBIASED_FULL)
+					{
+						multiple -= 1;
+					}
+
+					null_sample += eigenvalue_estimate * multiple;
+				}
+				null_samples[i] = null_sample;
+			}
+		}
+
+		return null_samples;
+	}
+	else
+	{
+		return CMMD::sample_null();
+	}
 }
 
 const char* CQuadraticTimeMMD::get_name() const
