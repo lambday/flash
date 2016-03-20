@@ -52,6 +52,7 @@ private:
 	static internal::mmd::FullDirect get_direct_estimation_method();
 	const float64_t normalize_statistic(float64_t statistic) const;
 	const float64_t normalize_variance(float64_t variance) const;
+	SGVector<float64_t> fit_null_gamma();
 };
 
 }

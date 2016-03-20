@@ -89,11 +89,13 @@ float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 			float64_t std_dev = CMath::sqrt(sigma_sq);
 			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+			break;
 		}
-		break;
 		default:
+		{
 			result = CHypothesisTest::compute_p_value(statistic);
-		break;
+			break;
+		}
 	}
 	return result;
 }
@@ -108,11 +110,13 @@ float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
 			float64_t sigma_sq = gaussian_variance(compute_variance());
 			float64_t std_dev = CMath::sqrt(sigma_sq);
 			result = 1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+			break;
 		}
-		break;
 		default:
+		{
 			result = CHypothesisTest::compute_threshold(alpha);
-		break;
+			break;
+		}
 	}
 	return result;
 }

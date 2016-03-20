@@ -21,6 +21,7 @@
 #include <shogun/kernel/Kernel.h>
 #include <shogun/kernel/CustomKernel.h>
 #include <shogun/mathematics/eigen3.h>
+#include <shogun/mathematics/Statistics.h>
 #include <flash/statistics/QuadraticTimeMMD.h>
 #include <flash/statistics/internals/NextSamples.h>
 #include <flash/statistics/internals/DataManager.h>
@@ -81,9 +82,11 @@ float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
 	{
 		case N_METHOD::MMD2_GAMMA:
 		{
-			// TODO
+			/* fit gamma and return cdf at statistic */
+			SGVector<float64_t> params = fit_null_gamma();
+			result = CStatistics::gamma_cdf(statistic, params[0], params[1]);
+			break;
 		}
-		break;
 		default:
 			result = CHypothesisTest::compute_p_value(statistic);
 		break;
@@ -98,9 +101,11 @@ float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
 	{
 		case N_METHOD::MMD2_GAMMA:
 		{
-			// TODO
+			/* fit gamma and return inverse cdf at alpha */
+			SGVector<float64_t> params = fit_null_gamma();
+			result = CStatistics::inverse_gamma_cdf(alpha, params[0], params[1]);
+			break;
 		}
-		break;
 		default:
 			result = CHypothesisTest::compute_threshold(alpha);
 		break;
@@ -190,6 +195,89 @@ SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 	{
 		return CMMD::sample_null();
 	}
+}
+
+SGVector<float64_t> CQuadraticTimeMMD::fit_null_gamma()
+{
+	DataManager& dm = get_data_manager();
+	index_t m = dm.num_samples_at(0);
+	index_t n = dm.num_samples_at(1);
+
+	REQUIRE(m == n, "Only possible with equal number of samples from both distribution!\n")
+
+	/* evtl. warn user not to use wrong statistic type */
+	if (get_statistic_type() != S_TYPE::BIASED_FULL)
+	{
+		SG_WARNING("Note: provided statistic has to be BIASED. Please ensure that! "
+		"To get rid of warning, call %s::set_statistic_type(S_TYPE::BIASED_FULL)\n", get_name());
+	}
+
+	dm.start();
+	auto next_samples = dm.next();
+
+	SGVector<float64_t> result(2);
+	std::fill(result.vector, result.vector + result.vlen, 0);
+
+	if (!next_samples.empty())
+	{
+		auto feats_p = next_samples[0][0];
+		auto feats_q = next_samples[1][0];
+
+		auto feats_p_q = feats_p->create_merged_copy(feats_q.get());
+
+		CKernel *kernel = get_kernel_manager().kernel_at(0);
+
+		/* imaginary matrix K=[K KL; KL' L] (MATLAB notation)
+		 * K is matrix for XX, L is matrix for YY, KL is XY, LK is YX
+		 * works since X and Y are concatenated here */
+		kernel->init(feats_p_q, feats_p_q);
+
+		/* compute mean under H0 of MMD, which is
+		 * meanMMD  = 2/m * ( 1  - 1/m*sum(diag(KL))  );
+		 * in MATLAB.
+		 * Remove diagonals on the fly */
+		float64_t mean_mmd=0;
+		for (index_t i=0; i<m; ++i)
+		{
+			/* virtual KL matrix is in upper right corner of SHOGUN K matrix
+			 * so this sums the diagonal of the matrix between X and Y*/
+			mean_mmd+=kernel->kernel(i, m+i);
+		}
+		mean_mmd=2.0/m*(1.0-1.0/m*mean_mmd);
+
+		/* compute variance under H0 of MMD, which is
+		 * varMMD = 2/m/(m-1) * 1/m/(m-1) * sum(sum( (K + L - KL - KL').^2 ));
+		 * in MATLAB, so sum up all elements */
+		float64_t var_mmd=0;
+		for (index_t i=0; i<m; ++i)
+		{
+			for (index_t j=0; j<m; ++j)
+			{
+				/* dont add diagonal of all pairs of imaginary kernel matrices */
+				if (i==j || m+i==j || m+j==i)
+					continue;
+
+				float64_t to_add=kernel->kernel(i, j);
+				to_add+=kernel->kernel(m+i, m+j);
+				to_add-=kernel->kernel(i, m+j);
+				to_add-=kernel->kernel(m+i, j);
+				var_mmd+=CMath::pow(to_add, 2);
+			}
+		}
+
+		kernel->remove_lhs_and_rhs();
+
+		var_mmd*=2.0/m/(m-1)*1.0/m/(m-1);
+
+		/* parameters for gamma distribution */
+		float64_t a=CMath::pow(mean_mmd, 2)/var_mmd;
+		float64_t b=var_mmd*m / mean_mmd;
+
+		result[0]=a;
+		result[1]=b;
+	}
+
+	return result;
 }
 
 const char* CQuadraticTimeMMD::get_name() const
