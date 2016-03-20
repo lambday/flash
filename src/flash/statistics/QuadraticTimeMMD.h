@@ -41,6 +41,9 @@ public:
 	virtual SGVector<float64_t> sample_null() override;
 	void set_num_eigenvalues(index_t num_eigenvalues);
 
+	virtual float64_t compute_p_value(float64_t statistic) override;
+	virtual float64_t compute_threshold(float64_t alpha) override;
+
 	virtual const char* get_name() const;
 private:
 	struct Self;

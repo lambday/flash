@@ -74,6 +74,40 @@ void CQuadraticTimeMMD::set_num_eigenvalues(index_t num_eigenvalues)
 	self->num_eigenvalues = num_eigenvalues;
 }
 
+float64_t CQuadraticTimeMMD::compute_p_value(float64_t statistic)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD2_GAMMA:
+		{
+			// TODO
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_p_value(statistic);
+		break;
+	}
+	return result;
+}
+
+float64_t CQuadraticTimeMMD::compute_threshold(float64_t alpha)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD2_GAMMA:
+		{
+			// TODO
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_threshold(alpha);
+		break;
+	}
+	return result;
+}
+
 SGVector<float64_t> CQuadraticTimeMMD::sample_null()
 {
 	if (get_null_approximation_method() == N_METHOD::MMD2_SPECTRUM)
