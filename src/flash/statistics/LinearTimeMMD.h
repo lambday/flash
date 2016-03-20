@@ -34,12 +34,18 @@ class CLinearTimeMMD : public CMMD<CLinearTimeMMD>
 public:
 	CLinearTimeMMD();
 	virtual ~CLinearTimeMMD();
+
 	void set_num_blocks_per_burst(index_t num_blocks_per_burst);
+
+	virtual float64_t compute_p_value(float64_t statistic) override;
+	virtual float64_t compute_threshold(float64_t alpha) override;
+
 	virtual const char* get_name() const;
 private:
 	static internal::mmd::WithinBlockDirect get_direct_estimation_method();
 	const float64_t normalize_statistic(float64_t statistic) const;
 	const float64_t normalize_variance(float64_t variance) const;
+	const float64_t gaussian_variance(float64_t variance) const;
 };
 
 }

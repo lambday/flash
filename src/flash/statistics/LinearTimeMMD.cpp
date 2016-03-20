@@ -19,6 +19,7 @@
 #include <flash/statistics/LinearTimeMMD.h>
 #include <flash/statistics/internals/DataManager.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Statistics.h>
 
 using namespace shogun;
 using namespace internal;
@@ -63,6 +64,57 @@ const float64_t CLinearTimeMMD::normalize_variance(float64_t variance) const
 		return variance * B * (B - 2) / 16;
 	}
 	return variance * Bx * By * (Bx - 1) * (By - 1) / (B - 1) / (B - 2);
+}
+
+const float64_t CLinearTimeMMD::gaussian_variance(float64_t variance) const
+{
+	const DataManager& dm = get_data_manager();
+	const index_t Bx = dm.blocksize_at(0);
+	const index_t By = dm.blocksize_at(1);
+	const index_t B = Bx + By;
+	if (get_statistic_type() == S_TYPE::UNBIASED_INCOMPLETE)
+	{
+		return variance * 4 / (B - 2);
+	}
+	return variance * (B - 1) * (B - 2) / (Bx - 1) / (By - 1) / B;
+}
+
+float64_t CLinearTimeMMD::compute_p_value(float64_t statistic)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD1_GAUSSIAN:
+		{
+			float64_t sigma_sq = gaussian_variance(compute_variance());
+			float64_t std_dev = CMath::sqrt(sigma_sq);
+			result = 1.0 - CStatistics::normal_cdf(statistic, std_dev);
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_p_value(statistic);
+		break;
+	}
+	return result;
+}
+
+float64_t CLinearTimeMMD::compute_threshold(float64_t alpha)
+{
+	float64_t result = 0;
+	switch (get_null_approximation_method())
+	{
+		case N_METHOD::MMD1_GAUSSIAN:
+		{
+			float64_t sigma_sq = gaussian_variance(compute_variance());
+			float64_t std_dev = CMath::sqrt(sigma_sq);
+			result = 1.0 - CStatistics::inverse_normal_cdf(1 - alpha, 0, std_dev);
+		}
+		break;
+		default:
+			result = CHypothesisTest::compute_threshold(alpha);
+		break;
+	}
+	return result;
 }
 
 const char* CLinearTimeMMD::get_name() const
