@@ -28,53 +28,46 @@ using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-template <class T>
-struct CHypothesisTest<T>::Self
+struct CHypothesisTest::Self
 {
-	Self() : data_manager(num_distributions), kernel_manager(num_kernels)
+	Self(index_t num_distributions, index_t num_kernels)
+	: data_manager(num_distributions), kernel_manager(num_kernels)
 	{
 	}
 	DataManager data_manager;
 	KernelManager kernel_manager;
 };
 
-template <class T>
-CHypothesisTest<T>::CHypothesisTest() : CSGObject()
+CHypothesisTest::CHypothesisTest(index_t num_distributions, index_t num_kernels) : CSGObject()
 {
-	self = std::make_unique<Self>();
+	self = std::make_unique<Self>(num_distributions, num_kernels);
 }
 
-template <class T>
-CHypothesisTest<T>::~CHypothesisTest()
+CHypothesisTest::~CHypothesisTest()
 {
 }
 
-template <class T>
-DataManager& CHypothesisTest<T>::get_data_manager()
+DataManager& CHypothesisTest::get_data_manager()
 {
 	return self->data_manager;
 }
 
-template <class T>
-const DataManager& CHypothesisTest<T>::get_data_manager() const
+const DataManager& CHypothesisTest::get_data_manager() const
 {
 	return self->data_manager;
 }
 
-template <class T>
-KernelManager& CHypothesisTest<T>::get_kernel_manager()
+KernelManager& CHypothesisTest::get_kernel_manager()
 {
 	return self->kernel_manager;
 }
 
-template <class T>
-const KernelManager& CHypothesisTest<T>::get_kernel_manager() const
+const KernelManager& CHypothesisTest::get_kernel_manager() const
 {
 	return self->kernel_manager;
 }
 
-template <class T>
-float64_t CHypothesisTest<T>::compute_p_value(float64_t statistic)
+float64_t CHypothesisTest::compute_p_value(float64_t statistic)
 {
 	SGVector<float64_t> values = sample_null();
 
@@ -84,8 +77,7 @@ float64_t CHypothesisTest<T>::compute_p_value(float64_t statistic)
 	return 1.0 - i / values.vlen;
 }
 
-template <class T>
-float64_t CHypothesisTest<T>::compute_threshold(float64_t alpha)
+float64_t CHypothesisTest::compute_threshold(float64_t alpha)
 {
 	float64_t result = 0;
 	SGVector<float64_t> values = sample_null();
@@ -94,25 +86,18 @@ float64_t CHypothesisTest<T>::compute_threshold(float64_t alpha)
 	return values[index_t(CMath::floor(values.vlen * (1 - alpha)))];
 }
 
-template <class T>
-float64_t CHypothesisTest<T>::perform_test()
+float64_t CHypothesisTest::perform_test()
 {
 	return compute_p_value(compute_statistic());
 }
 
-template <class T>
-bool CHypothesisTest<T>::perform_test(float64_t alpha)
+bool CHypothesisTest::perform_test(float64_t alpha)
 {
 	float64_t p_value = perform_test();
 	return p_value < alpha;
 }
 
-template <class T>
-const char* CHypothesisTest<T>::get_name() const
+const char* CHypothesisTest::get_name() const
 {
 	return "HypothesisTest";
 }
-
-template class CHypothesisTest<GoodnessOfFitTest>;
-template class CHypothesisTest<TwoSampleTest>;
-template class CHypothesisTest<IndependenceTest>;

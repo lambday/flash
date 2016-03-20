@@ -18,82 +18,70 @@
 
 #include <flash/statistics/TwoDistributionTest.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-template <typename T>
-CTwoDistributionTest<T>::CTwoDistributionTest() : CHypothesisTest<T>()
+CTwoDistributionTest::CTwoDistributionTest(index_t num_kernels)
+: CHypothesisTest(TwoDistributionTest::num_feats, num_kernels)
 {
 }
 
-template <typename T>
-CTwoDistributionTest<T>::~CTwoDistributionTest()
+CTwoDistributionTest::~CTwoDistributionTest()
 {
 }
 
-template <typename T>
-void CTwoDistributionTest<T>::set_p(CFeatures* samples_from_p)
+void CTwoDistributionTest::set_p(CFeatures* samples_from_p)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.samples_at(0) = samples_from_p;
 }
 
-template <typename T>
-CFeatures* CTwoDistributionTest<T>::get_p() const
+CFeatures* CTwoDistributionTest::get_p() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.samples_at(0);
 }
 
-template <typename T>
-void CTwoDistributionTest<T>::set_q(CFeatures* samples_from_q)
+void CTwoDistributionTest::set_q(CFeatures* samples_from_q)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.samples_at(1) = samples_from_q;
 }
 
-template <typename T>
-CFeatures* CTwoDistributionTest<T>::get_q() const
+CFeatures* CTwoDistributionTest::get_q() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.samples_at(1);
 }
 
-template <typename T>
-void CTwoDistributionTest<T>::set_num_samples_p(index_t num_samples_from_p)
+void CTwoDistributionTest::set_num_samples_p(index_t num_samples_from_p)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.num_samples_at(0) = num_samples_from_p;
 }
 
-template <typename T>
-const index_t CTwoDistributionTest<T>::get_num_samples_p() const
+const index_t CTwoDistributionTest::get_num_samples_p() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.num_samples_at(0);
 }
 
-template <typename T>
-void CTwoDistributionTest<T>::set_num_samples_q(index_t num_samples_from_q)
+void CTwoDistributionTest::set_num_samples_q(index_t num_samples_from_q)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.num_samples_at(1) = num_samples_from_q;
 }
 
-template <typename T>
-const index_t CTwoDistributionTest<T>::get_num_samples_q() const
+const index_t CTwoDistributionTest::get_num_samples_q() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.num_samples_at(1);
 }
 
-template <typename T>
-const char* CTwoDistributionTest<T>::get_name() const
+const char* CTwoDistributionTest::get_name() const
 {
 	return "TwoDistributionTest";
 }
-
-template class CTwoDistributionTest<TwoSampleTest>;
-template class CTwoDistributionTest<IndependenceTest>;

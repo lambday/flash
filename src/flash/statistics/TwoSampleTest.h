@@ -20,7 +20,6 @@
 #define TWO_SAMPLE_TEST_H_
 
 #include <flash/statistics/TwoDistributionTest.h>
-#include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
@@ -30,7 +29,7 @@ class CKernel;
 namespace statistics
 {
 
-class CTwoSampleTest : public CTwoDistributionTest<internal::TwoSampleTest>
+class CTwoSampleTest : public CTwoDistributionTest
 {
 public:
 	CTwoSampleTest();

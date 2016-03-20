@@ -19,12 +19,13 @@
 #include <shogun/kernel/Kernel.h>
 #include <flash/statistics/IndependenceTest.h>
 #include <flash/statistics/internals/KernelManager.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CIndependenceTest::CIndependenceTest() : CTwoDistributionTest()
+CIndependenceTest::CIndependenceTest() : CTwoDistributionTest(IndependenceTest::num_kernels)
 {
 }
 

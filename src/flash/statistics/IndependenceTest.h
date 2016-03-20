@@ -20,7 +20,6 @@
 #define INDEPENDENCE_TEST_H_
 
 #include <flash/statistics/TwoDistributionTest.h>
-#include <flash/statistics/internals/TestTypes.h>
 
 namespace shogun
 {
@@ -30,7 +29,7 @@ class CKernel;
 namespace statistics
 {
 
-class CIndependenceTest : public CTwoDistributionTest<internal::IndependenceTest>
+class CIndependenceTest : public CTwoDistributionTest
 {
 public:
 	CIndependenceTest();

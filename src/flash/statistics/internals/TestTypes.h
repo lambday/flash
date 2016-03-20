@@ -30,42 +30,34 @@ class CFeatures;
 namespace internal
 {
 
-struct TwoSampleTestPermutationPolicy;
-struct IndependenceTestPermutationPolicy;
-
 struct OneDistributionTest
 {
-	enum { num_feats = 1 };
+	static constexpr index_t num_feats = 1;
 };
 
 struct TwoDistributionTest
 {
-	enum { num_feats = 2 };
+	static constexpr index_t num_feats = 2;
 };
 
 struct ThreeDistributionTest
 {
-	enum { num_feats = 3 };
+	static constexpr index_t num_feats = 3;
 };
 
 struct GoodnessOfFitTest : OneDistributionTest
 {
-	enum { num_kernels = 1 };
-	using return_type = std::shared_ptr<CFeatures>;
+	static constexpr index_t num_kernels = 1;
 };
 
 struct TwoSampleTest : TwoDistributionTest
 {
-	enum { num_kernels = 1 };
-	using permutation_policy = TwoSampleTestPermutationPolicy;
-	using return_type = std::shared_ptr<CFeatures>;
+	static constexpr index_t num_kernels = 1;
 };
 
 struct IndependenceTest : TwoDistributionTest
 {
-	enum { num_kernels = 2 };
-	using permutation_policy = IndependenceTestPermutationPolicy;
-	using return_type = std::vector<std::shared_ptr<CFeatures>>;
+	static constexpr index_t num_kernels = 2;
 };
 
 }

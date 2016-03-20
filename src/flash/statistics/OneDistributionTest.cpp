@@ -18,53 +18,46 @@
 
 #include <flash/statistics/OneDistributionTest.h>
 #include <flash/statistics/internals/DataManager.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-template <typename T>
-COneDistributionTest<T>::COneDistributionTest() : CHypothesisTest<T>()
+COneDistributionTest::COneDistributionTest(index_t num_kernels)
+: CHypothesisTest(OneDistributionTest::num_feats, num_kernels)
 {
 }
 
-template <typename T>
-COneDistributionTest<T>::~COneDistributionTest()
+COneDistributionTest::~COneDistributionTest()
 {
 }
 
-template <typename T>
-void COneDistributionTest<T>::set_samples(CFeatures* samples)
+void COneDistributionTest::set_samples(CFeatures* samples)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.samples_at(0) = samples;
 }
 
-template <typename T>
-CFeatures* COneDistributionTest<T>::get_samples() const
+CFeatures* COneDistributionTest::get_samples() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.samples_at(0);
 }
 
-template <typename T>
-void COneDistributionTest<T>::set_num_samples(index_t num_samples)
+void COneDistributionTest::set_num_samples(index_t num_samples)
 {
-	auto& dm = CHypothesisTest<T>::get_data_manager();
+	auto& dm = get_data_manager();
 	dm.num_samples_at(0) = num_samples;
 }
 
-template <typename T>
-index_t COneDistributionTest<T>::get_num_samples() const
+index_t COneDistributionTest::get_num_samples() const
 {
-	const auto& dm = CHypothesisTest<T>::get_data_manager();
+	const auto& dm = get_data_manager();
 	return dm.num_samples_at(0);
 }
 
-template <typename T>
-const char* COneDistributionTest<T>::get_name() const
+const char* COneDistributionTest::get_name() const
 {
 	return "OneDistributionTest";
 }
-
-template class COneDistributionTest<GoodnessOfFitTest>;

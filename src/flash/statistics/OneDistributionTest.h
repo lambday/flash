@@ -26,21 +26,13 @@
 namespace shogun
 {
 
-namespace internal
-{
-
-struct OneDistributionTest;
-
-}
-
 namespace statistics
 {
 
-template <typename TestType>
-class COneDistributionTest : public CHypothesisTest<TestType>
+class COneDistributionTest : public CHypothesisTest
 {
 public:
-	COneDistributionTest();
+	COneDistributionTest(index_t num_kernels);
 	virtual ~COneDistributionTest();
 
 	void set_samples(CFeatures* samples);

@@ -19,12 +19,13 @@
 #include <shogun/kernel/Kernel.h>
 #include <flash/statistics/TwoSampleTest.h>
 #include <flash/statistics/internals/KernelManager.h>
+#include <flash/statistics/internals/TestTypes.h>
 
 using namespace shogun;
 using namespace internal;
 using namespace statistics;
 
-CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest()
+CTwoSampleTest::CTwoSampleTest() : CTwoDistributionTest(TwoSampleTest::num_kernels)
 {
 }
 

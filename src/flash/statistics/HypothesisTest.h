@@ -39,15 +39,10 @@ class KernelManager;
 namespace statistics
 {
 
-template <class TestType>
 class CHypothesisTest : public CSGObject
 {
 public:
-	using test_type = TestType;
-	enum { num_distributions = test_type::num_feats };
-	enum { num_kernels = test_type::num_kernels };
-
-	CHypothesisTest();
+	CHypothesisTest(index_t num_distributions, index_t num_kernels);
 	virtual ~CHypothesisTest();
 
 	virtual float64_t compute_statistic() = 0;
